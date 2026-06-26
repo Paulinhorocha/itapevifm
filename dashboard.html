@@ -650,6 +650,23 @@ function doLogout() {
 }
 
 function initDashboard() {
+  console.log('Inicializando dashboard...');
+  loadFromFirebase();
+  
+  const todayIdx = new Date().getDay();
+  const todayDia = DAYS_SHORT[todayIdx];
+  if (DIAS_SEMANA.includes(todayDia)) {
+    dashMostrarDia(todayDia);
+  } else {
+    dashMostrarDia('Seg');
+  }
+  
+  setInterval(() => {
+    renderStats();
+    dashMostrarDia(dashDiaSelecionado);
+  }, 60000);
+}
+
 function sanitize(str) {
   if (typeof str !== 'string') return String(str || '');
   const div = document.createElement('div');
@@ -1208,29 +1225,6 @@ function refreshDashboard() {
   }
 }
 
-// ══════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════
-console.log('Iniciando Dashboard com Firebase...');
-
-// Carregar dados do Firebase
-loadFromFirebase();
-
-// Detectar dia atual
-const todayIdx = new Date().getDay();
-const todayDia = DAYS_SHORT[todayIdx];
-if (DIAS_SEMANA.includes(todayDia)) {
-  dashMostrarDia(todayDia);
-} else {
-  dashMostrarDia('Seg');
-}
-
-// Auto-refresh a cada minuto
-setInterval(() => {
-  renderStats();
-  dashMostrarDia(dashDiaSelecionado);
-}, 60000);
-} // Fim initDashboard
 </script>
 </body>
 </html>
