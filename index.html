@@ -610,7 +610,6 @@ footer strong { color:var(--text2); }
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border2);
   padding: 0.8rem 1rem;
-  display: flex;
   align-items: center;
   gap: 0.8rem;
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
@@ -660,7 +659,7 @@ footer strong { color:var(--text2); }
 
 /* ═══ MOBILE ═══ */
 @media(max-width:680px){
-  :root{ --topbar-h:0px; --nav-h:46px; --header-total:148px; }
+  :root{ --topbar-h:0px; --nav-h:46px; --header-total:176px; }
   
   /* Mostrar barras mobile */
   #mobilePlayer { display: flex; }
@@ -671,7 +670,7 @@ footer strong { color:var(--text2); }
   
   /* Ajustar nav para ficar abaixo das barras mobile */
   nav {
-    top: 102px; /* 56px player + 46px onair */
+    top: 130px; /* 56px player + ~74px onair */
   }
   
   .nav-links{ display:none; }
