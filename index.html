@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0d0015">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' http: https:;">
 <title>Itapevi FM 87.9 — Maçambará</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="swap">
 <style>
 :root {
   --bg: #0d0015;
@@ -40,7 +39,7 @@ body {
   padding-top: var(--header-total);
 }
 
-/* ═══ TOP BAR ═══ */
+/* TOP BAR */
 #topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   height: var(--topbar-h);
@@ -185,7 +184,7 @@ input[type=range]::-webkit-slider-thumb {
   cursor:pointer; font-weight:600; width:100%;
 }
 
-/* ═══ NAV ═══ */
+/* NAV */
 nav {
   position: fixed; top: var(--topbar-h); left:0; right:0; z-index:999;
   height: var(--nav-h);
@@ -210,7 +209,7 @@ nav {
 .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
 .hamburger span { width:22px; height:2px; background:var(--text2); border-radius:2px; }
 
-/* ═══ HERO ═══ */
+/* HERO */
 .hero {
   min-height: calc(100vh - var(--header-total));
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -261,41 +260,8 @@ nav {
   font-size:0.95rem; color:var(--text2); margin-bottom:2rem;
   line-height:1.6; font-weight:300;
 }
-.hero-onair-card {
-  background:linear-gradient(135deg,rgba(26,0,45,0.95),rgba(32,0,53,0.95));
-  border:1px solid var(--border2); border-radius:20px;
-  padding:1.4rem 1.8rem; width:100%; max-width:560px;
-  box-shadow:var(--glow), inset 0 1px 0 rgba(255,255,255,0.05);
-  display:flex; align-items:center; gap:1.4rem; text-align:left;
-  margin: 0 auto;
-}
-.hero-locutor-avatar {
-  width: 72px; height: 72px; border-radius: 50%; flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),var(--purple));
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Bebas Neue',cursive; font-size:1.6rem; color:white;
-  border:2px solid rgba(255,255,255,0.12);
-  overflow:hidden; position:relative;
-}
-.hero-locutor-avatar img { width:100%; height:100%; object-fit:cover; }
-.hero-onair-info { flex:1; overflow:hidden; }
-.hero-onair-label {
-  font-size:0.62rem; font-weight:700; letter-spacing:2px;
-  color:var(--accent2); text-transform:uppercase;
-  display:flex; align-items:center; gap:6px; margin-bottom:4px;
-}
-.hero-onair-prog {
-  font-family:'Bebas Neue',cursive; font-size:1.5rem; letter-spacing:2px;
-  color:var(--text); margin-bottom:2px; line-height:1.1;
-}
-.hero-onair-locutor {
-  font-size:0.82rem; color:var(--purple2); font-weight:600; margin-bottom:4px;
-}
-.hero-onair-horario {
-  font-size:0.73rem; color:var(--text3);
-}
 
-/* ═══ SECTIONS ═══ */
+/* SECTIONS */
 .page-section { padding:4rem 2rem; max-width:1200px; margin:0 auto; }
 .section-eyebrow {
   font-size:0.68rem; font-weight:600; letter-spacing:3px;
@@ -329,7 +295,7 @@ nav {
 .tab-panel { display:none; }
 .tab-panel.active { display:block; }
 
-/* ═══ EQUIPE — cards quadrados ═══ */
+/* EQUIPE */
 .equipe-grid {
   display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.4rem;
 }
@@ -376,86 +342,15 @@ nav {
   font-size:0.78rem; color:var(--text2); line-height:1.5;
   background:rgba(255,255,255,0.04); border:1px solid var(--border);
   border-radius:8px; padding:8px 10px; min-height:40px;
-  resize:none; width:100%; font-family:'Inter',sans-serif;
-  outline:none; transition:border-color 0.2s;
-}
-.equipe-funcao:focus { border-color:var(--purple2); }
-
-/* ═══ PROGRAMAÇÃO — grade semanal inteligente ═══ */
-.grade-header {
-  display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; align-items:center;
-}
-.grade-legend {
-  display:flex; gap:8px; flex-wrap:wrap;
-}
-.grade-legend-item {
-  display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--text2);
-}
-.grade-legend-dot {
-  width:10px; height:10px; border-radius:3px;
-}
-.grade-container {
-  overflow-x:auto; border-radius:12px; border:1px solid var(--border);
-}
-.grade-table {
-  width:100%; border-collapse:collapse; min-width:900px;
-}
-.grade-table th {
-  background:linear-gradient(135deg,rgba(192,57,43,0.3),rgba(142,68,173,0.3));
-  color:var(--text); font-size:0.7rem; font-weight:600; letter-spacing:2px;
-  text-transform:uppercase; padding:13px 10px; text-align:center;
-  border-bottom:1px solid var(--border2); border-right:1px solid var(--border);
-  position:sticky; top:0; z-index:2;
-}
-.grade-table th:first-child {
-  text-align:left; min-width:90px; border-right:1px solid var(--border2);
-  position:sticky; left:0; z-index:3;
-  background:linear-gradient(135deg,rgba(30,0,50,0.98),rgba(40,0,65,0.98));
-}
-.grade-table th:last-child { border-right:none; }
-.grade-table th.today { background:linear-gradient(135deg,rgba(192,57,43,0.5),rgba(142,68,173,0.5)); }
-.grade-table td {
-  padding:0; border:1px solid var(--border); vertical-align:top;
-  height:36px; text-align:center; position:relative;
-}
-.grade-table td:first-child {
-  background:rgba(20,0,35,0.9); padding:8px 10px;
-  font-size:0.75rem; font-weight:600; color:var(--gold);
-  white-space:nowrap; text-align:center;
-  position:sticky; left:0; z-index:1;
-  border-right:1px solid var(--border2);
-}
-.grade-cell {
-  padding:6px 8px; font-size:0.76rem; cursor:pointer;
-  height:100%; display:flex; flex-direction:column; justify-content:center;
-  transition:background 0.2s;
-}
-.grade-cell:hover { background:rgba(142,68,173,0.12); }
-.grade-cell.has-prog {
-  background:rgba(255,255,255,0.03);
-}
-.grade-cell.is-now {
-  background:rgba(192,57,43,0.15);
-  border-left:3px solid var(--accent2);
-}
-.grade-cell-prog {
-  font-weight:600; color:var(--text); font-size:0.78rem; line-height:1.2;
-}
-.grade-cell-apres {
-  font-size:0.68rem; color:var(--text2); margin-top:2px;
-}
-.grade-cell-empty {
-  color:var(--text3); font-size:0.7rem; font-style:italic;
 }
 
-/* ═══ PROGRAMAÇÃO POR DIA ═══ */
+/* PROGRAMAÇÃO POR DIA */
 .dias-nav {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
 }
-
 .dia-btn {
   background: rgba(255,255,255,0.06);
   border: 1px solid var(--border2);
@@ -468,30 +363,25 @@ nav {
   transition: all 0.2s;
   letter-spacing: 0.5px;
 }
-
 .dia-btn:hover {
   background: rgba(142,68,173,0.2);
   border-color: var(--purple2);
   color: var(--text);
 }
-
 .dia-btn.active {
   background: linear-gradient(135deg, var(--accent), var(--purple));
   border-color: transparent;
   color: white;
   box-shadow: 0 2px 12px rgba(192,57,43,0.4);
 }
-
 .dia-btn.today {
   border-color: var(--accent2);
 }
-
 .prog-dia-lista {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-
 .prog-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -501,17 +391,14 @@ nav {
   position: relative;
   overflow: hidden;
 }
-
 .prog-card:hover {
   border-color: var(--border2);
   box-shadow: 0 0 20px rgba(142,68,173,0.15);
 }
-
 .prog-card.is-live {
   border-color: rgba(231,76,60,0.5);
   box-shadow: 0 0 20px rgba(231,76,60,0.2);
 }
-
 .prog-card-color {
   position: absolute;
   left: 0;
@@ -519,11 +406,9 @@ nav {
   bottom: 0;
   width: 4px;
 }
-
 .prog-card-content {
   padding-left: 0.8rem;
 }
-
 .prog-card-time {
   font-size: 0.75rem;
   font-weight: 600;
@@ -531,7 +416,6 @@ nav {
   letter-spacing: 1px;
   margin-bottom: 0.3rem;
 }
-
 .prog-card-name {
   font-family: 'Bebas Neue', cursive;
   font-size: 1.4rem;
@@ -539,13 +423,11 @@ nav {
   color: var(--text);
   margin-bottom: 0.2rem;
 }
-
 .prog-card-apres {
   font-size: 0.85rem;
   color: var(--purple2);
   font-weight: 500;
 }
-
 .prog-card-live-badge {
   position: absolute;
   top: 1rem;
@@ -562,11 +444,9 @@ nav {
   align-items: center;
   gap: 5px;
 }
-
 .prog-card.is-live .prog-card-live-badge {
   display: flex;
 }
-
 .prog-dia-vazio {
   text-align: center;
   padding: 3rem 1rem;
@@ -574,249 +454,16 @@ nav {
   font-style: italic;
 }
 
-/* ═══ FOOTER ═══ */
+/* FOOTER */
 footer {
   border-top:1px solid var(--border); padding:2rem; text-align:center;
   color:var(--text3); font-size:0.76rem; letter-spacing:1px;
 }
 footer strong { color:var(--text2); }
 
-/* ═══ MOBILE PLAYER BAR ═══ */
-#mobilePlayer {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1001;
-  height: 64px;
-  background: linear-gradient(135deg, rgba(18,0,32,0.98), rgba(28,0,46,0.98));
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border2);
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-  gap: 1rem;
-}
-
-.mobile-player-left {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.mobile-player-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.mobile-player-info {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.mobile-player-title {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1rem;
-  letter-spacing: 2px;
-  background: linear-gradient(135deg, var(--accent2), var(--purple2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  line-height: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mobile-player-subtitle {
-  font-size: 0.65rem;
-  color: var(--text3);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mobile-player-right {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-shrink: 0;
-}
-
-.mobile-eq-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 20px;
-}
-
-.mobile-eq-bar {
-  width: 3px;
-  border-radius: 2px;
-  background: linear-gradient(to top, var(--accent), var(--purple2));
-  animation: eq-anim 0.8s ease-in-out infinite alternate;
-}
-
-.mobile-eq-bar:nth-child(1){height:40%;animation-delay:0s}
-.mobile-eq-bar:nth-child(2){height:80%;animation-delay:0.1s}
-.mobile-eq-bar:nth-child(3){height:60%;animation-delay:0.2s}
-
-.mobile-eq-bars.paused .mobile-eq-bar {
-  animation-play-state: paused;
-  height: 20%;
-}
-
-.mobile-stream-btn {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border2);
-  color: var(--text3);
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 0.65rem;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  transition: all 0.2s;
-}
-
-.mobile-stream-btn:hover {
-  background: rgba(255,255,255,0.1);
-  color: var(--text2);
-}
-
-.mobile-stream-config {
-  display: none;
-  position: absolute;
-  top: 72px;
-  left: 1rem;
-  right: 1rem;
-  background: rgba(20,0,36,0.98);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  padding: 1rem;
-  z-index: 1002;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-}
-
-.mobile-stream-config.open {
-  display: block;
-}
-
-.mobile-stream-config label {
-  display: block;
-  font-size: 0.65rem;
-  color: var(--text3);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-}
-
-.mobile-stream-config input {
-  width: 100%;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  color: var(--text2);
-  font-size: 0.75rem;
-  padding: 8px 10px;
-  outline: none;
-  margin-bottom: 0.8rem;
-}
-
-.mobile-stream-config button {
-  width: 100%;
-  background: linear-gradient(135deg, var(--accent), var(--purple));
-  border: none;
-  color: white;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-#mobileOnair {
-  display: none;
-  position: fixed;
-  top: 64px;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  background: linear-gradient(135deg, rgba(26,0,45,0.98), rgba(32,0,53,0.98));
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border2);
-  padding: 0.8rem 1rem;
-  align-items: center;
-  gap: 0.8rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-
-.mobile-onair-logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.mobile-onair-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.mobile-onair-label {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: var(--accent2);
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 2px;
-}
-
-.mobile-onair-prog {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mobile-onair-locutor {
-  font-size: 0.7rem;
-  color: var(--text2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ═══ MOBILE ═══ */
+/* MOBILE */
 @media(max-width:680px){
-  :root{ --topbar-h:0px; --nav-h:46px; --header-total:184px; }
-  
-  /* Mostrar barras mobile */
-  #mobilePlayer { display: flex; }
-  #mobileOnair { display: flex; }
-  
-  /* Esconder topbar desktop */
-  #topbar { display: none; }
-  
-  /* Ajustar nav para ficar abaixo das barras mobile */
-  nav {
-    top: 138px; /* 64px player + ~74px onair */
-  }
-  
+  :root{ --topbar-h:0px; --nav-h:46px; --header-total:106px; }
   .nav-links{ display:none; }
   .nav-links.open{
     display:flex; flex-direction:column; gap:0;
@@ -826,72 +473,22 @@ footer strong { color:var(--text2); }
   }
   .nav-links.open a{display:block;padding:11px 2rem}
   .hamburger{display:flex}
-  
-  /* Centralizar logo e badge no mobile */
-  .hero-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .hero-badge {
-    margin-bottom: 1rem;
-  }
-  
-  .hero-logo-img {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 1rem;
-  }
-  
+  .vol-wrap{display:none}
+  .player-status{display:none}
+  .topbar-logo-text span{display:none}
+  .stream-cfg-toggle{font-size:0.65rem;padding:5px 8px}
+  .hero-logo-img{width:100px;height:100px}
   .equipe-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
 }
 @media(max-width:400px){
+  .topbar-sep{display:none}
   .stream-cfg{left:1rem;right:1rem;min-width:unset}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ MOBILE PLAYER BAR ═══ -->
-<div id="mobilePlayer">
-  <div class="mobile-player-left">
-    <img src="logo.jpg" alt="Itapevi FM" class="mobile-player-logo">
-    <div class="mobile-player-info">
-      <div class="mobile-player-title">ITAPEVI FM</div>
-      <div class="mobile-player-subtitle">87.9 MHz · Maçambará</div>
-    </div>
-  </div>
-  <div class="mobile-player-right">
-    <div class="mobile-eq-bars paused" id="mobileEqBars">
-      <div class="mobile-eq-bar"></div>
-      <div class="mobile-eq-bar"></div>
-      <div class="mobile-eq-bar"></div>
-    </div>
-    <button class="play-btn" id="mobilePlayBtn" onclick="togglePlay()" aria-label="Play / Pause">▶</button>
-    <button class="mobile-stream-btn" onclick="toggleMobileStream()">⚙ Stream</button>
-  </div>
-  <div class="mobile-stream-config" id="mobileStreamCfg">
-    <label>URL do Stream</label>
-    <input type="text" id="mobileStreamUrl" value="http://radio1.suaradionanet.net:10076/stream" placeholder="http://servidor:porta/stream">
-    <button onclick="applyMobileStream()">Aplicar e ouvir</button>
-  </div>
-</div>
-
-<!-- ═══ MOBILE ON AIR ═══ -->
-<div id="mobileOnair">
-  <img src="logo.jpg" alt="Itapevi FM" class="mobile-onair-logo">
-  <div class="mobile-onair-info">
-    <div class="mobile-onair-label">
-      <span class="live-dot"></span>
-      No ar agora
-    </div>
-    <div class="mobile-onair-prog" id="mobileProg">Carregando…</div>
-    <div class="mobile-onair-locutor" id="mobileLocutor">—</div>
-  </div>
-</div>
-
-<!-- ═══ TOP BAR ═══ -->
+<!-- TOP BAR -->
 <div id="topbar">
   <div class="topbar-logo">
     <img src="logo.jpg" alt="Itapevi FM">
@@ -929,13 +526,13 @@ footer strong { color:var(--text2); }
   <div class="stream-cfg" id="streamCfg">
     <label>URL do Stream Shoutcast / Icecast (AAC ou MP3)</label>
     <input type="text" id="streamUrl"
-      value="http://radio1.suaradionanet.net:10076/stream" placeholder="http://servidor:porta/stream">
+      value="https://casthttps1.suaradionanet.net/10076/stream" placeholder="http://servidor:porta/stream">
     <button onclick="applyStream()">✔ Aplicar e ouvir</button>
   </div>
   <audio id="radioAudio" preload="none"></audio>
 </div>
 
-<!-- ═══ NAV ═══ -->
+<!-- NAV -->
 <nav>
   <div class="nav-logo">Itapevi FM</div>
   <ul class="nav-links" id="navLinks">
@@ -949,7 +546,7 @@ footer strong { color:var(--text2); }
   </div>
 </nav>
 
-<!-- ═══ HERO ═══ -->
+<!-- HERO -->
 <section class="hero" id="inicio">
   <div class="hero-grid"></div>
   <div class="hero-content">
@@ -969,14 +566,14 @@ footer strong { color:var(--text2); }
   </svg>
 </section>
 
-<!-- ═══ CONTEÚDO ═══ -->
+<!-- CONTEÚDO -->
 <div class="page-section" id="conteudo">
   <div class="tabs-nav">
     <button class="tab-btn active" data-tab="equipe" onclick="openTab(event,'tab-equipe')">Equipe</button>
     <button class="tab-btn" data-tab="programacao" onclick="openTab(event,'tab-programacao')">Programação</button>
   </div>
 
-  <!-- ── EQUIPE ── -->
+  <!-- EQUIPE -->
   <div class="tab-panel active" id="tab-equipe">
     <p class="section-eyebrow">Nossa equipe</p>
     <h2 class="section-title">Equipe</h2>
@@ -984,7 +581,7 @@ footer strong { color:var(--text2); }
     <div class="equipe-grid" id="equipeGrid"></div>
   </div>
 
-  <!-- ── PROGRAMAÇÃO ── -->
+  <!-- PROGRAMAÇÃO -->
   <div class="tab-panel" id="tab-programacao">
     <p class="section-eyebrow">Grade semanal</p>
     <h2 class="section-title">Programação</h2>
@@ -1011,7 +608,27 @@ footer strong { color:var(--text2); }
   <p style="margin-top:5px;font-size:0.68rem;">© 2025 Itapevi FM · Todos os direitos reservados</p>
 </footer>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
+// ══════════════════════════════════════════
+//  FIREBASE CONFIG
+//  IMPORTANTE: Substitua com suas credenciais do Firebase
+// ══════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_PROJETO.firebaseapp.com",
+  databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SEU_APP_ID"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 // ══════════════════════════════════════════
 //  SEGURANÇA — Sanitização de inputs
 // ══════════════════════════════════════════
@@ -1030,45 +647,16 @@ function validateStreamUrl(url) {
   } catch(e) { return false; }
 }
 
-function validatePrograma(p) {
-  return p && typeof p === 'object' &&
-    typeof p.prog === 'string' &&
-    typeof p.apres === 'string' &&
-    typeof p.das === 'string' &&
-    typeof p.ate === 'string' &&
-    Array.isArray(p.dias) &&
-    p.dias.every(d => DIAS_SEMANA.includes(d));
-}
-
 // ══════════════════════════════════════════
-//  DADOS — EDITE AQUI SUA EQUIPE E PROGRAMAÇÃO
+//  DADOS — Sincronizados via Firebase
 // ══════════════════════════════════════════
-
-const EQUIPE = [
-  {
-    id: 'membro1',
-    nome: 'Nome do Locutor',
-    funcao: 'Apresentador do programa matutino',
-    iniciais: 'NL',
-    cor: 'linear-gradient(135deg,#1a002d,#3a0060)',
-    foto: '' // coloque o caminho da foto aqui, ex: 'fotos/locutor.jpg'
-  },
-  // Adicione mais membros aqui:
-  // { id: 'membro2', nome: 'Outro Locutor', funcao: 'Apresentador do vespertino', iniciais: 'OL', cor: 'linear-gradient(135deg,#200000,#600010)', foto: '' },
-];
-
-// ══════════════════════════════════════════
-//  PROGRAMAÇÃO — Grade semanal inteligente
-//  Cada entrada: { prog, apres, das, ate, dias:[] }
-//  dias: ['Seg','Ter','Qua','Qui','Sex'] para dias da semana
-// ══════════════════════════════════════════
+const EQUIPE = [];
+let programas = [];
 
 const DIAS_SEMANA = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 const DIAS_FULL   = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
-const DAY_CLASS   = {'Seg':'seg','Ter':'ter','Qua':'qua','Qui':'qui','Sex':'sex','Sáb':'sab','Dom':'dom'};
 const DAYS_SHORT  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
-// Faixas de horário da grade (linhas da tabela) — 06h às 22h
 const TIME_SLOTS = [
   '06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30',
   '10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30',
@@ -1076,29 +664,17 @@ const TIME_SLOTS = [
   '18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00'
 ];
 
-// Cores para programas na grade
 const PROG_COLORS = [
-  'rgba(192,57,43,0.2)',   // vermelho
-  'rgba(142,68,173,0.2)',  // roxo
-  'rgba(41,128,185,0.2)',  // azul
-  'rgba(39,174,96,0.2)',   // verde
-  'rgba(243,156,18,0.2)',  // dourado
-  'rgba(231,76,60,0.2)',   // coral
-  'rgba(155,89,182,0.2)',  // lilás
-  'rgba(26,188,156,0.2)',  // turquesa
-  'rgba(241,196,15,0.2)',  // amarelo
-  'rgba(52,152,219,0.2)',  // azul claro
-];
-
-// ══════════════════════════════════════════
-//  PROGRAMAS — edite aqui!
-//  Cada programa tem: prog, apres, das, ate, dias[]
-//  Exemplo: "Prosa de Galpão" de Seg a Sex, 06:00-08:30
-// ══════════════════════════════════════════
-const DEFAULT_PROGRAMAS = [
-  // { prog: 'Prosa de Galpão', apres: 'Apresentador', das: '06:00', ate: '08:30', dias: ['Seg','Ter','Qua','Qui','Sex'] },
-  // { prog: 'Rio Grande Prosa e Cordeona', apres: 'Apresentador', das: '06:00', ate: '08:30', dias: ['Sáb'] },
-  // Adicione seus programas aqui...
+  'rgba(192,57,43,0.2)',
+  'rgba(142,68,173,0.2)',
+  'rgba(41,128,185,0.2)',
+  'rgba(39,174,96,0.2)',
+  'rgba(243,156,18,0.2)',
+  'rgba(231,76,60,0.2)',
+  'rgba(155,89,182,0.2)',
+  'rgba(26,188,156,0.2)',
+  'rgba(241,196,15,0.2)',
+  'rgba(52,152,219,0.2)',
 ];
 
 // ══════════════════════════════════════════
@@ -1118,7 +694,6 @@ function openTabByName(name) {
   const btn = document.querySelector('.tab-btn[data-tab="'+name+'"]');
   if (btn) btn.classList.add('active');
   
-  // Se abriu a tab de programação, renderizar o dia atual
   if (name === 'programacao') {
     mostrarDia(diaSelecionado);
   }
@@ -1129,7 +704,7 @@ function openTabByName(name) {
 // ══════════════════════════════════════════
 const audio = document.getElementById('radioAudio');
 let playing = false;
-let STREAM_URL = 'http://radio1.suaradionanet.net:10076/stream';
+let STREAM_URL = 'https://casthttps1.suaradionanet.net/10076/stream';
 
 function toggleCfg() {
   document.getElementById('streamCfg').classList.toggle('open');
@@ -1159,9 +734,7 @@ function startPlay() {
   audio.play().then(() => {
     playing = true;
     document.getElementById('playBtn').textContent = '⏸';
-    document.getElementById('mobilePlayBtn').textContent = '⏸';
     document.getElementById('eqBars').classList.remove('paused');
-    document.getElementById('mobileEqBars').classList.remove('paused');
     st.textContent = '● Ao vivo'; st.className = 'player-status live';
     setupMediaSession();
   }).catch(() => {
@@ -1173,48 +746,18 @@ function stopPlay() {
   audio.pause(); audio.src = '';
   playing = false;
   document.getElementById('playBtn').textContent = '▶';
-  document.getElementById('mobilePlayBtn').textContent = '▶';
   document.getElementById('eqBars').classList.add('paused');
-  document.getElementById('mobileEqBars').classList.add('paused');
   const st = document.getElementById('playerStatus');
   st.textContent = 'Pausado'; st.className = 'player-status';
 }
 function togglePlay() { playing ? stopPlay() : startPlay(); }
 function setVolume(v) { audio.volume = v / 100; }
-
-// Mobile stream functions
-function toggleMobileStream() {
-  document.getElementById('mobileStreamCfg').classList.toggle('open');
-}
-
-function applyMobileStream() {
-  const val = document.getElementById('mobileStreamUrl').value.trim();
-  if (val && validateStreamUrl(val)) {
-    STREAM_URL = val;
-    document.getElementById('mobileStreamCfg').classList.remove('open');
-    if (playing) { stopPlay(); setTimeout(startPlay, 200); }
-    else startPlay();
-  } else if (val) {
-    alert('URL inválida. Use http:// ou https://');
-  }
-}
-
-// Close mobile stream config when clicking outside
-document.addEventListener('click', e => {
-  const cfg = document.getElementById('mobileStreamCfg');
-  if (!cfg.contains(e.target) && !e.target.classList.contains('mobile-stream-btn')) {
-    cfg.classList.remove('open');
-  }
-});
-
 audio.addEventListener('error', () => {
   const st = document.getElementById('playerStatus');
   st.textContent = 'Indisponível'; st.className = 'player-status error';
   playing = false;
   document.getElementById('playBtn').textContent = '▶';
-  document.getElementById('mobilePlayBtn').textContent = '▶';
   document.getElementById('eqBars').classList.add('paused');
-  document.getElementById('mobileEqBars').classList.add('paused');
 });
 function setupMediaSession() {
   if (!('mediaSession' in navigator)) return;
@@ -1256,7 +799,6 @@ function getCurrentOnAir() {
 function updateOnAirUI() {
   const cur = getCurrentOnAir();
 
-  // Find locutor in EQUIPE by matching apresentador name
   let loc = null;
   if (cur) {
     loc = EQUIPE.find(m =>
@@ -1265,7 +807,6 @@ function updateOnAirUI() {
     ) || null;
   }
 
-  // Topbar
   const tbAvatar = document.getElementById('topbarAvatar');
   tbAvatar.innerHTML = '';
   if (loc && loc.foto) {
@@ -1283,39 +824,6 @@ function updateOnAirUI() {
   }
   document.getElementById('topbarProg').textContent    = cur ? cur.prog  : 'Itapevi FM no Ar';
   document.getElementById('topbarLocutor').textContent = cur ? cur.apres : 'Programação automática';
-
-  // Mobile onair
-  document.getElementById('mobileProg').textContent    = cur ? cur.prog  : 'Itapevi FM no Ar';
-  document.getElementById('mobileLocutor').textContent = cur ? cur.apres : 'Programação automática';
-
-  // Highlight na grade
-  document.querySelectorAll('.grade-cell').forEach(cell => {
-    cell.classList.remove('is-now');
-  });
-  if (cur) {
-    const curIdx = programas.indexOf(cur);
-    const curColor = PROG_COLORS[curIdx % PROG_COLORS.length];
-    cur.dias.forEach(dia => {
-      const colIdx = DIAS_SEMANA.indexOf(dia);
-      if (colIdx < 0) return;
-      TIME_SLOTS.forEach((slot, rowIdx) => {
-        const slotMin = timeToMin(slot);
-        const nextSlot = rowIdx < TIME_SLOTS.length - 1 ? TIME_SLOTS[rowIdx + 1] : '22:30';
-        const nextMin = timeToMin(nextSlot);
-        const startMin = timeToMin(cur.das);
-        let endMin = timeToMin(cur.ate);
-        if (endMin === 0) endMin = 1440;
-        if (slotMin < endMin && nextMin > startMin) {
-          const cell = document.querySelector('.grade-cell[data-row="'+rowIdx+'"][data-col="'+colIdx+'"]');
-          if (cell) {
-            cell.classList.add('is-now');
-            cell.style.background = curColor.replace('0.2', '0.35');
-            cell.style.borderLeft = '3px solid ' + curColor.replace('0.2', '0.8');
-          }
-        }
-      });
-    });
-  }
 }
 
 // ══════════════════════════════════════════
@@ -1366,7 +874,6 @@ function renderEquipe() {
     const funcaoArea = document.createElement('div');
     funcaoArea.className = 'equipe-funcao';
     funcaoArea.textContent = m.funcao || '—';
-    funcaoArea.style.cursor = 'default';
     
     infoDiv.appendChild(nomeDiv);
     infoDiv.appendChild(funcaoArea);
@@ -1377,121 +884,6 @@ function renderEquipe() {
   });
 }
 
-function loadEquipe() {
-  try {
-    const s = localStorage.getItem('itapevi_equipe');
-    if (s) {
-      const loaded = JSON.parse(s);
-      EQUIPE.length = 0;
-      loaded.forEach(m => EQUIPE.push(m));
-    }
-  } catch(e){}
-}
-
-// ══════════════════════════════════════════
-//  PROGRAMAÇÃO — grade semanal inteligente
-// ══════════════════════════════════════════
-let programas = [];
-
-function loadProgramas() {
-  try {
-    const s = localStorage.getItem('itapevi_prog');
-    if (s) {
-      programas = JSON.parse(s);
-      return;
-    }
-  } catch(e){}
-  programas = JSON.parse(JSON.stringify(DEFAULT_PROGRAMAS));
-}
-
-function renderGrade() {
-  // Header
-  const thead = document.getElementById('gradeHead');
-  const todayIdx = new Date().getDay(); // 0=Dom
-  const todayDia = DAYS_SHORT[todayIdx];
-  let headHtml = '<tr><th>Horário</th>';
-  DIAS_SEMANA.forEach((dia, i) => {
-    const isToday = dia === todayDia;
-    headHtml += '<th class="'+(isToday?'today':'')+'">'+ sanitize(DIAS_FULL[i]) +'</th>';
-  });
-  headHtml += '</tr>';
-  thead.innerHTML = headHtml;
-
-  // Body
-  const tbody = document.getElementById('gradeBody');
-  tbody.innerHTML = '';
-  
-  // Assign colors to programs
-  const progColorMap = {};
-  programas.forEach((p, idx) => {
-    progColorMap[idx] = PROG_COLORS[idx % PROG_COLORS.length];
-  });
-  
-  TIME_SLOTS.forEach((slot, rowIdx) => {
-    const tr = document.createElement('tr');
-    // Horário column
-    const nextSlot = rowIdx < TIME_SLOTS.length - 1 ? TIME_SLOTS[rowIdx + 1] : '22:30';
-    tr.innerHTML = '<td>' + sanitize(slot) + '</td>';
-
-    DIAS_SEMANA.forEach((dia, colIdx) => {
-      const td = document.createElement('td');
-      const cell = document.createElement('div');
-      cell.className = 'grade-cell';
-      cell.dataset.row = rowIdx;
-      cell.dataset.col = colIdx;
-
-      // Find program for this slot
-      const slotMin = timeToMin(slot);
-      const nextMin = timeToMin(nextSlot);
-      const prog = programas.find(p => {
-        if (!p.dias.includes(dia)) return null;
-        const startMin = timeToMin(p.das);
-        let endMin = timeToMin(p.ate);
-        if (endMin === 0) endMin = 1440;
-        // Cell overlaps with program?
-        return slotMin < endMin && nextMin > startMin && startMin < endMin;
-      });
-
-      if (prog) {
-        const progIdx = programas.indexOf(prog);
-        cell.classList.add('has-prog');
-        
-        // Apply program color to all cells it occupies
-        cell.style.background = progColorMap[progIdx];
-        cell.style.borderLeft = '3px solid ' + progColorMap[progIdx].replace('0.2', '0.6');
-        
-        // Only show full info on the starting row
-        const startMin = timeToMin(prog.das);
-        if (slotMin === startMin || (startMin === 0 && slotMin === timeToMin('00:00'))) {
-          const progName = document.createElement('div');
-          progName.className = 'grade-cell-prog';
-          progName.textContent = prog.prog;
-          
-          const apresName = document.createElement('div');
-          apresName.className = 'grade-cell-apres';
-          apresName.textContent = prog.apres;
-          
-          const horario = document.createElement('div');
-          horario.className = 'grade-cell-apres';
-          horario.textContent = prog.das + ' - ' + prog.ate;
-          
-          cell.innerHTML = '';
-          cell.appendChild(progName);
-          cell.appendChild(apresName);
-          cell.appendChild(horario);
-        }
-        cell.onclick = function() { /* read-only */ };
-      } else {
-        cell.innerHTML = '<div class="grade-cell-empty"></div>';
-      }
-      td.appendChild(cell);
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-  updateOnAirUI();
-}
-
 // ══════════════════════════════════════════
 //  PROGRAMAÇÃO POR DIA
 // ══════════════════════════════════════════
@@ -1500,7 +892,6 @@ let diaSelecionado = 'Seg';
 function mostrarDia(dia) {
   diaSelecionado = dia;
   
-  // Atualizar botões ativos
   document.querySelectorAll('.dia-btn').forEach(btn => {
     btn.classList.remove('active');
     if (btn.dataset.dia === dia) {
@@ -1508,13 +899,9 @@ function mostrarDia(dia) {
     }
   });
   
-  // Filtrar programas do dia
   const progsDoDia = programas.filter(p => p.dias.includes(dia));
-  
-  // Ordenar por horário
   progsDoDia.sort((a, b) => timeToMin(a.das) - timeToMin(b.das));
   
-  // Renderizar lista
   const lista = document.getElementById('progDiaLista');
   lista.innerHTML = '';
   
@@ -1529,13 +916,11 @@ function mostrarDia(dia) {
     const card = document.createElement('div');
     card.className = 'prog-card';
     
-    // Verificar se está no ar
     const isLive = cur && cur.prog === prog.prog && cur.das === prog.das;
     if (isLive) {
       card.classList.add('is-live');
     }
     
-    // Cor do programa
     const progIdx = programas.indexOf(prog);
     const cor = PROG_COLORS[progIdx % PROG_COLORS.length];
     
@@ -1575,26 +960,45 @@ function mostrarDia(dia) {
 }
 
 // ══════════════════════════════════════════
+//  FIREBASE SYNC — Carregar dados em tempo real
+// ══════════════════════════════════════════
+function loadFromFirebase() {
+  // Carregar equipe
+  db.ref('equipe').on('value', (snapshot) => {
+    const data = snapshot.val();
+    EQUIPE.length = 0;
+    if (data) {
+      Object.values(data).forEach(m => EQUIPE.push(m));
+    }
+    renderEquipe();
+    updateOnAirUI();
+  });
+
+  // Carregar programas
+  db.ref('programas').on('value', (snapshot) => {
+    const data = snapshot.val();
+    programas = [];
+    if (data) {
+      programas = Object.values(data);
+    }
+    mostrarDia(diaSelecionado);
+    updateOnAirUI();
+  });
+}
+
+// ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
-console.log('Iniciando Itapevi FM...');
+console.log('Iniciando Itapevi FM com Firebase...');
 
-loadEquipe();
-console.log('Equipe carregada:', EQUIPE.length, 'membros');
-renderEquipe();
+// Carregar dados do Firebase
+loadFromFirebase();
 
-loadProgramas();
-console.log('Programas carregados:', programas.length, 'programas');
-
-// Detectar dia atual e mostrar
+// Detectar dia atual
 const todayIdx = new Date().getDay();
 const todayDia = DAYS_SHORT[todayIdx];
-console.log('Dia atual:', todayDia);
-
 if (DIAS_SEMANA.includes(todayDia)) {
   mostrarDia(todayDia);
-  console.log('Mostrando programação de:', todayDia);
-  // Marcar botão do dia atual
   document.querySelectorAll('.dia-btn').forEach(btn => {
     if (btn.dataset.dia === todayDia) {
       btn.classList.add('today');
@@ -1602,12 +1006,11 @@ if (DIAS_SEMANA.includes(todayDia)) {
   });
 } else {
   mostrarDia('Seg');
-  console.log('Mostrando programação de: Seg (fallback)');
 }
 
 setInterval(() => { 
   updateOnAirUI(); 
-  mostrarDia(diaSelecionado); // Atualizar lista para mostrar "no ar"
+  mostrarDia(diaSelecionado);
   if (playing) setupMediaSession(); 
 }, 60000);
 </script>

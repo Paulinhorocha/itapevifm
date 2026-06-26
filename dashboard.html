@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0d0015">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:;">
 <title>Dashboard — Itapevi FM 87.9</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
@@ -143,76 +142,6 @@ body {
   }
 }
 
-/* Table */
-.dash-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.dash-table th {
-  text-align: left;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text3);
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border2);
-}
-.dash-table td {
-  padding: 12px;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text2);
-}
-.dash-table tr:last-child td { border-bottom: none; }
-.dash-table tr:hover td { background: rgba(142,68,173,0.05); }
-.dash-table .prog-name { color: var(--text); font-weight: 600; }
-.dash-table .badge {
-  display: inline-block;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 6px;
-}
-.badge-live {
-  background: rgba(231,76,60,0.2);
-  color: var(--accent2);
-  border: 1px solid rgba(231,76,60,0.3);
-}
-.badge-day {
-  background: rgba(142,68,173,0.15);
-  color: var(--purple2);
-  border: 1px solid rgba(142,68,173,0.25);
-}
-
-/* Team grid */
-.team-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1rem;
-}
-.team-member {
-  text-align: center;
-}
-.team-avatar {
-  width: 64px; height: 64px; border-radius: 50%;
-  margin: 0 auto 0.5rem;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.4rem; color: white;
-  border: 2px solid rgba(255,255,255,0.1);
-  overflow: hidden;
-}
-.team-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.team-name {
-  font-size: 0.82rem; font-weight: 600; color: var(--text);
-}
-.team-role {
-  font-size: 0.7rem; color: var(--text3);
-}
-
 /* Dias nav */
 .dias-nav {
   display: flex;
@@ -328,6 +257,32 @@ body {
   padding: 2rem;
   color: var(--text3);
   font-style: italic;
+}
+
+/* Team grid */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+.team-member {
+  text-align: center;
+}
+.team-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  margin: 0 auto 0.5rem;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem; color: white;
+  border: 2px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+.team-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.team-name {
+  font-size: 0.82rem; font-weight: 600; color: var(--text);
+}
+.team-role {
+  font-size: 0.7rem; color: var(--text3);
 }
 
 /* Footer */
@@ -460,7 +415,6 @@ body {
   </div>
   <div class="dash-actions">
     <a href="index.html" class="dash-btn">🌐 Ver Site</a>
-    <button class="dash-btn" onclick="exportAllData()">📋 Exportar Dados</button>
     <button class="dash-btn primary" onclick="refreshDashboard()">🔄 Atualizar</button>
   </div>
 </div>
@@ -607,9 +561,30 @@ body {
 <!-- Footer -->
 <div class="dash-footer">
   <p><strong>Itapevi FM 87.9</strong> — Dashboard Administrativo</p>
-  <p style="margin-top:4px;">Dados sincronizados com o site principal via localStorage</p>
+  <p style="margin-top:4px;">Dados sincronizados via Firebase em tempo real</p>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
+// ══════════════════════════════════════════
+//  FIREBASE CONFIG
+//  IMPORTANTE: Substitua com suas credenciais do Firebase
+// ══════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_PROJETO.firebaseapp.com",
+  databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SEU_APP_ID"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 // ══════════════════════════════════════════
 //  SEGURANÇA
 // ══════════════════════════════════════════
@@ -621,7 +596,7 @@ function sanitize(str) {
 }
 
 // ══════════════════════════════════════════
-//  DADOS — lê do localStorage (mesmo do site)
+//  DADOS
 // ══════════════════════════════════════════
 const DIAS_SEMANA = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 const DIAS_FULL   = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
@@ -630,25 +605,6 @@ const TIME_SLOTS  = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13
 
 let EQUIPE = [];
 let programas = [];
-
-function loadData() {
-  // Resetar arrays
-  EQUIPE = [];
-  programas = [];
-  
-  try {
-    const eq = localStorage.getItem('itapevi_equipe');
-    if (eq) EQUIPE = JSON.parse(eq);
-  } catch(e){
-    console.error('Erro ao carregar equipe:', e);
-  }
-  try {
-    const pr = localStorage.getItem('itapevi_prog');
-    if (pr) programas = JSON.parse(pr);
-  } catch(e){
-    console.error('Erro ao carregar programas:', e);
-  }
-}
 
 // ══════════════════════════════════════════
 //  CÁLCULOS
@@ -720,66 +676,6 @@ function renderStats() {
   document.getElementById('statProgramas').textContent = programas.length;
   document.getElementById('statEquipe').textContent = EQUIPE.length;
   document.getElementById('statHoras').textContent = calcHorasSemana() + 'h';
-}
-
-function renderScheduleTable() {
-  const tbody = document.getElementById('scheduleBody');
-  tbody.innerHTML = '';
-  const cur = getCurrentOnAir();
-  
-  // Sort by first day and start time
-  const sorted = [...programas].map((p, idx) => ({...p, originalIdx: idx})).sort((a, b) => {
-    const dayA = DIAS_SEMANA.indexOf(a.dias[0]);
-    const dayB = DIAS_SEMANA.indexOf(b.dias[0]);
-    if (dayA !== dayB) return dayA - dayB;
-    return timeToMin(a.das) - timeToMin(b.das);
-  });
-  
-  sorted.forEach(p => {
-    const tr = document.createElement('tr');
-    const isLive = cur && cur.prog === p.prog && cur.das === p.das;
-    
-    const tdName = document.createElement('td');
-    tdName.className = 'prog-name';
-    tdName.textContent = p.prog;
-    
-    const tdApres = document.createElement('td');
-    tdApres.textContent = p.apres;
-    
-    const tdHorario = document.createElement('td');
-    tdHorario.textContent = p.das + ' — ' + p.ate;
-    
-    const tdDias = document.createElement('td');
-    tdDias.textContent = p.dias.join(', ');
-    
-    const tdStatus = document.createElement('td');
-    if (isLive) {
-      tdStatus.innerHTML = '<span class="badge badge-live"><span class="live-dot" style="width:5px;height:5px;vertical-align:middle;margin-right:4px;"></span>No ar</span>';
-    } else {
-      tdStatus.innerHTML = '<span class="badge badge-day">Agendado</span>';
-    }
-    
-    const tdActions = document.createElement('td');
-    const editBtn = document.createElement('button');
-    editBtn.className = 'edit-btn';
-    editBtn.textContent = 'Editar';
-    editBtn.onclick = function() { openProgramModal(p.originalIdx); };
-    tdActions.appendChild(editBtn);
-    
-    tr.appendChild(tdName);
-    tr.appendChild(tdApres);
-    tr.appendChild(tdHorario);
-    tr.appendChild(tdDias);
-    tr.appendChild(tdStatus);
-    tr.appendChild(tdActions);
-    tbody.appendChild(tr);
-  });
-  
-  if (programas.length === 0) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="6" style="text-align:center;color:var(--text3);padding:2rem;">Nenhum programa cadastrado. Clique em "+ Adicionar Programa" para começar.</td>';
-    tbody.appendChild(tr);
-  }
 }
 
 function renderTeam() {
@@ -925,7 +821,6 @@ const PROG_COLORS = [
 function dashMostrarDia(dia) {
   dashDiaSelecionado = dia;
   
-  // Atualizar botões ativos
   document.querySelectorAll('#dashDiasNav .dia-btn').forEach(btn => {
     btn.classList.remove('active');
     if (btn.dataset.dia === dia) {
@@ -933,13 +828,9 @@ function dashMostrarDia(dia) {
     }
   });
   
-  // Filtrar programas do dia
   const progsDoDia = programas.filter(p => p.dias.includes(dia));
-  
-  // Ordenar por horário
   progsDoDia.sort((a, b) => timeToMin(a.das) - timeToMin(b.das));
   
-  // Renderizar lista
   const lista = document.getElementById('dashProgLista');
   lista.innerHTML = '';
   
@@ -954,13 +845,11 @@ function dashMostrarDia(dia) {
     const card = document.createElement('div');
     card.className = 'dash-prog-card';
     
-    // Verificar se está no ar
     const isLive = cur && cur.prog === prog.prog && cur.das === prog.das;
     if (isLive) {
       card.classList.add('is-live');
     }
     
-    // Cor do programa
     const progIdx = programas.indexOf(prog);
     const cor = PROG_COLORS[progIdx % PROG_COLORS.length];
     
@@ -1006,45 +895,6 @@ function dashMostrarDia(dia) {
 }
 
 // ══════════════════════════════════════════
-//  ACTIONS
-// ══════════════════════════════════════════
-function refreshDashboard() {
-  try {
-    loadData();
-    renderStats();
-    dashMostrarDia(dashDiaSelecionado);
-    renderTeam();
-    renderCharts();
-    
-    // Feedback visual
-    const btn = event.target;
-    const originalText = btn.textContent;
-    btn.textContent = '✓ Atualizado!';
-    btn.style.background = 'rgba(46,204,113,0.2)';
-    setTimeout(() => {
-      btn.textContent = originalText;
-      btn.style.background = '';
-    }, 1500);
-  } catch(e) {
-    alert('Erro ao atualizar: ' + e.message);
-  }
-}
-
-function exportAllData() {
-  const data = {
-    equipe: EQUIPE,
-    programas: programas,
-    exportado: new Date().toISOString()
-  };
-  const json = JSON.stringify(data, null, 2);
-  navigator.clipboard.writeText(json).then(() => {
-    alert('Dados copiados! Inclui equipe e programação.');
-  }).catch(() => {
-    prompt('Copie os dados:', json);
-  });
-}
-
-// ══════════════════════════════════════════
 //  EDIÇÃO DE PROGRAMAS
 // ══════════════════════════════════════════
 let programEditIdx = -1;
@@ -1078,7 +928,6 @@ function closeProgramModal() {
 }
 
 function quickSelectDias(dias) {
-  // Selecionar os dias passados e desmarcar os outros
   document.querySelectorAll('#modalDias button').forEach(btn => {
     const dia = btn.dataset.dia;
     const shouldSelect = dias.includes(dia);
@@ -1130,22 +979,39 @@ function saveProgram() {
   const dias = getModalDias();
   if (dias.length === 0) { alert('Selecione ao menos um dia.'); return; }
 
+  const programa = { prog, apres, das, ate, dias };
+
   if (programEditIdx >= 0) {
-    programas[programEditIdx] = { prog, apres, das, ate, dias };
+    // Atualizar programa existente
+    const key = programas[programEditIdx].id || 'prog' + programEditIdx;
+    db.ref('programas/' + key).update(programa).then(() => {
+      alert('Programa atualizado!');
+      closeProgramModal();
+    }).catch(err => {
+      alert('Erro ao atualizar: ' + err.message);
+    });
   } else {
-    programas.push({ prog, apres, das, ate, dias });
+    // Criar novo programa
+    const newKey = 'prog' + Date.now();
+    programa.id = newKey;
+    db.ref('programas/' + newKey).set(programa).then(() => {
+      alert('Programa adicionado!');
+      closeProgramModal();
+    }).catch(err => {
+      alert('Erro ao salvar: ' + err.message);
+    });
   }
-  saveAllData();
-  closeProgramModal();
-  refreshDashboard();
 }
 
 function deleteProgram() {
   if (programEditIdx >= 0 && confirm('Excluir este programa?')) {
-    programas.splice(programEditIdx, 1);
-    saveAllData();
-    closeProgramModal();
-    refreshDashboard();
+    const key = programas[programEditIdx].id || 'prog' + programEditIdx;
+    db.ref('programas/' + key).remove().then(() => {
+      alert('Programa excluído!');
+      closeProgramModal();
+    }).catch(err => {
+      alert('Erro ao excluir: ' + err.message);
+    });
   }
 }
 
@@ -1186,49 +1052,107 @@ function saveTeamMember() {
   const iniciais = document.getElementById('modalTeamIniciais').value.trim() || nome.substring(0, 2).toUpperCase();
   const foto = document.getElementById('modalTeamFoto').value.trim();
 
+  const membro = {
+    nome: nome,
+    funcao: funcao,
+    iniciais: iniciais,
+    foto: foto,
+    cor: 'linear-gradient(135deg,#1a002d,#3a0060)'
+  };
+
   if (teamEditIdx >= 0) {
-    EQUIPE[teamEditIdx].nome = nome;
-    EQUIPE[teamEditIdx].funcao = funcao;
-    EQUIPE[teamEditIdx].iniciais = iniciais;
-    EQUIPE[teamEditIdx].foto = foto;
+    // Atualizar membro existente
+    const key = EQUIPE[teamEditIdx].id || 'membro' + teamEditIdx;
+    membro.id = key;
+    db.ref('equipe/' + key).update(membro).then(() => {
+      alert('Membro atualizado!');
+      closeTeamModal();
+    }).catch(err => {
+      alert('Erro ao atualizar: ' + err.message);
+    });
   } else {
-    EQUIPE.push({
-      id: 'membro' + (EQUIPE.length + 1),
-      nome: nome,
-      funcao: funcao,
-      iniciais: iniciais,
-      cor: 'linear-gradient(135deg,#1a002d,#3a0060)',
-      foto: foto
+    // Criar novo membro
+    const newKey = 'membro' + Date.now();
+    membro.id = newKey;
+    db.ref('equipe/' + newKey).set(membro).then(() => {
+      alert('Membro adicionado!');
+      closeTeamModal();
+    }).catch(err => {
+      alert('Erro ao salvar: ' + err.message);
     });
   }
-  saveAllData();
-  closeTeamModal();
-  refreshDashboard();
 }
 
 function deleteTeamMember() {
   if (teamEditIdx >= 0 && confirm('Excluir este membro?')) {
-    EQUIPE.splice(teamEditIdx, 1);
-    saveAllData();
-    closeTeamModal();
-    refreshDashboard();
+    const key = EQUIPE[teamEditIdx].id || 'membro' + teamEditIdx;
+    db.ref('equipe/' + key).remove().then(() => {
+      alert('Membro excluído!');
+      closeTeamModal();
+    }).catch(err => {
+      alert('Erro ao excluir: ' + err.message);
+    });
   }
 }
 
-function saveAllData() {
+// ══════════════════════════════════════════
+//  FIREBASE SYNC — Carregar dados em tempo real
+// ══════════════════════════════════════════
+function loadFromFirebase() {
+  // Carregar equipe
+  db.ref('equipe').on('value', (snapshot) => {
+    const data = snapshot.val();
+    EQUIPE = [];
+    if (data) {
+      EQUIPE = Object.values(data);
+    }
+    renderTeam();
+    renderStats();
+  });
+
+  // Carregar programas
+  db.ref('programas').on('value', (snapshot) => {
+    const data = snapshot.val();
+    programas = [];
+    if (data) {
+      programas = Object.values(data);
+    }
+    dashMostrarDia(dashDiaSelecionado);
+    renderStats();
+    renderCharts();
+  });
+}
+
+// ══════════════════════════════════════════
+//  ACTIONS
+// ══════════════════════════════════════════
+function refreshDashboard() {
   try {
-    localStorage.setItem('itapevi_equipe', JSON.stringify(EQUIPE));
-    localStorage.setItem('itapevi_prog', JSON.stringify(programas));
+    renderStats();
+    dashMostrarDia(dashDiaSelecionado);
+    renderTeam();
+    renderCharts();
+    
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = '✓ Atualizado!';
+    btn.style.background = 'rgba(46,204,113,0.2)';
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.style.background = '';
+    }, 1500);
   } catch(e) {
-    alert('Erro ao salvar dados.');
+    alert('Erro ao atualizar: ' + e.message);
   }
 }
 
 // ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
-loadData();
-renderStats();
+console.log('Iniciando Dashboard com Firebase...');
+
+// Carregar dados do Firebase
+loadFromFirebase();
 
 // Detectar dia atual
 const todayIdx = new Date().getDay();
@@ -1238,9 +1162,6 @@ if (DIAS_SEMANA.includes(todayDia)) {
 } else {
   dashMostrarDia('Seg');
 }
-
-renderTeam();
-renderCharts();
 
 // Auto-refresh a cada minuto
 setInterval(() => {
