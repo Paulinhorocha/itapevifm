@@ -684,8 +684,23 @@ footer strong { color:var(--text2); }
   .nav-links.open a{display:block;padding:11px 2rem}
   .hamburger{display:flex}
   
-  .hero-onair-card{ display: none; }
-  .hero-logo-img{width:100px;height:100px}
+  /* Centralizar logo e badge no mobile */
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hero-badge {
+    margin-bottom: 1rem;
+  }
+  
+  .hero-logo-img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1rem;
+  }
+  
   .equipe-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
 }
 @media(max-width:400px){
@@ -785,18 +800,6 @@ footer strong { color:var(--text2); }
     <p class="hero-freq">87.9 MHz</p>
     <p class="hero-city">Maçambará — RS</p>
     <p class="hero-slogan">A rádio que pulsa com você — a melhor programação,<br>de segunda a domingo, das 06h às 22h.</p>
-    <div class="hero-onair-card" id="heroOnairCard">
-      <div class="hero-locutor-avatar" id="heroAvatar">🎵</div>
-      <div class="hero-onair-info">
-        <div class="hero-onair-label">
-          <span class="live-dot"></span>
-          Programa no ar agora
-        </div>
-        <div class="hero-onair-prog" id="heroProg">Aguardando…</div>
-        <div class="hero-onair-locutor" id="heroLocutor">—</div>
-        <div class="hero-onair-horario" id="heroHorario">—</div>
-      </div>
-    </div>
   </div>
   <svg class="hero-waves" viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M0,80 C240,150 480,0 720,80 C960,150 1200,0 1440,80 L1440,180 L0,180 Z" fill="rgba(142,68,173,0.07)"/>
@@ -952,6 +955,11 @@ function openTabByName(name) {
   if (panel) panel.classList.add('active');
   const btn = document.querySelector('.tab-btn[data-tab="'+name+'"]');
   if (btn) btn.classList.add('active');
+  
+  // Se abriu a tab de programação, renderizar o dia atual
+  if (name === 'programacao') {
+    mostrarDia(diaSelecionado);
+  }
 }
 
 // ══════════════════════════════════════════
@@ -1088,26 +1096,6 @@ function updateOnAirUI() {
   // Mobile onair
   document.getElementById('mobileProg').textContent    = cur ? cur.prog  : 'Itapevi FM no Ar';
   document.getElementById('mobileLocutor').textContent = cur ? cur.apres : 'Programação automática';
-
-  // Hero card — foto, nome, horário
-  const heroAvatar = document.getElementById('heroAvatar');
-  heroAvatar.innerHTML = '';
-  if (loc && loc.foto) {
-    const img = document.createElement('img');
-    img.src = loc.foto;
-    img.alt = loc.nome;
-    heroAvatar.appendChild(img);
-    heroAvatar.style.background = 'none';
-  } else if (loc) {
-    heroAvatar.textContent = loc.iniciais;
-    heroAvatar.style.background = loc.cor;
-  } else {
-    heroAvatar.textContent = '🎵';
-    heroAvatar.style.background = 'linear-gradient(135deg,var(--accent),var(--purple))';
-  }
-  document.getElementById('heroProg').textContent    = cur ? cur.prog  : 'Itapevi FM no Ar';
-  document.getElementById('heroLocutor').textContent = cur ? cur.apres : 'Programação automática';
-  document.getElementById('heroHorario').textContent = cur ? cur.das + ' às ' + cur.ate : '';
 
   // Highlight na grade
   document.querySelectorAll('.grade-cell').forEach(cell => {
