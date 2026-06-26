@@ -589,20 +589,164 @@ footer strong { color:var(--text2); }
   left: 0;
   right: 0;
   z-index: 1001;
-  height: 56px;
+  height: 64px;
   background: linear-gradient(135deg, rgba(18,0,32,0.98), rgba(28,0,46,0.98));
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border2);
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 0 1rem;
   box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  gap: 1rem;
+}
+
+.mobile-player-left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-player-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.mobile-player-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mobile-player-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--accent2), var(--purple2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-player-subtitle {
+  font-size: 0.65rem;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-player-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.mobile-eq-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 20px;
+}
+
+.mobile-eq-bar {
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to top, var(--accent), var(--purple2));
+  animation: eq-anim 0.8s ease-in-out infinite alternate;
+}
+
+.mobile-eq-bar:nth-child(1){height:40%;animation-delay:0s}
+.mobile-eq-bar:nth-child(2){height:80%;animation-delay:0.1s}
+.mobile-eq-bar:nth-child(3){height:60%;animation-delay:0.2s}
+
+.mobile-eq-bars.paused .mobile-eq-bar {
+  animation-play-state: paused;
+  height: 20%;
+}
+
+.mobile-stream-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.65rem;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+.mobile-stream-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text2);
+}
+
+.mobile-stream-config {
+  display: none;
+  position: absolute;
+  top: 72px;
+  left: 1rem;
+  right: 1rem;
+  background: rgba(20,0,36,0.98);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 1rem;
+  z-index: 1002;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.mobile-stream-config.open {
+  display: block;
+}
+
+.mobile-stream-config label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-stream-config input {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 0.75rem;
+  padding: 8px 10px;
+  outline: none;
+  margin-bottom: 0.8rem;
+}
+
+.mobile-stream-config button {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border: none;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 #mobileOnair {
   display: none;
   position: fixed;
-  top: 56px;
+  top: 64px;
   left: 0;
   right: 0;
   z-index: 1000;
@@ -659,7 +803,7 @@ footer strong { color:var(--text2); }
 
 /* ═══ MOBILE ═══ */
 @media(max-width:680px){
-  :root{ --topbar-h:0px; --nav-h:46px; --header-total:176px; }
+  :root{ --topbar-h:0px; --nav-h:46px; --header-total:184px; }
   
   /* Mostrar barras mobile */
   #mobilePlayer { display: flex; }
@@ -670,7 +814,7 @@ footer strong { color:var(--text2); }
   
   /* Ajustar nav para ficar abaixo das barras mobile */
   nav {
-    top: 130px; /* 56px player + ~74px onair */
+    top: 138px; /* 64px player + ~74px onair */
   }
   
   .nav-links{ display:none; }
@@ -711,8 +855,27 @@ footer strong { color:var(--text2); }
 
 <!-- ═══ MOBILE PLAYER BAR ═══ -->
 <div id="mobilePlayer">
-  <button class="play-btn" id="mobilePlayBtn" onclick="togglePlay()" aria-label="Play / Pause">▶</button>
-  <audio id="mobileRadioAudio" preload="none"></audio>
+  <div class="mobile-player-left">
+    <img src="logo.jpg" alt="Itapevi FM" class="mobile-player-logo">
+    <div class="mobile-player-info">
+      <div class="mobile-player-title">ITAPEVI FM</div>
+      <div class="mobile-player-subtitle">87.9 MHz · Maçambará</div>
+    </div>
+  </div>
+  <div class="mobile-player-right">
+    <div class="mobile-eq-bars paused" id="mobileEqBars">
+      <div class="mobile-eq-bar"></div>
+      <div class="mobile-eq-bar"></div>
+      <div class="mobile-eq-bar"></div>
+    </div>
+    <button class="play-btn" id="mobilePlayBtn" onclick="togglePlay()" aria-label="Play / Pause">▶</button>
+    <button class="mobile-stream-btn" onclick="toggleMobileStream()">⚙ Stream</button>
+  </div>
+  <div class="mobile-stream-config" id="mobileStreamCfg">
+    <label>URL do Stream</label>
+    <input type="text" id="mobileStreamUrl" value="http://radio1.suaradionanet.net:10076/stream" placeholder="http://servidor:porta/stream">
+    <button onclick="applyMobileStream()">Aplicar e ouvir</button>
+  </div>
 </div>
 
 <!-- ═══ MOBILE ON AIR ═══ -->
@@ -766,7 +929,7 @@ footer strong { color:var(--text2); }
   <div class="stream-cfg" id="streamCfg">
     <label>URL do Stream Shoutcast / Icecast (AAC ou MP3)</label>
     <input type="text" id="streamUrl"
-      value="" placeholder="http://servidor:porta/stream">
+      value="http://radio1.suaradionanet.net:10076/stream" placeholder="http://servidor:porta/stream">
     <button onclick="applyStream()">✔ Aplicar e ouvir</button>
   </div>
   <audio id="radioAudio" preload="none"></audio>
@@ -966,7 +1129,7 @@ function openTabByName(name) {
 // ══════════════════════════════════════════
 const audio = document.getElementById('radioAudio');
 let playing = false;
-let STREAM_URL = '';
+let STREAM_URL = 'http://radio1.suaradionanet.net:10076/stream';
 
 function toggleCfg() {
   document.getElementById('streamCfg').classList.toggle('open');
@@ -998,6 +1161,7 @@ function startPlay() {
     document.getElementById('playBtn').textContent = '⏸';
     document.getElementById('mobilePlayBtn').textContent = '⏸';
     document.getElementById('eqBars').classList.remove('paused');
+    document.getElementById('mobileEqBars').classList.remove('paused');
     st.textContent = '● Ao vivo'; st.className = 'player-status live';
     setupMediaSession();
   }).catch(() => {
@@ -1011,11 +1175,38 @@ function stopPlay() {
   document.getElementById('playBtn').textContent = '▶';
   document.getElementById('mobilePlayBtn').textContent = '▶';
   document.getElementById('eqBars').classList.add('paused');
+  document.getElementById('mobileEqBars').classList.add('paused');
   const st = document.getElementById('playerStatus');
   st.textContent = 'Pausado'; st.className = 'player-status';
 }
 function togglePlay() { playing ? stopPlay() : startPlay(); }
 function setVolume(v) { audio.volume = v / 100; }
+
+// Mobile stream functions
+function toggleMobileStream() {
+  document.getElementById('mobileStreamCfg').classList.toggle('open');
+}
+
+function applyMobileStream() {
+  const val = document.getElementById('mobileStreamUrl').value.trim();
+  if (val && validateStreamUrl(val)) {
+    STREAM_URL = val;
+    document.getElementById('mobileStreamCfg').classList.remove('open');
+    if (playing) { stopPlay(); setTimeout(startPlay, 200); }
+    else startPlay();
+  } else if (val) {
+    alert('URL inválida. Use http:// ou https://');
+  }
+}
+
+// Close mobile stream config when clicking outside
+document.addEventListener('click', e => {
+  const cfg = document.getElementById('mobileStreamCfg');
+  if (!cfg.contains(e.target) && !e.target.classList.contains('mobile-stream-btn')) {
+    cfg.classList.remove('open');
+  }
+});
+
 audio.addEventListener('error', () => {
   const st = document.getElementById('playerStatus');
   st.textContent = 'Indisponível'; st.className = 'player-status error';
@@ -1023,6 +1214,7 @@ audio.addEventListener('error', () => {
   document.getElementById('playBtn').textContent = '▶';
   document.getElementById('mobilePlayBtn').textContent = '▶';
   document.getElementById('eqBars').classList.add('paused');
+  document.getElementById('mobileEqBars').classList.add('paused');
 });
 function setupMediaSession() {
   if (!('mediaSession' in navigator)) return;
@@ -1385,15 +1577,23 @@ function mostrarDia(dia) {
 // ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
+console.log('Iniciando Itapevi FM...');
+
 loadEquipe();
+console.log('Equipe carregada:', EQUIPE.length, 'membros');
 renderEquipe();
+
 loadProgramas();
+console.log('Programas carregados:', programas.length, 'programas');
 
 // Detectar dia atual e mostrar
 const todayIdx = new Date().getDay();
 const todayDia = DAYS_SHORT[todayIdx];
+console.log('Dia atual:', todayDia);
+
 if (DIAS_SEMANA.includes(todayDia)) {
   mostrarDia(todayDia);
+  console.log('Mostrando programação de:', todayDia);
   // Marcar botão do dia atual
   document.querySelectorAll('.dia-btn').forEach(btn => {
     if (btn.dataset.dia === todayDia) {
@@ -1402,6 +1602,7 @@ if (DIAS_SEMANA.includes(todayDia)) {
   });
 } else {
   mostrarDia('Seg');
+  console.log('Mostrando programação de: Seg (fallback)');
 }
 
 setInterval(() => { 
