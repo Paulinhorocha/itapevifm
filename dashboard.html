@@ -632,14 +632,22 @@ let EQUIPE = [];
 let programas = [];
 
 function loadData() {
+  // Resetar arrays
+  EQUIPE = [];
+  programas = [];
+  
   try {
     const eq = localStorage.getItem('itapevi_equipe');
     if (eq) EQUIPE = JSON.parse(eq);
-  } catch(e){}
+  } catch(e){
+    console.error('Erro ao carregar equipe:', e);
+  }
   try {
     const pr = localStorage.getItem('itapevi_prog');
     if (pr) programas = JSON.parse(pr);
-  } catch(e){}
+  } catch(e){
+    console.error('Erro ao carregar programas:', e);
+  }
 }
 
 // ══════════════════════════════════════════
@@ -1001,11 +1009,25 @@ function dashMostrarDia(dia) {
 //  ACTIONS
 // ══════════════════════════════════════════
 function refreshDashboard() {
-  loadData();
-  renderStats();
-  dashMostrarDia(dashDiaSelecionado);
-  renderTeam();
-  renderCharts();
+  try {
+    loadData();
+    renderStats();
+    dashMostrarDia(dashDiaSelecionado);
+    renderTeam();
+    renderCharts();
+    
+    // Feedback visual
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = '✓ Atualizado!';
+    btn.style.background = 'rgba(46,204,113,0.2)';
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.style.background = '';
+    }, 1500);
+  } catch(e) {
+    alert('Erro ao atualizar: ' + e.message);
+  }
 }
 
 function exportAllData() {
