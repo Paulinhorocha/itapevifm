@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0d0015">
 <title>Itapevi FM 87.9 — Maçambará</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="swap">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #0d0015;
@@ -463,7 +463,38 @@ footer strong { color:var(--text2); }
 
 /* MOBILE */
 @media(max-width:680px){
-  :root{ --topbar-h:0px; --nav-h:46px; --header-total:106px; }
+  :root{ --topbar-h:60px; --nav-h:46px; --header-total:106px; }
+  #topbar {
+    height: 60px;
+    padding: 0 1rem;
+    gap: 0.8rem;
+  }
+  .topbar-logo img {
+    height: 40px;
+    width: 40px;
+  }
+  .topbar-logo-text {
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+  }
+  .onair-box {
+    display: none;
+  }
+  .eq-bars {
+    display: none;
+  }
+  .vol-wrap {
+    display: none;
+  }
+  .player-status {
+    display: none;
+  }
+  .stream-cfg-toggle {
+    display: none;
+  }
+  .topbar-sep {
+    display: none;
+  }
   .nav-links{ display:none; }
   .nav-links.open{
     display:flex; flex-direction:column; gap:0;
@@ -473,11 +504,7 @@ footer strong { color:var(--text2); }
   }
   .nav-links.open a{display:block;padding:11px 2rem}
   .hamburger{display:flex}
-  .vol-wrap{display:none}
-  .player-status{display:none}
-  .topbar-logo-text span{display:none}
-  .stream-cfg-toggle{font-size:0.65rem;padding:5px 8px}
-  .hero-logo-img{width:100px;height:100px}
+  .hero-logo-img{display:none}
   .equipe-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
 }
 @media(max-width:400px){
@@ -554,7 +581,6 @@ footer strong { color:var(--text2); }
       <span class="live-dot"></span>
       Transmitindo ao vivo
     </div>
-    <img src="logo.jpg" alt="Itapevi FM" class="hero-logo-img">
     <h1 class="hero-title">ITAPEVI<br>FM</h1>
     <p class="hero-freq">87.9 MHz</p>
     <p class="hero-city">Maçambará — RS</p>
@@ -616,13 +642,13 @@ footer strong { color:var(--text2); }
 //  IMPORTANTE: Substitua com suas credenciais do Firebase
 // ══════════════════════════════════════════
 const firebaseConfig = {
-  apiKey: "AIzaSyDWS74FZqrBJ23Ype1o0IFd0QwX_If_s6g",
-  authDomain: "itapevi-fm.firebaseapp.com",
-  databaseURL: "https://itapevi-fm-default-rtdb.firebaseio.com",
-  projectId: "itapevi-fm",
-  storageBucket: "itapevi-fm.firebasestorage.app",
-  messagingSenderId: "541640863596",
-  appId: "1:541640863596:web:618b581fd9b8edb94a4d49"
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_PROJETO.firebaseapp.com",
+  databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SEU_APP_ID"
 };
 
 // Inicializar Firebase
