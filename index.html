@@ -448,49 +448,6 @@ nav {
   color:var(--text3); font-size:0.7rem; font-style:italic;
 }
 
-/* Modal de edição de programa */
-.modal-overlay {
-  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
-  z-index:2000; align-items:center; justify-content:center;
-  backdrop-filter:blur(4px);
-}
-.modal-overlay.open { display:flex; }
-.modal-box {
-  background:var(--card); border:1px solid var(--border2); border-radius:16px;
-  padding:2rem; width:90%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.6);
-}
-.modal-title {
-  font-family:'Bebas Neue',cursive; font-size:1.6rem; letter-spacing:2px;
-  color:var(--text); margin-bottom:1.2rem;
-}
-.modal-field { margin-bottom:1rem; }
-.modal-field label {
-  display:block; font-size:0.7rem; color:var(--text3); letter-spacing:1px;
-  text-transform:uppercase; margin-bottom:5px;
-}
-.modal-field input, .modal-field select {
-  width:100%; background:rgba(255,255,255,0.06); border:1px solid var(--border2);
-  border-radius:8px; color:var(--text); font-size:0.85rem; padding:10px 12px; outline:none;
-  font-family:'Inter',sans-serif;
-}
-.modal-field input:focus, .modal-field select:focus { border-color:var(--purple2); }
-.modal-actions { display:flex; gap:10px; margin-top:1.5rem; }
-.modal-actions button {
-  flex:1; border:none; border-radius:10px; padding:10px 16px;
-  font-size:0.85rem; font-weight:600; cursor:pointer;
-}
-.modal-btn-save {
-  background:linear-gradient(135deg,var(--accent),var(--purple)); color:white;
-}
-.modal-btn-delete {
-  background:rgba(231,76,60,0.15); border:1px solid rgba(231,76,60,0.3)!important;
-  color:var(--accent2);
-}
-.modal-btn-cancel {
-  background:rgba(255,255,255,0.06); border:1px solid var(--border2)!important;
-  color:var(--text2);
-}
-
 /* ═══ FOOTER ═══ */
 footer {
   border-top:1px solid var(--border); padding:2rem; text-align:center;
@@ -510,17 +467,19 @@ footer strong { color:var(--text2); }
   }
   .nav-links.open a{display:block;padding:11px 2rem}
   .hamburger{display:flex}
+  .topbar-sep{display:none}
+  .onair-box{display:none}
+  .eq-bars{display:none}
   .vol-wrap{display:none}
   .player-status{display:none}
+  .stream-cfg-toggle{display:none}
   .topbar-logo-text span{display:none}
-  .stream-cfg-toggle{font-size:0.65rem;padding:5px 8px}
   .hero-onair-card{flex-direction:column;text-align:center;gap:1rem}
   .hero-onair-label{justify-content:center}
   .hero-logo-img{width:100px;height:100px}
   .equipe-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
 }
 @media(max-width:400px){
-  .topbar-sep{display:none}
   .stream-cfg{left:1rem;right:1rem;min-width:unset}
 }
 </style>
@@ -578,7 +537,6 @@ footer strong { color:var(--text2); }
     <li><a href="#inicio">Início</a></li>
     <li><a href="#conteudo" onclick="setTimeout(()=>openTabByName('equipe'),100)">Equipe</a></li>
     <li><a href="#conteudo" onclick="setTimeout(()=>openTabByName('programacao'),100)">Programação</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
   </ul>
   <div class="hamburger" id="hamburger"
        onclick="document.getElementById('navLinks').classList.toggle('open')">
@@ -631,16 +589,13 @@ footer strong { color:var(--text2); }
     <h2 class="section-title">Equipe</h2>
     <p class="section-sub">Conheça quem faz a Itapevi FM acontecer todos os dias.</p>
     <div class="equipe-grid" id="equipeGrid"></div>
-    <div style="margin-top:1.6rem;">
-      <button onclick="addEquipe()" style="background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:white;border-radius:10px;padding:9px 18px;font-size:0.82rem;font-weight:600;cursor:pointer;">+ Adicionar membro</button>
-    </div>
   </div>
 
   <!-- ── PROGRAMAÇÃO ── -->
   <div class="tab-panel" id="tab-programacao">
     <p class="section-eyebrow">Grade semanal</p>
     <h2 class="section-title">Programação</h2>
-    <p class="section-sub">Grade completa de segunda a domingo. Clique em uma célula para adicionar ou editar um programa.</p>
+    <p class="section-sub">Grade completa de segunda a domingo, das 06h às 22h.</p>
     <div class="grade-header">
       <div class="grade-legend">
         <div class="grade-legend-item"><div class="grade-legend-dot" style="background:rgba(192,57,43,0.4)"></div>No ar agora</div>
@@ -653,43 +608,6 @@ footer strong { color:var(--text2); }
         <thead id="gradeHead"></thead>
         <tbody id="gradeBody"></tbody>
       </table>
-    </div>
-    <div style="margin-top:1.6rem;display:flex;gap:1rem;flex-wrap:wrap;">
-      <button onclick="saveGrade()" style="background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.3);color:#58d68d;border-radius:10px;padding:9px 18px;font-size:0.82rem;cursor:pointer;font-weight:600;">💾 Salvar Programação</button>
-      <button onclick="exportGrade()" style="background:rgba(52,152,219,0.15);border:1px solid rgba(52,152,219,0.3);color:#5dade2;border-radius:10px;padding:9px 18px;font-size:0.82rem;cursor:pointer;">📋 Copiar JSON</button>
-      <button onclick="importGrade()" style="background:rgba(155,89,182,0.15);border:1px solid rgba(155,89,182,0.3);color:#c39bd3;border-radius:10px;padding:9px 18px;font-size:0.82rem;cursor:pointer;">📥 Importar JSON</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL EDITAR PROGRAMA ═══ -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
-    <div class="modal-title" id="modalTitle">Editar Programa</div>
-    <div class="modal-field">
-      <label>Nome do Programa</label>
-      <input type="text" id="modalProg" placeholder="Ex: Prosa de Galpão">
-    </div>
-    <div class="modal-field">
-      <label>Apresentação</label>
-      <input type="text" id="modalApres" placeholder="Ex: João Silva">
-    </div>
-    <div class="modal-field">
-      <label>Horário Início</label>
-      <input type="time" id="modalDas">
-    </div>
-    <div class="modal-field">
-      <label>Horário Fim</label>
-      <input type="time" id="modalAte">
-    </div>
-    <div class="modal-field">
-      <label>Dias da Semana (selecione múltiplos)</label>
-      <div id="modalDias" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="modal-btn-delete" id="modalDeleteBtn" onclick="deleteFromModal()">Excluir</button>
-      <button class="modal-btn-save" onclick="saveModal()">Salvar</button>
     </div>
   </div>
 </div>
@@ -1030,15 +948,10 @@ function renderEquipe() {
     nomeDiv.className = 'equipe-nome';
     nomeDiv.textContent = m.nome;
     
-    const funcaoArea = document.createElement('textarea');
+    const funcaoArea = document.createElement('div');
     funcaoArea.className = 'equipe-funcao';
-    funcaoArea.rows = 2;
-    funcaoArea.placeholder = 'Função / descrição...';
-    funcaoArea.value = m.funcao;
-    funcaoArea.addEventListener('input', function() {
-      EQUIPE[idx].funcao = this.value;
-      saveEquipe();
-    });
+    funcaoArea.textContent = m.funcao || '—';
+    funcaoArea.style.cursor = 'default';
     
     infoDiv.appendChild(nomeDiv);
     infoDiv.appendChild(funcaoArea);
@@ -1047,24 +960,6 @@ function renderEquipe() {
     card.appendChild(infoDiv);
     grid.appendChild(card);
   });
-}
-
-function addEquipe() {
-  const n = EQUIPE.length + 1;
-  EQUIPE.push({
-    id: 'membro' + n,
-    nome: 'Novo Membro',
-    funcao: '',
-    iniciais: 'NM',
-    cor: 'linear-gradient(135deg,#1a002d,#3a0060)',
-    foto: ''
-  });
-  renderEquipe();
-  saveEquipe();
-}
-
-function saveEquipe() {
-  try { localStorage.setItem('itapevi_equipe', JSON.stringify(EQUIPE)); } catch(e){}
 }
 
 function loadEquipe() {
@@ -1082,7 +977,6 @@ function loadEquipe() {
 //  PROGRAMAÇÃO — grade semanal inteligente
 // ══════════════════════════════════════════
 let programas = [];
-let modalEditIdx = -1;
 
 function loadProgramas() {
   try {
@@ -1093,36 +987,6 @@ function loadProgramas() {
     }
   } catch(e){}
   programas = JSON.parse(JSON.stringify(DEFAULT_PROGRAMAS));
-}
-
-function saveGrade() {
-  try {
-    localStorage.setItem('itapevi_prog', JSON.stringify(programas));
-    alert('Programação salva!');
-  } catch(e) { alert('Erro ao salvar.'); }
-}
-
-function exportGrade() {
-  const json = JSON.stringify(programas, null, 2);
-  navigator.clipboard.writeText(json).then(() => {
-    alert('JSON copiado! Cole em "Importar JSON" para restaurar.');
-  }).catch(() => {
-    prompt('Copie este JSON:', json);
-  });
-}
-
-function importGrade() {
-  const json = prompt('Cole o JSON da programação aqui:');
-  if (!json) return;
-  try {
-    const parsed = JSON.parse(json);
-    if (!Array.isArray(parsed)) { alert('JSON deve ser um array.'); return; }
-    if (!parsed.every(validatePrograma)) { alert('JSON contém dados inválidos.'); return; }
-    programas = parsed;
-    renderGrade();
-    updateOnAirUI();
-    saveGrade();
-  } catch(e) { alert('JSON inválido: ' + e.message); }
 }
 
 function renderGrade() {
@@ -1201,10 +1065,9 @@ function renderGrade() {
           cell.appendChild(apresName);
           cell.appendChild(horario);
         }
-        cell.onclick = function() { openModal(progIdx); };
+        cell.onclick = function() { /* read-only */ };
       } else {
-        cell.innerHTML = '<div class="grade-cell-empty">+</div>';
-        cell.onclick = function() { openModalNew(dia, slot, nextSlot); };
+        cell.innerHTML = '<div class="grade-cell-empty"></div>';
       }
       td.appendChild(cell);
       tr.appendChild(td);
@@ -1212,97 +1075,6 @@ function renderGrade() {
     tbody.appendChild(tr);
   });
   updateOnAirUI();
-}
-
-// ══════════════════════════════════════════
-//  MODAL — editar / criar programa
-// ══════════════════════════════════════════
-function openModal(idx) {
-  modalEditIdx = idx;
-  const p = programas[idx];
-  document.getElementById('modalTitle').textContent = 'Editar Programa';
-  document.getElementById('modalProg').value = p.prog;
-  document.getElementById('modalApres').value = p.apres;
-  document.getElementById('modalDas').value = p.das;
-  document.getElementById('modalAte').value = p.ate;
-  renderModalDias(p.dias);
-  document.getElementById('modalDeleteBtn').style.display = '';
-  document.getElementById('modalOverlay').classList.add('open');
-}
-
-function openModalNew(dia, slot, nextSlot) {
-  modalEditIdx = -1;
-  document.getElementById('modalTitle').textContent = 'Novo Programa';
-  document.getElementById('modalProg').value = '';
-  document.getElementById('modalApres').value = '';
-  document.getElementById('modalDas').value = slot;
-  document.getElementById('modalAte').value = nextSlot;
-  renderModalDias([dia]);
-  document.getElementById('modalDeleteBtn').style.display = 'none';
-  document.getElementById('modalOverlay').classList.add('open');
-}
-
-function renderModalDias(selected) {
-  const container = document.getElementById('modalDias');
-  container.innerHTML = '';
-  DIAS_SEMANA.forEach(dia => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = dia;
-    const isSelected = selected.includes(dia);
-    btn.style.cssText = 'padding:6px 12px;border-radius:8px;border:1px solid ' +
-      (isSelected ? 'var(--accent2)' : 'var(--border2)') + ';background:' +
-      (isSelected ? 'rgba(192,57,43,0.3)' : 'rgba(255,255,255,0.05)') + ';color:' +
-      (isSelected ? 'var(--accent2)' : 'var(--text2)') + ';cursor:pointer;font-size:0.78rem;font-weight:600;';
-    btn.dataset.dia = dia;
-    btn.dataset.selected = isSelected ? '1' : '0';
-    btn.onclick = function() {
-      const sel = this.dataset.selected === '1';
-      this.dataset.selected = sel ? '0' : '1';
-      this.style.border = '1px solid ' + (sel ? 'var(--border2)' : 'var(--accent2)');
-      this.style.background = sel ? 'rgba(255,255,255,0.05)' : 'rgba(192,57,43,0.3)';
-      this.style.color = sel ? 'var(--text2)' : 'var(--accent2)';
-    };
-    container.appendChild(btn);
-  });
-}
-
-function getModalDias() {
-  const dias = [];
-  document.querySelectorAll('#modalDias button').forEach(btn => {
-    if (btn.dataset.selected === '1') dias.push(btn.dataset.dia);
-  });
-  return dias;
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-  modalEditIdx = -1;
-}
-
-function saveModal() {
-  const prog = document.getElementById('modalProg').value.trim() || 'Sem nome';
-  const apres = document.getElementById('modalApres').value.trim() || '—';
-  const das = document.getElementById('modalDas').value;
-  const ate = document.getElementById('modalAte').value;
-  const dias = getModalDias();
-  if (dias.length === 0) { alert('Selecione ao menos um dia.'); return; }
-
-  if (modalEditIdx >= 0) {
-    programas[modalEditIdx] = { prog, apres, das, ate, dias };
-  } else {
-    programas.push({ prog, apres, das, ate, dias });
-  }
-  closeModal();
-  renderGrade();
-}
-
-function deleteFromModal() {
-  if (modalEditIdx >= 0 && confirm('Excluir este programa?')) {
-    programas.splice(modalEditIdx, 1);
-    closeModal();
-    renderGrade();
-  }
 }
 
 // ══════════════════════════════════════════

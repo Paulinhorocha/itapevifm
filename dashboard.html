@@ -222,6 +222,107 @@ body {
   letter-spacing: 1px;
 }
 
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.modal-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: var(--text);
+  margin-bottom: 1.2rem;
+}
+.modal-field { margin-bottom: 1rem; }
+.modal-field label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.modal-field input, .modal-field select, .modal-field textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.85rem;
+  padding: 10px 12px;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+}
+.modal-field textarea { resize: vertical; min-height: 60px; }
+.modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus {
+  border-color: var(--purple2);
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.5rem;
+}
+.modal-actions button {
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.modal-btn-save {
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  color: white;
+}
+.modal-btn-delete {
+  background: rgba(231,76,60,0.15);
+  border: 1px solid rgba(231,76,60,0.3) !important;
+  color: var(--accent2);
+}
+.modal-btn-cancel {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border2) !important;
+  color: var(--text2);
+}
+
+/* Edit buttons */
+.edit-btn {
+  background: rgba(142,68,173,0.15);
+  border: 1px solid rgba(142,68,173,0.3);
+  color: var(--purple2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: all 0.2s;
+}
+.edit-btn:hover {
+  background: rgba(142,68,173,0.25);
+  border-color: var(--purple2);
+}
+
 /* Mobile */
 @media (max-width: 680px) {
   body { padding: 1rem; }
@@ -289,7 +390,10 @@ body {
 <!-- Schedule Table -->
 <div class="dash-grid">
   <div class="dash-card wide">
-    <div class="dash-card-title">Grade Completa da Semana</div>
+    <div class="dash-card-title">
+      Grade Completa da Semana
+      <button class="edit-btn" onclick="openProgramModal(-1)">+ Adicionar Programa</button>
+    </div>
     <div style="overflow-x:auto;">
       <table class="dash-table" id="scheduleTable">
         <thead>
@@ -299,6 +403,7 @@ body {
             <th>Horário</th>
             <th>Dias</th>
             <th>Status</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody id="scheduleBody"></tbody>
@@ -310,8 +415,71 @@ body {
 <!-- Team Section -->
 <div class="dash-grid">
   <div class="dash-card wide">
-    <div class="dash-card-title">Equipe</div>
+    <div class="dash-card-title">
+      Equipe
+      <button class="edit-btn" onclick="openTeamModal(-1)">+ Adicionar Membro</button>
+    </div>
     <div class="team-grid" id="teamGrid"></div>
+  </div>
+</div>
+
+<!-- Modal para editar programa -->
+<div class="modal-overlay" id="programModal" onclick="if(event.target===this)closeProgramModal()">
+  <div class="modal-box">
+    <div class="modal-title" id="programModalTitle">Editar Programa</div>
+    <div class="modal-field">
+      <label>Nome do Programa</label>
+      <input type="text" id="modalProg" placeholder="Ex: Prosa de Galpão">
+    </div>
+    <div class="modal-field">
+      <label>Apresentação</label>
+      <input type="text" id="modalApres" placeholder="Ex: João Silva">
+    </div>
+    <div class="modal-field">
+      <label>Horário Início</label>
+      <input type="time" id="modalDas">
+    </div>
+    <div class="modal-field">
+      <label>Horário Fim</label>
+      <input type="time" id="modalAte">
+    </div>
+    <div class="modal-field">
+      <label>Dias da Semana</label>
+      <div id="modalDias" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" onclick="closeProgramModal()">Cancelar</button>
+      <button class="modal-btn-delete" id="modalDeleteBtn" onclick="deleteProgram()">Excluir</button>
+      <button class="modal-btn-save" onclick="saveProgram()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar equipe -->
+<div class="modal-overlay" id="teamModal" onclick="if(event.target===this)closeTeamModal()">
+  <div class="modal-box">
+    <div class="modal-title" id="teamModalTitle">Editar Membro</div>
+    <div class="modal-field">
+      <label>Nome</label>
+      <input type="text" id="modalTeamNome" placeholder="Ex: João Silva">
+    </div>
+    <div class="modal-field">
+      <label>Função</label>
+      <textarea id="modalTeamFuncao" placeholder="Ex: Apresentador do programa matutino"></textarea>
+    </div>
+    <div class="modal-field">
+      <label>Iniciais (para avatar)</label>
+      <input type="text" id="modalTeamIniciais" placeholder="Ex: JS" maxlength="3">
+    </div>
+    <div class="modal-field">
+      <label>URL da Foto (opcional)</label>
+      <input type="text" id="modalTeamFoto" placeholder="Ex: fotos/joao.jpg">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" onclick="closeTeamModal()">Cancelar</button>
+      <button class="modal-btn-delete" id="modalTeamDeleteBtn" onclick="deleteTeamMember()">Excluir</button>
+      <button class="modal-btn-save" onclick="saveTeamMember()">Salvar</button>
+    </div>
   </div>
 </div>
 
@@ -431,7 +599,7 @@ function renderScheduleTable() {
   const cur = getCurrentOnAir();
   
   // Sort by first day and start time
-  const sorted = [...programas].sort((a, b) => {
+  const sorted = [...programas].map((p, idx) => ({...p, originalIdx: idx})).sort((a, b) => {
     const dayA = DIAS_SEMANA.indexOf(a.dias[0]);
     const dayB = DIAS_SEMANA.indexOf(b.dias[0]);
     if (dayA !== dayB) return dayA - dayB;
@@ -462,17 +630,25 @@ function renderScheduleTable() {
       tdStatus.innerHTML = '<span class="badge badge-day">Agendado</span>';
     }
     
+    const tdActions = document.createElement('td');
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
+    editBtn.textContent = 'Editar';
+    editBtn.onclick = function() { openProgramModal(p.originalIdx); };
+    tdActions.appendChild(editBtn);
+    
     tr.appendChild(tdName);
     tr.appendChild(tdApres);
     tr.appendChild(tdHorario);
     tr.appendChild(tdDias);
     tr.appendChild(tdStatus);
+    tr.appendChild(tdActions);
     tbody.appendChild(tr);
   });
   
   if (programas.length === 0) {
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="5" style="text-align:center;color:var(--text3);padding:2rem;">Nenhum programa cadastrado. <a href="index.html" style="color:var(--purple2);">Adicionar no site</a></td>';
+    tr.innerHTML = '<td colspan="6" style="text-align:center;color:var(--text3);padding:2rem;">Nenhum programa cadastrado. Clique em "+ Adicionar Programa" para começar.</td>';
     tbody.appendChild(tr);
   }
 }
@@ -480,7 +656,7 @@ function renderScheduleTable() {
 function renderTeam() {
   const grid = document.getElementById('teamGrid');
   grid.innerHTML = '';
-  EQUIPE.forEach(m => {
+  EQUIPE.forEach((m, idx) => {
     const div = document.createElement('div');
     div.className = 'team-member';
     
@@ -504,14 +680,21 @@ function renderTeam() {
     role.className = 'team-role';
     role.textContent = m.funcao || '—';
     
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
+    editBtn.textContent = 'Editar';
+    editBtn.style.marginTop = '0.5rem';
+    editBtn.onclick = function() { openTeamModal(idx); };
+    
     div.appendChild(avatar);
     div.appendChild(name);
     div.appendChild(role);
+    div.appendChild(editBtn);
     grid.appendChild(div);
   });
   
   if (EQUIPE.length === 0) {
-    grid.innerHTML = '<p style="color:var(--text3);grid-column:1/-1;text-align:center;padding:1rem;">Nenhum membro cadastrado. <a href="index.html" style="color:var(--purple2);">Adicionar no site</a></p>';
+    grid.innerHTML = '<p style="color:var(--text3);grid-column:1/-1;text-align:center;padding:1rem;">Nenhum membro cadastrado. Clique em "+ Adicionar Membro" para começar.</p>';
   }
 }
 
@@ -616,6 +799,174 @@ function exportAllData() {
   }).catch(() => {
     prompt('Copie os dados:', json);
   });
+}
+
+// ══════════════════════════════════════════
+//  EDIÇÃO DE PROGRAMAS
+// ══════════════════════════════════════════
+let programEditIdx = -1;
+
+function openProgramModal(idx) {
+  programEditIdx = idx;
+  if (idx >= 0) {
+    const p = programas[idx];
+    document.getElementById('programModalTitle').textContent = 'Editar Programa';
+    document.getElementById('modalProg').value = p.prog;
+    document.getElementById('modalApres').value = p.apres;
+    document.getElementById('modalDas').value = p.das;
+    document.getElementById('modalAte').value = p.ate;
+    renderModalDias(p.dias);
+    document.getElementById('modalDeleteBtn').style.display = '';
+  } else {
+    document.getElementById('programModalTitle').textContent = 'Novo Programa';
+    document.getElementById('modalProg').value = '';
+    document.getElementById('modalApres').value = '';
+    document.getElementById('modalDas').value = '06:00';
+    document.getElementById('modalAte').value = '07:00';
+    renderModalDias(['Seg']);
+    document.getElementById('modalDeleteBtn').style.display = 'none';
+  }
+  document.getElementById('programModal').classList.add('open');
+}
+
+function closeProgramModal() {
+  document.getElementById('programModal').classList.remove('open');
+  programEditIdx = -1;
+}
+
+function renderModalDias(selected) {
+  const container = document.getElementById('modalDias');
+  container.innerHTML = '';
+  DIAS_SEMANA.forEach(dia => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = dia;
+    const isSelected = selected.includes(dia);
+    btn.style.cssText = 'padding:6px 12px;border-radius:8px;border:1px solid ' +
+      (isSelected ? 'var(--accent2)' : 'var(--border2)') + ';background:' +
+      (isSelected ? 'rgba(192,57,43,0.3)' : 'rgba(255,255,255,0.05)') + ';color:' +
+      (isSelected ? 'var(--accent2)' : 'var(--text2)') + ';cursor:pointer;font-size:0.78rem;font-weight:600;';
+    btn.dataset.dia = dia;
+    btn.dataset.selected = isSelected ? '1' : '0';
+    btn.onclick = function() {
+      const sel = this.dataset.selected === '1';
+      this.dataset.selected = sel ? '0' : '1';
+      this.style.border = '1px solid ' + (sel ? 'var(--border2)' : 'var(--accent2)');
+      this.style.background = sel ? 'rgba(255,255,255,0.05)' : 'rgba(192,57,43,0.3)';
+      this.style.color = sel ? 'var(--text2)' : 'var(--accent2)';
+    };
+    container.appendChild(btn);
+  });
+}
+
+function getModalDias() {
+  const dias = [];
+  document.querySelectorAll('#modalDias button').forEach(btn => {
+    if (btn.dataset.selected === '1') dias.push(btn.dataset.dia);
+  });
+  return dias;
+}
+
+function saveProgram() {
+  const prog = document.getElementById('modalProg').value.trim() || 'Sem nome';
+  const apres = document.getElementById('modalApres').value.trim() || '—';
+  const das = document.getElementById('modalDas').value;
+  const ate = document.getElementById('modalAte').value;
+  const dias = getModalDias();
+  if (dias.length === 0) { alert('Selecione ao menos um dia.'); return; }
+
+  if (programEditIdx >= 0) {
+    programas[programEditIdx] = { prog, apres, das, ate, dias };
+  } else {
+    programas.push({ prog, apres, das, ate, dias });
+  }
+  saveAllData();
+  closeProgramModal();
+  refreshDashboard();
+}
+
+function deleteProgram() {
+  if (programEditIdx >= 0 && confirm('Excluir este programa?')) {
+    programas.splice(programEditIdx, 1);
+    saveAllData();
+    closeProgramModal();
+    refreshDashboard();
+  }
+}
+
+// ══════════════════════════════════════════
+//  EDIÇÃO DE EQUIPE
+// ══════════════════════════════════════════
+let teamEditIdx = -1;
+
+function openTeamModal(idx) {
+  teamEditIdx = idx;
+  if (idx >= 0) {
+    const m = EQUIPE[idx];
+    document.getElementById('teamModalTitle').textContent = 'Editar Membro';
+    document.getElementById('modalTeamNome').value = m.nome;
+    document.getElementById('modalTeamFuncao').value = m.funcao || '';
+    document.getElementById('modalTeamIniciais').value = m.iniciais || '';
+    document.getElementById('modalTeamFoto').value = m.foto || '';
+    document.getElementById('modalTeamDeleteBtn').style.display = '';
+  } else {
+    document.getElementById('teamModalTitle').textContent = 'Novo Membro';
+    document.getElementById('modalTeamNome').value = '';
+    document.getElementById('modalTeamFuncao').value = '';
+    document.getElementById('modalTeamIniciais').value = '';
+    document.getElementById('modalTeamFoto').value = '';
+    document.getElementById('modalTeamDeleteBtn').style.display = 'none';
+  }
+  document.getElementById('teamModal').classList.add('open');
+}
+
+function closeTeamModal() {
+  document.getElementById('teamModal').classList.remove('open');
+  teamEditIdx = -1;
+}
+
+function saveTeamMember() {
+  const nome = document.getElementById('modalTeamNome').value.trim() || 'Sem nome';
+  const funcao = document.getElementById('modalTeamFuncao').value.trim();
+  const iniciais = document.getElementById('modalTeamIniciais').value.trim() || nome.substring(0, 2).toUpperCase();
+  const foto = document.getElementById('modalTeamFoto').value.trim();
+
+  if (teamEditIdx >= 0) {
+    EQUIPE[teamEditIdx].nome = nome;
+    EQUIPE[teamEditIdx].funcao = funcao;
+    EQUIPE[teamEditIdx].iniciais = iniciais;
+    EQUIPE[teamEditIdx].foto = foto;
+  } else {
+    EQUIPE.push({
+      id: 'membro' + (EQUIPE.length + 1),
+      nome: nome,
+      funcao: funcao,
+      iniciais: iniciais,
+      cor: 'linear-gradient(135deg,#1a002d,#3a0060)',
+      foto: foto
+    });
+  }
+  saveAllData();
+  closeTeamModal();
+  refreshDashboard();
+}
+
+function deleteTeamMember() {
+  if (teamEditIdx >= 0 && confirm('Excluir este membro?')) {
+    EQUIPE.splice(teamEditIdx, 1);
+    saveAllData();
+    closeTeamModal();
+    refreshDashboard();
+  }
+}
+
+function saveAllData() {
+  try {
+    localStorage.setItem('itapevi_equipe', JSON.stringify(EQUIPE));
+    localStorage.setItem('itapevi_prog', JSON.stringify(programas));
+  } catch(e) {
+    alert('Erro ao salvar dados.');
+  }
 }
 
 // ══════════════════════════════════════════
