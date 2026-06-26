@@ -448,6 +448,132 @@ nav {
   color:var(--text3); font-size:0.7rem; font-style:italic;
 }
 
+/* ═══ PROGRAMAÇÃO POR DIA ═══ */
+.dias-nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.dia-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.dia-btn:hover {
+  background: rgba(142,68,173,0.2);
+  border-color: var(--purple2);
+  color: var(--text);
+}
+
+.dia-btn.active {
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 2px 12px rgba(192,57,43,0.4);
+}
+
+.dia-btn.today {
+  border-color: var(--accent2);
+}
+
+.prog-dia-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.prog-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.prog-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 0 20px rgba(142,68,173,0.15);
+}
+
+.prog-card.is-live {
+  border-color: rgba(231,76,60,0.5);
+  box-shadow: 0 0 20px rgba(231,76,60,0.2);
+}
+
+.prog-card-color {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.prog-card-content {
+  padding-left: 0.8rem;
+}
+
+.prog-card-time {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-bottom: 0.3rem;
+}
+
+.prog-card-name {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 1.5px;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.prog-card-apres {
+  font-size: 0.85rem;
+  color: var(--purple2);
+  font-weight: 500;
+}
+
+.prog-card-live-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(231,76,60,0.9);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 100px;
+  display: none;
+  align-items: center;
+  gap: 5px;
+}
+
+.prog-card.is-live .prog-card-live-badge {
+  display: flex;
+}
+
+.prog-dia-vazio {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text3);
+  font-style: italic;
+}
+
 /* ═══ FOOTER ═══ */
 footer {
   border-top:1px solid var(--border); padding:2rem; text-align:center;
@@ -455,9 +581,99 @@ footer {
 }
 footer strong { color:var(--text2); }
 
+/* ═══ MOBILE PLAYER BAR ═══ */
+#mobilePlayer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(18,0,32,0.98), rgba(28,0,46,0.98));
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border2);
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+#mobileOnair {
+  display: none;
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, rgba(26,0,45,0.98), rgba(32,0,53,0.98));
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border2);
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.mobile-onair-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.mobile-onair-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-onair-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--accent2);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.mobile-onair-prog {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-onair-locutor {
+  font-size: 0.7rem;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ═══ MOBILE ═══ */
 @media(max-width:680px){
-  :root{ --topbar-h:60px; --nav-h:46px; --header-total:106px; }
+  :root{ --topbar-h:0px; --nav-h:46px; --header-total:148px; }
+  
+  /* Mostrar barras mobile */
+  #mobilePlayer { display: flex; }
+  #mobileOnair { display: flex; }
+  
+  /* Esconder topbar desktop */
+  #topbar { display: none; }
+  
+  /* Ajustar nav para ficar abaixo das barras mobile */
+  nav {
+    top: 102px; /* 56px player + 46px onair */
+  }
+  
   .nav-links{ display:none; }
   .nav-links.open{
     display:flex; flex-direction:column; gap:0;
@@ -467,15 +683,8 @@ footer strong { color:var(--text2); }
   }
   .nav-links.open a{display:block;padding:11px 2rem}
   .hamburger{display:flex}
-  .topbar-sep{display:none}
-  .onair-box{display:none}
-  .eq-bars{display:none}
-  .vol-wrap{display:none}
-  .player-status{display:none}
-  .stream-cfg-toggle{display:none}
-  .topbar-logo-text span{display:none}
-  .hero-onair-card{flex-direction:column;text-align:center;gap:1rem}
-  .hero-onair-label{justify-content:center}
+  
+  .hero-onair-card{ display: none; }
   .hero-logo-img{width:100px;height:100px}
   .equipe-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
 }
@@ -485,6 +694,25 @@ footer strong { color:var(--text2); }
 </style>
 </head>
 <body>
+
+<!-- ═══ MOBILE PLAYER BAR ═══ -->
+<div id="mobilePlayer">
+  <button class="play-btn" id="mobilePlayBtn" onclick="togglePlay()" aria-label="Play / Pause">▶</button>
+  <audio id="mobileRadioAudio" preload="none"></audio>
+</div>
+
+<!-- ═══ MOBILE ON AIR ═══ -->
+<div id="mobileOnair">
+  <img src="logo.jpg" alt="Itapevi FM" class="mobile-onair-logo">
+  <div class="mobile-onair-info">
+    <div class="mobile-onair-label">
+      <span class="live-dot"></span>
+      No ar agora
+    </div>
+    <div class="mobile-onair-prog" id="mobileProg">Carregando…</div>
+    <div class="mobile-onair-locutor" id="mobileLocutor">—</div>
+  </div>
+</div>
 
 <!-- ═══ TOP BAR ═══ -->
 <div id="topbar">
@@ -595,20 +823,21 @@ footer strong { color:var(--text2); }
   <div class="tab-panel" id="tab-programacao">
     <p class="section-eyebrow">Grade semanal</p>
     <h2 class="section-title">Programação</h2>
-    <p class="section-sub">Grade completa de segunda a domingo, das 06h às 22h.</p>
-    <div class="grade-header">
-      <div class="grade-legend">
-        <div class="grade-legend-item"><div class="grade-legend-dot" style="background:rgba(192,57,43,0.4)"></div>No ar agora</div>
-        <div class="grade-legend-item"><div class="grade-legend-dot" style="background:rgba(142,68,173,0.3)"></div>Com programa</div>
-        <div class="grade-legend-item"><div class="grade-legend-dot" style="background:rgba(255,255,255,0.05)"></div>Livre</div>
-      </div>
+    <p class="section-sub">Selecione um dia para ver a programação.</p>
+    
+    <!-- Botões dos dias -->
+    <div class="dias-nav" id="diasNav">
+      <button class="dia-btn active" data-dia="Seg" onclick="mostrarDia('Seg')">Seg</button>
+      <button class="dia-btn" data-dia="Ter" onclick="mostrarDia('Ter')">Ter</button>
+      <button class="dia-btn" data-dia="Qua" onclick="mostrarDia('Qua')">Qua</button>
+      <button class="dia-btn" data-dia="Qui" onclick="mostrarDia('Qui')">Qui</button>
+      <button class="dia-btn" data-dia="Sex" onclick="mostrarDia('Sex')">Sex</button>
+      <button class="dia-btn" data-dia="Sáb" onclick="mostrarDia('Sáb')">Sáb</button>
+      <button class="dia-btn" data-dia="Dom" onclick="mostrarDia('Dom')">Dom</button>
     </div>
-    <div class="grade-container">
-      <table class="grade-table" id="gradeTable">
-        <thead id="gradeHead"></thead>
-        <tbody id="gradeBody"></tbody>
-      </table>
-    </div>
+    
+    <!-- Lista de programas do dia selecionado -->
+    <div class="prog-dia-lista" id="progDiaLista"></div>
   </div>
 </div>
 
@@ -760,6 +989,7 @@ function startPlay() {
   audio.play().then(() => {
     playing = true;
     document.getElementById('playBtn').textContent = '⏸';
+    document.getElementById('mobilePlayBtn').textContent = '⏸';
     document.getElementById('eqBars').classList.remove('paused');
     st.textContent = '● Ao vivo'; st.className = 'player-status live';
     setupMediaSession();
@@ -772,6 +1002,7 @@ function stopPlay() {
   audio.pause(); audio.src = '';
   playing = false;
   document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('mobilePlayBtn').textContent = '▶';
   document.getElementById('eqBars').classList.add('paused');
   const st = document.getElementById('playerStatus');
   st.textContent = 'Pausado'; st.className = 'player-status';
@@ -783,6 +1014,7 @@ audio.addEventListener('error', () => {
   st.textContent = 'Indisponível'; st.className = 'player-status error';
   playing = false;
   document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('mobilePlayBtn').textContent = '▶';
   document.getElementById('eqBars').classList.add('paused');
 });
 function setupMediaSession() {
@@ -852,6 +1084,10 @@ function updateOnAirUI() {
   }
   document.getElementById('topbarProg').textContent    = cur ? cur.prog  : 'Itapevi FM no Ar';
   document.getElementById('topbarLocutor').textContent = cur ? cur.apres : 'Programação automática';
+
+  // Mobile onair
+  document.getElementById('mobileProg').textContent    = cur ? cur.prog  : 'Itapevi FM no Ar';
+  document.getElementById('mobileLocutor').textContent = cur ? cur.apres : 'Programação automática';
 
   // Hero card — foto, nome, horário
   const heroAvatar = document.getElementById('heroAvatar');
@@ -1078,14 +1314,114 @@ function renderGrade() {
 }
 
 // ══════════════════════════════════════════
+//  PROGRAMAÇÃO POR DIA
+// ══════════════════════════════════════════
+let diaSelecionado = 'Seg';
+
+function mostrarDia(dia) {
+  diaSelecionado = dia;
+  
+  // Atualizar botões ativos
+  document.querySelectorAll('.dia-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.dia === dia) {
+      btn.classList.add('active');
+    }
+  });
+  
+  // Filtrar programas do dia
+  const progsDoDia = programas.filter(p => p.dias.includes(dia));
+  
+  // Ordenar por horário
+  progsDoDia.sort((a, b) => timeToMin(a.das) - timeToMin(b.das));
+  
+  // Renderizar lista
+  const lista = document.getElementById('progDiaLista');
+  lista.innerHTML = '';
+  
+  if (progsDoDia.length === 0) {
+    lista.innerHTML = '<div class="prog-dia-vazio">Nenhum programa cadastrado para este dia.</div>';
+    return;
+  }
+  
+  const cur = getCurrentOnAir();
+  
+  progsDoDia.forEach((prog, idx) => {
+    const card = document.createElement('div');
+    card.className = 'prog-card';
+    
+    // Verificar se está no ar
+    const isLive = cur && cur.prog === prog.prog && cur.das === prog.das;
+    if (isLive) {
+      card.classList.add('is-live');
+    }
+    
+    // Cor do programa
+    const progIdx = programas.indexOf(prog);
+    const cor = PROG_COLORS[progIdx % PROG_COLORS.length];
+    
+    const colorBar = document.createElement('div');
+    colorBar.className = 'prog-card-color';
+    colorBar.style.background = cor.replace('0.2', '0.8');
+    
+    const content = document.createElement('div');
+    content.className = 'prog-card-content';
+    
+    const time = document.createElement('div');
+    time.className = 'prog-card-time';
+    time.textContent = prog.das + ' — ' + prog.ate;
+    
+    const name = document.createElement('div');
+    name.className = 'prog-card-name';
+    name.textContent = prog.prog;
+    
+    const apres = document.createElement('div');
+    apres.className = 'prog-card-apres';
+    apres.textContent = prog.apres;
+    
+    content.appendChild(time);
+    content.appendChild(name);
+    content.appendChild(apres);
+    
+    const liveBadge = document.createElement('div');
+    liveBadge.className = 'prog-card-live-badge';
+    liveBadge.innerHTML = '<span class="live-dot" style="width:5px;height:5px;"></span> No ar';
+    
+    card.appendChild(colorBar);
+    card.appendChild(content);
+    card.appendChild(liveBadge);
+    
+    lista.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
 loadEquipe();
 renderEquipe();
 loadProgramas();
-renderGrade();
 
-setInterval(() => { updateOnAirUI(); if (playing) setupMediaSession(); }, 60000);
+// Detectar dia atual e mostrar
+const todayIdx = new Date().getDay();
+const todayDia = DAYS_SHORT[todayIdx];
+if (DIAS_SEMANA.includes(todayDia)) {
+  mostrarDia(todayDia);
+  // Marcar botão do dia atual
+  document.querySelectorAll('.dia-btn').forEach(btn => {
+    if (btn.dataset.dia === todayDia) {
+      btn.classList.add('today');
+    }
+  });
+} else {
+  mostrarDia('Seg');
+}
+
+setInterval(() => { 
+  updateOnAirUI(); 
+  mostrarDia(diaSelecionado); // Atualizar lista para mostrar "no ar"
+  if (playing) setupMediaSession(); 
+}, 60000);
 </script>
 </body>
 </html>

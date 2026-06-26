@@ -213,6 +213,123 @@ body {
   font-size: 0.7rem; color: var(--text3);
 }
 
+/* Dias nav */
+.dias-nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dia-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.dia-btn:hover {
+  background: rgba(142,68,173,0.2);
+  border-color: var(--purple2);
+  color: var(--text);
+}
+
+.dia-btn.active {
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 2px 12px rgba(192,57,43,0.4);
+}
+
+.quick-dias-btn {
+  background: rgba(142,68,173,0.15);
+  border: 1px solid rgba(142,68,173,0.3);
+  color: var(--purple2);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-dias-btn:hover {
+  background: rgba(142,68,173,0.25);
+  border-color: var(--purple2);
+}
+
+/* Dashboard program cards */
+.dash-prog-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: border-color 0.2s;
+}
+
+.dash-prog-card:hover {
+  border-color: var(--border2);
+}
+
+.dash-prog-card.is-live {
+  border-color: rgba(231,76,60,0.5);
+  background: rgba(192,57,43,0.08);
+}
+
+.dash-prog-color {
+  width: 4px;
+  height: 50px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.dash-prog-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-prog-time {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.dash-prog-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.dash-prog-apres {
+  font-size: 0.8rem;
+  color: var(--text2);
+}
+
+.dash-prog-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.dash-prog-empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text3);
+  font-style: italic;
+}
+
 /* Footer */
 .dash-footer {
   text-align: center;
@@ -387,28 +504,27 @@ body {
   </div>
 </div>
 
-<!-- Schedule Table -->
+<!-- Schedule by Day -->
 <div class="dash-grid">
   <div class="dash-card wide">
     <div class="dash-card-title">
-      Grade Completa da Semana
+      Programação por Dia
       <button class="edit-btn" onclick="openProgramModal(-1)">+ Adicionar Programa</button>
     </div>
-    <div style="overflow-x:auto;">
-      <table class="dash-table" id="scheduleTable">
-        <thead>
-          <tr>
-            <th>Programa</th>
-            <th>Apresentador</th>
-            <th>Horário</th>
-            <th>Dias</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="scheduleBody"></tbody>
-      </table>
+    
+    <!-- Day buttons -->
+    <div class="dias-nav" id="dashDiasNav" style="margin-bottom:1.5rem;">
+      <button class="dia-btn active" data-dia="Seg" onclick="dashMostrarDia('Seg')">Seg</button>
+      <button class="dia-btn" data-dia="Ter" onclick="dashMostrarDia('Ter')">Ter</button>
+      <button class="dia-btn" data-dia="Qua" onclick="dashMostrarDia('Qua')">Qua</button>
+      <button class="dia-btn" data-dia="Qui" onclick="dashMostrarDia('Qui')">Qui</button>
+      <button class="dia-btn" data-dia="Sex" onclick="dashMostrarDia('Sex')">Sex</button>
+      <button class="dia-btn" data-dia="Sáb" onclick="dashMostrarDia('Sáb')">Sáb</button>
+      <button class="dia-btn" data-dia="Dom" onclick="dashMostrarDia('Dom')">Dom</button>
     </div>
+    
+    <!-- Program list for selected day -->
+    <div id="dashProgLista"></div>
   </div>
 </div>
 
@@ -445,6 +561,11 @@ body {
     </div>
     <div class="modal-field">
       <label>Dias da Semana</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button type="button" class="quick-dias-btn" onclick="quickSelectDias(['Seg','Ter','Qua','Qui','Sex'])">Seg a Sex</button>
+        <button type="button" class="quick-dias-btn" onclick="quickSelectDias(['Sáb','Dom'])">Sáb e Dom</button>
+        <button type="button" class="quick-dias-btn" onclick="quickSelectDias(['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'])">Todos os dias</button>
+      </div>
       <div id="modalDias" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;"></div>
     </div>
     <div class="modal-actions">
@@ -777,12 +898,112 @@ function renderCharts() {
 }
 
 // ══════════════════════════════════════════
+//  DASHBOARD PROGRAMAÇÃO POR DIA
+// ══════════════════════════════════════════
+let dashDiaSelecionado = 'Seg';
+const PROG_COLORS = [
+  'rgba(192,57,43,0.6)',
+  'rgba(142,68,173,0.6)',
+  'rgba(41,128,185,0.6)',
+  'rgba(39,174,96,0.6)',
+  'rgba(243,156,18,0.6)',
+  'rgba(231,76,60,0.6)',
+  'rgba(155,89,182,0.6)',
+  'rgba(26,188,156,0.6)',
+  'rgba(241,196,15,0.6)',
+  'rgba(52,152,219,0.6)',
+];
+
+function dashMostrarDia(dia) {
+  dashDiaSelecionado = dia;
+  
+  // Atualizar botões ativos
+  document.querySelectorAll('#dashDiasNav .dia-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.dia === dia) {
+      btn.classList.add('active');
+    }
+  });
+  
+  // Filtrar programas do dia
+  const progsDoDia = programas.filter(p => p.dias.includes(dia));
+  
+  // Ordenar por horário
+  progsDoDia.sort((a, b) => timeToMin(a.das) - timeToMin(b.das));
+  
+  // Renderizar lista
+  const lista = document.getElementById('dashProgLista');
+  lista.innerHTML = '';
+  
+  if (progsDoDia.length === 0) {
+    lista.innerHTML = '<div class="dash-prog-empty">Nenhum programa cadastrado para este dia.</div>';
+    return;
+  }
+  
+  const cur = getCurrentOnAir();
+  
+  progsDoDia.forEach((prog) => {
+    const card = document.createElement('div');
+    card.className = 'dash-prog-card';
+    
+    // Verificar se está no ar
+    const isLive = cur && cur.prog === prog.prog && cur.das === prog.das;
+    if (isLive) {
+      card.classList.add('is-live');
+    }
+    
+    // Cor do programa
+    const progIdx = programas.indexOf(prog);
+    const cor = PROG_COLORS[progIdx % PROG_COLORS.length];
+    
+    const colorBar = document.createElement('div');
+    colorBar.className = 'dash-prog-color';
+    colorBar.style.background = cor;
+    
+    const info = document.createElement('div');
+    info.className = 'dash-prog-info';
+    
+    const time = document.createElement('div');
+    time.className = 'dash-prog-time';
+    time.textContent = prog.das + ' — ' + prog.ate;
+    
+    const name = document.createElement('div');
+    name.className = 'dash-prog-name';
+    name.textContent = prog.prog;
+    
+    const apres = document.createElement('div');
+    apres.className = 'dash-prog-apres';
+    apres.textContent = prog.apres;
+    
+    info.appendChild(time);
+    info.appendChild(name);
+    info.appendChild(apres);
+    
+    const actions = document.createElement('div');
+    actions.className = 'dash-prog-actions';
+    
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
+    editBtn.textContent = 'Editar';
+    editBtn.onclick = function() { openProgramModal(progIdx); };
+    
+    actions.appendChild(editBtn);
+    
+    card.appendChild(colorBar);
+    card.appendChild(info);
+    card.appendChild(actions);
+    
+    lista.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════
 //  ACTIONS
 // ══════════════════════════════════════════
 function refreshDashboard() {
   loadData();
   renderStats();
-  renderScheduleTable();
+  dashMostrarDia(dashDiaSelecionado);
   renderTeam();
   renderCharts();
 }
@@ -832,6 +1053,18 @@ function openProgramModal(idx) {
 function closeProgramModal() {
   document.getElementById('programModal').classList.remove('open');
   programEditIdx = -1;
+}
+
+function quickSelectDias(dias) {
+  // Selecionar os dias passados e desmarcar os outros
+  document.querySelectorAll('#modalDias button').forEach(btn => {
+    const dia = btn.dataset.dia;
+    const shouldSelect = dias.includes(dia);
+    btn.dataset.selected = shouldSelect ? '1' : '0';
+    btn.style.border = '1px solid ' + (shouldSelect ? 'var(--accent2)' : 'var(--border2)');
+    btn.style.background = shouldSelect ? 'rgba(192,57,43,0.3)' : 'rgba(255,255,255,0.05)';
+    btn.style.color = shouldSelect ? 'var(--accent2)' : 'var(--text2)';
+  });
 }
 
 function renderModalDias(selected) {
@@ -974,14 +1207,23 @@ function saveAllData() {
 // ══════════════════════════════════════════
 loadData();
 renderStats();
-renderScheduleTable();
+
+// Detectar dia atual
+const todayIdx = new Date().getDay();
+const todayDia = DAYS_SHORT[todayIdx];
+if (DIAS_SEMANA.includes(todayDia)) {
+  dashMostrarDia(todayDia);
+} else {
+  dashMostrarDia('Seg');
+}
+
 renderTeam();
 renderCharts();
 
 // Auto-refresh a cada minuto
 setInterval(() => {
   renderStats();
-  renderScheduleTable();
+  dashMostrarDia(dashDiaSelecionado);
 }, 60000);
 </script>
 </body>
