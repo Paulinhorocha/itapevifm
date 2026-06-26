@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0015">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' http: https:;">
+<title>Itapevi FM 87.9 — Maçambará</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0015;
+  --bg2: #130020;
+  --card: #1a002d;
+  --card2: #200035;
+  --accent: #c0392b;
+  --accent2: #e74c3c;
+  --purple: #8e44ad;
+  --purple2: #9b59b6;
+  --gold: #f39c12;
+  --text: #f0e6ff;
+  --text2: #b39dcc;
+  --text3: #7a6b8a;
+  --border: rgba(180,100,255,0.15);
+  --border2: rgba(180,100,255,0.3);
+  --glow: 0 0 30px rgba(192,57,43,0.3);
+  --pglow: 0 0 20px rgba(142,68,173,0.4);
+  --topbar-h: 72px;
+  --nav-h: 52px;
+  --header-total: 124px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-top: var(--header-total);
+}
+
+/* ═══ TOP BAR ═══ */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--topbar-h);
+  background: linear-gradient(135deg, rgba(18,0,32,0.98), rgba(28,0,46,0.98));
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border2);
+  display: flex; align-items: center;
+  padding: 0 1.5rem; gap: 1rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 1px 0 rgba(180,100,255,0.1);
+}
+.topbar-logo {
+  flex-shrink: 0; display: flex; align-items: center; gap: 10px;
+}
+.topbar-logo img {
+  height: 48px; width: 48px; object-fit: contain; border-radius: 8px;
+}
+.topbar-logo-text {
+  font-family: 'Bebas Neue', cursive; font-size: 1.3rem; letter-spacing: 3px;
+  background: linear-gradient(135deg, var(--accent2), var(--purple2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1; display: flex; flex-direction: column;
+}
+.topbar-logo-text span {
+  font-size: 0.45rem; letter-spacing: 3px;
+  background: none; -webkit-text-fill-color: var(--text3);
+  color: var(--text3); font-family: 'Inter', sans-serif;
+  font-weight: 500; text-transform: uppercase;
+}
+.topbar-sep {
+  width: 1px; height: 40px; background: var(--border2); flex-shrink:0;
+}
+.onair-box {
+  display: flex; align-items: center; gap: 10px;
+  flex: 1; overflow: hidden; min-width: 0;
+}
+.onair-avatar {
+  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', cursive; font-size: 1rem;
+  color: white; letter-spacing: 1px;
+  border: 2px solid rgba(255,255,255,0.1);
+  position: relative; overflow: hidden;
+}
+.onair-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.onair-info { overflow: hidden; flex: 1; min-width: 0; }
+.onair-label {
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 2px;
+  color: var(--accent2); text-transform: uppercase;
+  display: flex; align-items: center; gap: 5px;
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent2);
+  animation: pulse-dot 1.5s infinite; flex-shrink:0;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.4; transform:scale(1.5); }
+}
+.onair-prog {
+  font-size: 0.88rem; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.onair-locutor {
+  font-size: 0.72rem; color: var(--text2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.eq-bars {
+  display: flex; align-items: flex-end; gap: 2px; height: 22px; flex-shrink: 0;
+}
+.eq-bar {
+  width: 3px; border-radius: 2px;
+  background: linear-gradient(to top, var(--accent), var(--purple2));
+  animation: eq-anim 0.8s ease-in-out infinite alternate;
+}
+.eq-bar:nth-child(1){height:40%;animation-delay:0s}
+.eq-bar:nth-child(2){height:80%;animation-delay:0.1s}
+.eq-bar:nth-child(3){height:60%;animation-delay:0.2s}
+.eq-bar:nth-child(4){height:90%;animation-delay:0.05s}
+.eq-bar:nth-child(5){height:50%;animation-delay:0.15s}
+.eq-bars.paused .eq-bar { animation-play-state:paused; height:20%; }
+@keyframes eq-anim {
+  0%{transform:scaleY(0.3)} 100%{transform:scaleY(1)}
+}
+.topbar-controls {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.play-btn {
+  width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  color: white; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 14px rgba(192,57,43,0.5);
+  flex-shrink: 0;
+}
+.play-btn:hover { transform:scale(1.07); box-shadow:0 4px 20px rgba(192,57,43,0.7); }
+.play-btn:active { transform:scale(0.95); }
+.vol-wrap {
+  display: flex; align-items: center; gap: 6px; width: 130px;
+}
+.vol-icon { color: var(--text3); font-size: 0.85rem; flex-shrink:0; }
+input[type=range] {
+  -webkit-appearance:none; flex:1; height:3px;
+  background:rgba(255,255,255,0.12); border-radius:4px; outline:none; cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:var(--accent2); cursor:pointer;
+  box-shadow:0 0 6px rgba(231,76,60,0.6);
+}
+.player-status {
+  font-size:0.65rem; color:var(--text3); letter-spacing:1px; text-transform:uppercase; flex-shrink:0;
+}
+.player-status.buffering { color:var(--gold); }
+.player-status.error { color:var(--accent2); }
+.player-status.live { color:#58d68d; }
+.stream-cfg-toggle {
+  background:rgba(255,255,255,0.05); border:1px solid var(--border2);
+  color:var(--text3); border-radius:8px; padding:5px 10px;
+  font-size:0.7rem; cursor:pointer; flex-shrink:0; letter-spacing:0.5px;
+  transition:background 0.2s;
+}
+.stream-cfg-toggle:hover { background:rgba(255,255,255,0.1); color:var(--text2); }
+.stream-cfg {
+  display:none; position:absolute; top:calc(var(--topbar-h) + 4px); right:1.5rem;
+  background:rgba(20,0,36,0.98); border:1px solid var(--border2); border-radius:12px;
+  padding:14px 16px; z-index:1001; box-shadow:0 8px 32px rgba(0,0,0,0.6);
+  min-width:320px;
+}
+.stream-cfg.open { display:block; }
+.stream-cfg label { font-size:0.68rem; color:var(--text3); letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:6px; }
+.stream-cfg input {
+  width:100%; background:rgba(255,255,255,0.06); border:1px solid var(--border2);
+  border-radius:8px; color:var(--text2); font-size:0.78rem; padding:8px 12px; outline:none;
+  margin-bottom:8px;
+}
+.stream-cfg button {
+  background:linear-gradient(135deg,var(--accent),var(--purple)); border:none;
+  color:white; border-radius:8px; padding:7px 16px; font-size:0.78rem;
+  cursor:pointer; font-weight:600; width:100%;
+}
+
+/* ═══ NAV ═══ */
+nav {
+  position: fixed; top: var(--topbar-h); left:0; right:0; z-index:999;
+  height: var(--nav-h);
+  background: rgba(13,0,21,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem;
+}
+.nav-logo {
+  font-family:'Bebas Neue',cursive; font-size:1.4rem; letter-spacing:3px;
+  background:linear-gradient(135deg,var(--accent2),var(--purple2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.nav-links { display:flex; gap:2rem; list-style:none; }
+.nav-links a {
+  color:var(--text2); text-decoration:none;
+  font-size:0.78rem; font-weight:500; letter-spacing:1.5px;
+  text-transform:uppercase; transition:color 0.2s;
+}
+.nav-links a:hover { color:var(--accent2); }
+.hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+.hamburger span { width:22px; height:2px; background:var(--text2); border-radius:2px; }
+
+/* ═══ HERO ═══ */
+.hero {
+  min-height: calc(100vh - var(--header-total));
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(142,68,173,0.18) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 40% at 80% 60%, rgba(192,57,43,0.12) 0%,transparent 60%),
+             var(--bg);
+  padding: 3rem 2rem;
+}
+.hero-grid {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(180,100,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180,100,255,0.04) 1px, transparent 1px);
+  background-size:50px 50px;
+}
+.hero-waves {
+  position:absolute; bottom:0; left:0; right:0; height:180px; pointer-events:none;
+}
+.hero-content { text-align:center; z-index:2; max-width:680px; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(192,57,43,0.15); border:1px solid rgba(192,57,43,0.4);
+  border-radius:100px; padding:6px 16px;
+  font-size:0.7rem; font-weight:600; letter-spacing:2px;
+  color:var(--accent2); text-transform:uppercase; margin-bottom:1.5rem;
+}
+.hero-logo-img {
+  width: 140px; height: 140px; object-fit: contain; margin: 0 auto 1rem;
+  border-radius: 16px; filter: drop-shadow(0 0 30px rgba(192,57,43,0.4));
+}
+.hero-title {
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(4rem,15vw,8rem); line-height:0.9; letter-spacing:4px;
+  background:linear-gradient(160deg,#ffffff 0%,var(--purple2) 50%,var(--accent2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:0.4rem;
+}
+.hero-freq {
+  font-family:'Bebas Neue',cursive; font-size:clamp(1.5rem,5vw,2.5rem);
+  letter-spacing:8px; color:var(--text2); margin-bottom:0.4rem;
+}
+.hero-city {
+  font-size:0.82rem; color:var(--text3); letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:1.2rem;
+}
+.hero-slogan {
+  font-size:0.95rem; color:var(--text2); margin-bottom:2rem;
+  line-height:1.6; font-weight:300;
+}
+.hero-onair-card {
+  background:linear-gradient(135deg,rgba(26,0,45,0.95),rgba(32,0,53,0.95));
+  border:1px solid var(--border2); border-radius:20px;
+  padding:1.4rem 1.8rem; width:100%; max-width:560px;
+  box-shadow:var(--glow), inset 0 1px 0 rgba(255,255,255,0.05);
+  display:flex; align-items:center; gap:1.4rem; text-align:left;
+  margin: 0 auto;
+}
+.hero-locutor-avatar {
+  width: 72px; height: 72px; border-radius: 50%; flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Bebas Neue',cursive; font-size:1.6rem; color:white;
+  border:2px solid rgba(255,255,255,0.12);
+  overflow:hidden; position:relative;
+}
+.hero-locutor-avatar img { width:100%; height:100%; object-fit:cover; }
+.hero-onair-info { flex:1; overflow:hidden; }
+.hero-onair-label {
+  font-size:0.62rem; font-weight:700; letter-spacing:2px;
+  color:var(--accent2); text-transform:uppercase;
+  display:flex; align-items:center; gap:6px; margin-bottom:4px;
+}
+.hero-onair-prog {
+  font-family:'Bebas Neue',cursive; font-size:1.5rem; letter-spacing:2px;
+  color:var(--text); margin-bottom:2px; line-height:1.1;
+}
+.hero-onair-locutor {
+  font-size:0.82rem; color:var(--purple2); font-weight:600; margin-bottom:4px;
+}
+.hero-onair-horario {
+  font-size:0.73rem; color:var(--text3);
+}
+
+/* ═══ SECTIONS ═══ */
+.page-section { padding:4rem 2rem; max-width:1200px; margin:0 auto; }
+.section-eyebrow {
+  font-size:0.68rem; font-weight:600; letter-spacing:3px;
+  text-transform:uppercase; color:var(--accent2); margin-bottom:4px;
+}
+.section-title {
+  font-family:'Bebas Neue',cursive; font-size:clamp(2.4rem,6vw,3.8rem);
+  letter-spacing:2px; color:var(--text); margin-bottom:0.4rem;
+}
+.section-sub {
+  color:var(--text2); font-size:0.92rem; margin-bottom:2.5rem;
+  max-width:480px; line-height:1.7;
+}
+
+/* TABS */
+.tabs-nav {
+  display:flex; gap:4px;
+  background:rgba(255,255,255,0.04); border-radius:12px; padding:4px;
+  margin-bottom:2.5rem; width:fit-content; border:1px solid var(--border);
+}
+.tab-btn {
+  background:none; border:none; cursor:pointer;
+  color:var(--text2); font-size:0.8rem; font-weight:500;
+  letter-spacing:1.5px; text-transform:uppercase;
+  padding:9px 22px; border-radius:8px; transition:all 0.2s;
+}
+.tab-btn.active {
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  color:white; box-shadow:0 2px 12px rgba(192,57,43,0.4);
+}
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* ═══ EQUIPE — cards quadrados ═══ */
+.equipe-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.4rem;
+}
+.equipe-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; overflow:hidden;
+  transition:transform 0.25s,border-color 0.25s,box-shadow 0.25s;
+  display:flex; flex-direction:column;
+}
+.equipe-card.onair {
+  border-color: rgba(231,76,60,0.5);
+  box-shadow: 0 0 20px rgba(231,76,60,0.2);
+}
+.equipe-card:hover {
+  transform:translateY(-4px); border-color:var(--border2); box-shadow:var(--pglow);
+}
+.equipe-photo {
+  width:100%; aspect-ratio:1/1; position:relative; overflow:hidden;
+}
+.equipe-photo img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s; }
+.equipe-card:hover .equipe-photo img { transform:scale(1.05); }
+.equipe-photo-placeholder {
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  font-family:'Bebas Neue',cursive; font-size:3.5rem; letter-spacing:3px; color:var(--text3);
+}
+.photo-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top,rgba(13,0,21,0.7) 0%,transparent 40%);
+}
+.onair-badge-card {
+  position:absolute; top:12px; left:12px;
+  background:rgba(231,76,60,0.9); color:white;
+  font-size:0.6rem; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; padding:4px 10px; border-radius:100px;
+  display:none; align-items:center; gap:5px;
+}
+.equipe-card.onair .onair-badge-card { display:flex; }
+.equipe-info { padding:1rem 1.2rem 1.2rem; text-align:center; }
+.equipe-nome {
+  font-family:'Bebas Neue',cursive; font-size:1.3rem; letter-spacing:2px;
+  color:var(--text); margin-bottom:6px;
+}
+.equipe-funcao {
+  font-size:0.78rem; color:var(--text2); line-height:1.5;
+  background:rgba(255,255,255,0.04); border:1px solid var(--border);
+  border-radius:8px; padding:8px 10px; min-height:40px;
+  resize:none; width:100%; font-family:'Inter',sans-serif;
+  outline:none; transition:border-color 0.2s;
+}
+.equipe-funcao:focus { border-color:var(--purple2); }
+
+/* ═══ PROGRAMAÇÃO — grade semanal inteligente ═══ */
+.grade-header {
+  display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; align-items:center;
+}
+.grade-legend {
+  display:flex; gap:8px; flex-wrap:wrap;
+}
+.grade-legend-item {
+  display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--text2);
+}
+.grade-legend-dot {
+  width:10px; height:10px; border-radius:3px;
+}
+.grade-container {
+  overflow-x:auto; border-radius:12px; border:1px solid var(--border);
+}
+.grade-table {
+  width:100%; border-collapse:collapse; min-width:900px;
+}
+.grade-table th {
+  background:linear-gradient(135deg,rgba(192,57,43,0.3),rgba(142,68,173,0.3));
+  color:var(--text); font-size:0.7rem; font-weight:600; letter-spacing:2px;
+  text-transform:uppercase; padding:13px 10px; text-align:center;
+  border-bottom:1px solid var(--border2); border-right:1px solid var(--border);
+  position:sticky; top:0; z-index:2;
+}
+.grade-table th:first-child {
+  text-align:left; min-width:90px; border-right:1px solid var(--border2);
+  position:sticky; left:0; z-index:3;
+  background:linear-gradient(135deg,rgba(30,0,50,0.98),rgba(40,0,65,0.98));
+}
+.grade-table th:last-child { border-right:none; }
+.grade-table th.today { background:linear-gradient(135deg,rgba(192,57,43,0.5),rgba(142,68,173,0.5)); }
+.grade-table td {
+  padding:0; border:1px solid var(--border); vertical-align:top;
+  height:36px; text-align:center; position:relative;
+}
+.grade-table td:first-child {
+  background:rgba(20,0,35,0.9); padding:8px 10px;
+  font-size:0.75rem; font-weight:600; color:var(--gold);
+  white-space:nowrap; text-align:center;
+  position:sticky; left:0; z-index:1;
+  border-right:1px solid var(--border2);
+}
+.grade-cell {
+  padding:6px 8px; font-size:0.76rem; cursor:pointer;
+  height:100%; display:flex; flex-direction:column; justify-content:center;
+  transition:background 0.2s;
+}
+.grade-cell:hover { background:rgba(142,68,173,0.12); }
+.grade-cell.has-prog {
+  background:rgba(255,255,255,0.03);
+}
+.grade-cell.is-now {
+  background:rgba(192,57,43,0.15);
+  border-left:3px solid var(--accent2);
+}
+.grade-cell-prog {
+  font-weight:600; color:var(--text); font-size:0.78rem; line-height:1.2;
+}
+.grade-cell-apres {
+  font-size:0.68rem; color:var(--text2); margin-top:2px;
+}
+.grade-cell-empty {
+  color:var(--text3); font-size:0.7rem; font-style:italic;
+}
+
+/* Modal de edição de programa */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
+  z-index:2000; align-items:center; justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:var(--card); border:1px solid var(--border2); border-radius:16px;
+  padding:2rem; width:90%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+.modal-title {
+  font-family:'Bebas Neue',cursive; font-size:1.6rem; letter-spacing:2px;
+  color:var(--text); margin-bottom:1.2rem;
+}
+.modal-field { margin-bottom:1rem; }
+.modal-field label {
+  display:block; font-size:0.7rem; color:var(--text3); letter-spacing:1px;
+  text-transform:uppercase; margin-bottom:5px;
+}
+.modal-field input, .modal-field select {
+  width:100%; background:rgba(255,255,255,0.06); border:1px solid var(--border2);
+  border-radius:8px; color:var(--text); font-size:0.85rem; padding:10px 12px; outline:none;
+  font-family:'Inter',sans-serif;
+}
+.modal-field input:focus, .modal-field select:focus { border-color:var(--purple2); }
+.modal-actions { display:flex; gap:10px; margin-top:1.5rem; }
+.modal-actions button {
+  flex:1; border:none; border-radius:10px; padding:10px 16px;
+  font-size:0.85rem; font-weight:600; cursor:pointer;
+}
+.modal-btn-save {
+  background:linear-gradient(135deg,var(--accent),var(--purple)); color:white;
+}
+.modal-btn-delete {
+  background:rgba(231,76,60,0.15); border:1px solid rgba(231,76,60,0.3)!important;
+  color:var(--accent2);
+}
+.modal-btn-cancel {
+  background:rgba(255,255,255,0.06); border:1px solid var(--border2)!important;
+  color:var(--text2);
+}
+
+/* ═══ FOOTER ═══ */
+footer {
+  border-top:1px solid var(--border); padding:2rem; text-align:center;
+  color:var(--text3); font-size:0.76rem; letter-spacing:1px;
+}
+footer strong { color:var(--text2); }
+
+/* ═══ MOBILE ═══ */
+@media(max-width:680px){
+  :root{ --topbar-h:60px; --nav-h:46px; --header-total:106px; }
+  .nav-links{ display:none; }
+  .nav-links.open{
+    display:flex; flex-direction:column; gap:0;
+    position:absolute; top:var(--nav-h); left:0; right:0;
+    background:rgba(13,0,21,0.98); border-bottom:1px solid var(--border2);
+    padding:1rem 0;
+  }
+  .nav-links.open a{display:block;padding:11px 2rem}
+  .hamburger{display:flex}
+  .vol-wrap{display:none}
+  .player-status{display:none}
+  .topbar-logo-text span{display:none}
+  .stream-cfg-toggle{font-size:0.65rem;padding:5px 8px}
+  .hero-onair-card{flex-direction:column;text-align:center;gap:1rem}
+  .hero-onair-label{justify-content:center}
+  .hero-logo-img{width:100px;height:100px}
+  .equipe-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
+}
+@media(max-width:400px){
+  .topbar-sep{display:none}
+  .stream-cfg{left:1rem;right:1rem;min-width:unset}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div id="topbar">
+  <div class="topbar-logo">
+    <img src="logo.jpg" alt="Itapevi FM">
+    <div class="topbar-logo-text">
+      ITAPEVI<br><span>FM 87.9 · Maçambará</span>
+    </div>
+  </div>
+  <div class="topbar-sep"></div>
+  <div class="onair-box">
+    <div class="onair-avatar" id="topbarAvatar">🎵</div>
+    <div class="onair-info">
+      <div class="onair-label">
+        <span class="live-dot"></span>
+        No ar agora
+      </div>
+      <div class="onair-prog" id="topbarProg">Carregando…</div>
+      <div class="onair-locutor" id="topbarLocutor">—</div>
+    </div>
+  </div>
+  <div class="eq-bars paused" id="eqBars">
+    <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+    <div class="eq-bar"></div><div class="eq-bar"></div>
+  </div>
+  <div class="topbar-controls">
+    <div class="vol-wrap">
+      <span class="vol-icon">🔈</span>
+      <input type="range" id="volSlider" min="0" max="100" value="80" step="1"
+             oninput="setVolume(this.value)" aria-label="Volume">
+      <span class="vol-icon">🔊</span>
+    </div>
+    <button class="play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play / Pause">▶</button>
+    <span class="player-status" id="playerStatus">Pronto</span>
+    <button class="stream-cfg-toggle" onclick="toggleCfg()">⚙ Stream</button>
+  </div>
+  <div class="stream-cfg" id="streamCfg">
+    <label>URL do Stream Shoutcast / Icecast (AAC ou MP3)</label>
+    <input type="text" id="streamUrl"
+      value="" placeholder="http://servidor:porta/stream">
+    <button onclick="applyStream()">✔ Aplicar e ouvir</button>
+  </div>
+  <audio id="radioAudio" preload="none"></audio>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-logo">Itapevi FM</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#inicio">Início</a></li>
+    <li><a href="#conteudo" onclick="setTimeout(()=>openTabByName('equipe'),100)">Equipe</a></li>
+    <li><a href="#conteudo" onclick="setTimeout(()=>openTabByName('programacao'),100)">Programação</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger"
+       onclick="document.getElementById('navLinks').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="inicio">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="live-dot"></span>
+      Transmitindo ao vivo
+    </div>
+    <img src="logo.jpg" alt="Itapevi FM" class="hero-logo-img">
+    <h1 class="hero-title">ITAPEVI<br>FM</h1>
+    <p class="hero-freq">87.9 MHz</p>
+    <p class="hero-city">Maçambará — RS</p>
+    <p class="hero-slogan">A rádio que pulsa com você — a melhor programação,<br>de segunda a domingo, das 06h às 22h.</p>
+    <div class="hero-onair-card" id="heroOnairCard">
+      <div class="hero-locutor-avatar" id="heroAvatar">🎵</div>
+      <div class="hero-onair-info">
+        <div class="hero-onair-label">
+          <span class="live-dot"></span>
+          Programa no ar agora
+        </div>
+        <div class="hero-onair-prog" id="heroProg">Aguardando…</div>
+        <div class="hero-onair-locutor" id="heroLocutor">—</div>
+        <div class="hero-onair-horario" id="heroHorario">—</div>
+      </div>
+    </div>
+  </div>
+  <svg class="hero-waves" viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,80 C240,150 480,0 720,80 C960,150 1200,0 1440,80 L1440,180 L0,180 Z" fill="rgba(142,68,173,0.07)"/>
+    <path d="M0,110 C360,40 720,160 1080,110 C1260,85 1380,130 1440,120 L1440,180 L0,180 Z" fill="rgba(192,57,43,0.06)"/>
+  </svg>
+</section>
+
+<!-- ═══ CONTEÚDO ═══ -->
+<div class="page-section" id="conteudo">
+  <div class="tabs-nav">
+    <button class="tab-btn active" data-tab="equipe" onclick="openTab(event,'tab-equipe')">Equipe</button>
+    <button class="tab-btn" data-tab="programacao" onclick="openTab(event,'tab-programacao')">Programação</button>
+  </div>
+
+  <!-- ── EQUIPE ── -->
+  <div class="tab-panel active" id="tab-equipe">
+    <p class="section-eyebrow">Nossa equipe</p>
+    <h2 class="section-title">Equipe</h2>
+    <p class="section-sub">Conheça quem faz a Itapevi FM acontecer todos os dias.</p>
+    <div class="equipe-grid" id="equipeGrid"></div>
+    <div style="margin-top:1.6rem;">
+      <button onclick="addEquipe()" style="background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:white;border-radius:10px;padding:9px 18px;font-size:0.82rem;font-weight:600;cursor:pointer;">+ Adicionar membro</button>
+    </div>
+  </div>
+
+  <!-- ── PROGRAMAÇÃO ── -->
+  <div class="tab-panel" id="tab-programacao">
+    <p class="section-eyebrow">Grade semanal</p>
+    <h2 class="section-title">Programação</h2>
+    <p class="section-sub">Grade completa de segunda a domingo. Clique em uma célula para adicionar ou editar um programa.</p>
+    <div class="grade-header">
+      <div class="grade-legend">
+        <div class="grade-legend-item"><div class="grade-legend-dot" style="background:rgba(192,57,43,0.4)"></div>No ar agora</div>
+        <div class="grade-legend-item"><div class="grade-legend-dot" style="background:rgba(142,68,173,0.3)"></div>Com programa</div>
+        <div class="grade-legend-item"><div class="grade-legend-dot" style="background:rgba(255,255,255,0.05)"></div>Livre</div>
+      </div>
+    </div>
+    <div class="grade-container">
+      <table class="grade-table" id="gradeTable">
+        <thead id="gradeHead"></thead>
+        <tbody id="gradeBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:1.6rem;display:flex;gap:1rem;flex-wrap:wrap;">
+      <button onclick="saveGrade()" style="background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.3);color:#58d68d;border-radius:10px;padding:9px 18px;font-size:0.82rem;cursor:pointer;font-weight:600;">💾 Salvar Programação</button>
+      <button onclick="exportGrade()" style="background:rgba(52,152,219,0.15);border:1px solid rgba(52,152,219,0.3);color:#5dade2;border-radius:10px;padding:9px 18px;font-size:0.82rem;cursor:pointer;">📋 Copiar JSON</button>
+      <button onclick="importGrade()" style="background:rgba(155,89,182,0.15);border:1px solid rgba(155,89,182,0.3);color:#c39bd3;border-radius:10px;padding:9px 18px;font-size:0.82rem;cursor:pointer;">📥 Importar JSON</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL EDITAR PROGRAMA ═══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">Editar Programa</div>
+    <div class="modal-field">
+      <label>Nome do Programa</label>
+      <input type="text" id="modalProg" placeholder="Ex: Prosa de Galpão">
+    </div>
+    <div class="modal-field">
+      <label>Apresentação</label>
+      <input type="text" id="modalApres" placeholder="Ex: João Silva">
+    </div>
+    <div class="modal-field">
+      <label>Horário Início</label>
+      <input type="time" id="modalDas">
+    </div>
+    <div class="modal-field">
+      <label>Horário Fim</label>
+      <input type="time" id="modalAte">
+    </div>
+    <div class="modal-field">
+      <label>Dias da Semana (selecione múltiplos)</label>
+      <div id="modalDias" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="modal-btn-delete" id="modalDeleteBtn" onclick="deleteFromModal()">Excluir</button>
+      <button class="modal-btn-save" onclick="saveModal()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p><strong>Itapevi FM 87.9</strong> — Maçambará/RS</p>
+  <p style="margin-top:5px;font-size:0.68rem;">© 2025 Itapevi FM · Todos os direitos reservados</p>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+//  SEGURANÇA — Sanitização de inputs
+// ══════════════════════════════════════════
+function sanitize(str) {
+  if (typeof str !== 'string') return String(str || '');
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function validateStreamUrl(url) {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch(e) { return false; }
+}
+
+function validatePrograma(p) {
+  return p && typeof p === 'object' &&
+    typeof p.prog === 'string' &&
+    typeof p.apres === 'string' &&
+    typeof p.das === 'string' &&
+    typeof p.ate === 'string' &&
+    Array.isArray(p.dias) &&
+    p.dias.every(d => DIAS_SEMANA.includes(d));
+}
+
+// ══════════════════════════════════════════
+//  DADOS — EDITE AQUI SUA EQUIPE E PROGRAMAÇÃO
+// ══════════════════════════════════════════
+
+const EQUIPE = [
+  {
+    id: 'membro1',
+    nome: 'Nome do Locutor',
+    funcao: 'Apresentador do programa matutino',
+    iniciais: 'NL',
+    cor: 'linear-gradient(135deg,#1a002d,#3a0060)',
+    foto: '' // coloque o caminho da foto aqui, ex: 'fotos/locutor.jpg'
+  },
+  // Adicione mais membros aqui:
+  // { id: 'membro2', nome: 'Outro Locutor', funcao: 'Apresentador do vespertino', iniciais: 'OL', cor: 'linear-gradient(135deg,#200000,#600010)', foto: '' },
+];
+
+// ══════════════════════════════════════════
+//  PROGRAMAÇÃO — Grade semanal inteligente
+//  Cada entrada: { prog, apres, das, ate, dias:[] }
+//  dias: ['Seg','Ter','Qua','Qui','Sex'] para dias da semana
+// ══════════════════════════════════════════
+
+const DIAS_SEMANA = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const DIAS_FULL   = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+const DAY_CLASS   = {'Seg':'seg','Ter':'ter','Qua':'qua','Qui':'qui','Sex':'sex','Sáb':'sab','Dom':'dom'};
+const DAYS_SHORT  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+// Faixas de horário da grade (linhas da tabela) — 06h às 22h
+const TIME_SLOTS = [
+  '06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30',
+  '10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30',
+  '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30',
+  '18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00'
+];
+
+// Cores para programas na grade
+const PROG_COLORS = [
+  'rgba(192,57,43,0.2)',   // vermelho
+  'rgba(142,68,173,0.2)',  // roxo
+  'rgba(41,128,185,0.2)',  // azul
+  'rgba(39,174,96,0.2)',   // verde
+  'rgba(243,156,18,0.2)',  // dourado
+  'rgba(231,76,60,0.2)',   // coral
+  'rgba(155,89,182,0.2)',  // lilás
+  'rgba(26,188,156,0.2)',  // turquesa
+  'rgba(241,196,15,0.2)',  // amarelo
+  'rgba(52,152,219,0.2)',  // azul claro
+];
+
+// ══════════════════════════════════════════
+//  PROGRAMAS — edite aqui!
+//  Cada programa tem: prog, apres, das, ate, dias[]
+//  Exemplo: "Prosa de Galpão" de Seg a Sex, 06:00-08:30
+// ══════════════════════════════════════════
+const DEFAULT_PROGRAMAS = [
+  // { prog: 'Prosa de Galpão', apres: 'Apresentador', das: '06:00', ate: '08:30', dias: ['Seg','Ter','Qua','Qui','Sex'] },
+  // { prog: 'Rio Grande Prosa e Cordeona', apres: 'Apresentador', das: '06:00', ate: '08:30', dias: ['Sáb'] },
+  // Adicione seus programas aqui...
+];
+
+// ══════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════
+function openTab(e, id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  e.currentTarget.classList.add('active');
+}
+function openTabByName(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('tab-' + name);
+  if (panel) panel.classList.add('active');
+  const btn = document.querySelector('.tab-btn[data-tab="'+name+'"]');
+  if (btn) btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════
+//  PLAYER
+// ══════════════════════════════════════════
+const audio = document.getElementById('radioAudio');
+let playing = false;
+let STREAM_URL = '';
+
+function toggleCfg() {
+  document.getElementById('streamCfg').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const cfg = document.getElementById('streamCfg');
+  if (!cfg.contains(e.target) && !e.target.classList.contains('stream-cfg-toggle'))
+    cfg.classList.remove('open');
+});
+function applyStream() {
+  const val = document.getElementById('streamUrl').value.trim();
+  if (val && validateStreamUrl(val)) {
+    STREAM_URL = val;
+    document.getElementById('streamCfg').classList.remove('open');
+    if (playing) { stopPlay(); setTimeout(startPlay, 200); }
+    else startPlay();
+  } else if (val) {
+    alert('URL inválida. Use http:// ou https://');
+  }
+}
+function startPlay() {
+  if (!STREAM_URL) { alert('Configure a URL do stream primeiro (botão ⚙ Stream)'); return; }
+  const st = document.getElementById('playerStatus');
+  st.textContent = 'Carregando…'; st.className = 'player-status buffering';
+  audio.src = STREAM_URL;
+  audio.volume = document.getElementById('volSlider').value / 100;
+  audio.play().then(() => {
+    playing = true;
+    document.getElementById('playBtn').textContent = '⏸';
+    document.getElementById('eqBars').classList.remove('paused');
+    st.textContent = '● Ao vivo'; st.className = 'player-status live';
+    setupMediaSession();
+  }).catch(() => {
+    st.textContent = 'Erro'; st.className = 'player-status error';
+    playing = false;
+  });
+}
+function stopPlay() {
+  audio.pause(); audio.src = '';
+  playing = false;
+  document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('eqBars').classList.add('paused');
+  const st = document.getElementById('playerStatus');
+  st.textContent = 'Pausado'; st.className = 'player-status';
+}
+function togglePlay() { playing ? stopPlay() : startPlay(); }
+function setVolume(v) { audio.volume = v / 100; }
+audio.addEventListener('error', () => {
+  const st = document.getElementById('playerStatus');
+  st.textContent = 'Indisponível'; st.className = 'player-status error';
+  playing = false;
+  document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('eqBars').classList.add('paused');
+});
+function setupMediaSession() {
+  if (!('mediaSession' in navigator)) return;
+  const cur = getCurrentOnAir();
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: cur ? cur.prog : 'Itapevi FM 87.9',
+    artist: cur ? cur.apres : 'Ao Vivo',
+    album: 'Itapevi FM 87.9',
+    artwork: [{ src: 'logo.jpg', sizes:'512x512', type:'image/jpeg' }]
+  });
+  navigator.mediaSession.setActionHandler('play', startPlay);
+  navigator.mediaSession.setActionHandler('pause', stopPlay);
+  navigator.mediaSession.setActionHandler('stop', stopPlay);
+}
+
+// ══════════════════════════════════════════
+//  DETECÇÃO DO PROGRAMA NO AR
+// ══════════════════════════════════════════
+function timeToMin(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function getCurrentOnAir() {
+  const now = new Date();
+  const dayIdx = now.getDay();
+  const dayName = DAYS_SHORT[dayIdx];
+  const curMin = now.getHours() * 60 + now.getMinutes();
+
+  return programas.find(p => {
+    if (!p.dias.includes(dayName)) return false;
+    const start = timeToMin(p.das);
+    let end = timeToMin(p.ate);
+    if (end === 0) end = 1440;
+    return curMin >= start && curMin < end;
+  }) || null;
+}
+
+function updateOnAirUI() {
+  const cur = getCurrentOnAir();
+
+  // Find locutor in EQUIPE by matching apresentador name
+  let loc = null;
+  if (cur) {
+    loc = EQUIPE.find(m =>
+      m.nome.toLowerCase() === cur.apres.toLowerCase() ||
+      cur.apres.toLowerCase().includes(m.nome.toLowerCase())
+    ) || null;
+  }
+
+  // Topbar
+  const tbAvatar = document.getElementById('topbarAvatar');
+  tbAvatar.innerHTML = '';
+  if (loc && loc.foto) {
+    const img = document.createElement('img');
+    img.src = loc.foto;
+    img.alt = loc.nome;
+    tbAvatar.appendChild(img);
+    tbAvatar.style.background = 'none';
+  } else if (loc) {
+    tbAvatar.textContent = loc.iniciais;
+    tbAvatar.style.background = loc.cor;
+  } else {
+    tbAvatar.textContent = '🎵';
+    tbAvatar.style.background = 'linear-gradient(135deg,var(--accent),var(--purple))';
+  }
+  document.getElementById('topbarProg').textContent    = cur ? cur.prog  : 'Itapevi FM no Ar';
+  document.getElementById('topbarLocutor').textContent = cur ? cur.apres : 'Programação automática';
+
+  // Hero card — foto, nome, horário
+  const heroAvatar = document.getElementById('heroAvatar');
+  heroAvatar.innerHTML = '';
+  if (loc && loc.foto) {
+    const img = document.createElement('img');
+    img.src = loc.foto;
+    img.alt = loc.nome;
+    heroAvatar.appendChild(img);
+    heroAvatar.style.background = 'none';
+  } else if (loc) {
+    heroAvatar.textContent = loc.iniciais;
+    heroAvatar.style.background = loc.cor;
+  } else {
+    heroAvatar.textContent = '🎵';
+    heroAvatar.style.background = 'linear-gradient(135deg,var(--accent),var(--purple))';
+  }
+  document.getElementById('heroProg').textContent    = cur ? cur.prog  : 'Itapevi FM no Ar';
+  document.getElementById('heroLocutor').textContent = cur ? cur.apres : 'Programação automática';
+  document.getElementById('heroHorario').textContent = cur ? cur.das + ' às ' + cur.ate : '';
+
+  // Highlight na grade
+  document.querySelectorAll('.grade-cell').forEach(cell => {
+    cell.classList.remove('is-now');
+  });
+  if (cur) {
+    const curIdx = programas.indexOf(cur);
+    const curColor = PROG_COLORS[curIdx % PROG_COLORS.length];
+    cur.dias.forEach(dia => {
+      const colIdx = DIAS_SEMANA.indexOf(dia);
+      if (colIdx < 0) return;
+      TIME_SLOTS.forEach((slot, rowIdx) => {
+        const slotMin = timeToMin(slot);
+        const nextSlot = rowIdx < TIME_SLOTS.length - 1 ? TIME_SLOTS[rowIdx + 1] : '22:30';
+        const nextMin = timeToMin(nextSlot);
+        const startMin = timeToMin(cur.das);
+        let endMin = timeToMin(cur.ate);
+        if (endMin === 0) endMin = 1440;
+        if (slotMin < endMin && nextMin > startMin) {
+          const cell = document.querySelector('.grade-cell[data-row="'+rowIdx+'"][data-col="'+colIdx+'"]');
+          if (cell) {
+            cell.classList.add('is-now');
+            cell.style.background = curColor.replace('0.2', '0.35');
+            cell.style.borderLeft = '3px solid ' + curColor.replace('0.2', '0.8');
+          }
+        }
+      });
+    });
+  }
+}
+
+// ══════════════════════════════════════════
+//  EQUIPE — render
+// ══════════════════════════════════════════
+function renderEquipe() {
+  const grid = document.getElementById('equipeGrid');
+  grid.innerHTML = '';
+  EQUIPE.forEach((m, idx) => {
+    const card = document.createElement('div');
+    card.className = 'equipe-card';
+    card.id = 'equipe-card-' + m.id;
+    
+    const photoDiv = document.createElement('div');
+    photoDiv.className = 'equipe-photo';
+    
+    const placeholder = document.createElement('div');
+    placeholder.className = 'equipe-photo-placeholder';
+    placeholder.style.background = m.cor;
+    
+    if (m.foto) {
+      const img = document.createElement('img');
+      img.src = m.foto;
+      img.alt = m.nome;
+      placeholder.appendChild(img);
+    } else {
+      placeholder.textContent = m.iniciais;
+    }
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'photo-overlay';
+    
+    const badge = document.createElement('span');
+    badge.className = 'onair-badge-card';
+    badge.innerHTML = '<span class="live-dot" style="width:5px;height:5px"></span> No ar';
+    
+    photoDiv.appendChild(placeholder);
+    photoDiv.appendChild(overlay);
+    photoDiv.appendChild(badge);
+    
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'equipe-info';
+    
+    const nomeDiv = document.createElement('div');
+    nomeDiv.className = 'equipe-nome';
+    nomeDiv.textContent = m.nome;
+    
+    const funcaoArea = document.createElement('textarea');
+    funcaoArea.className = 'equipe-funcao';
+    funcaoArea.rows = 2;
+    funcaoArea.placeholder = 'Função / descrição...';
+    funcaoArea.value = m.funcao;
+    funcaoArea.addEventListener('input', function() {
+      EQUIPE[idx].funcao = this.value;
+      saveEquipe();
+    });
+    
+    infoDiv.appendChild(nomeDiv);
+    infoDiv.appendChild(funcaoArea);
+    
+    card.appendChild(photoDiv);
+    card.appendChild(infoDiv);
+    grid.appendChild(card);
+  });
+}
+
+function addEquipe() {
+  const n = EQUIPE.length + 1;
+  EQUIPE.push({
+    id: 'membro' + n,
+    nome: 'Novo Membro',
+    funcao: '',
+    iniciais: 'NM',
+    cor: 'linear-gradient(135deg,#1a002d,#3a0060)',
+    foto: ''
+  });
+  renderEquipe();
+  saveEquipe();
+}
+
+function saveEquipe() {
+  try { localStorage.setItem('itapevi_equipe', JSON.stringify(EQUIPE)); } catch(e){}
+}
+
+function loadEquipe() {
+  try {
+    const s = localStorage.getItem('itapevi_equipe');
+    if (s) {
+      const loaded = JSON.parse(s);
+      EQUIPE.length = 0;
+      loaded.forEach(m => EQUIPE.push(m));
+    }
+  } catch(e){}
+}
+
+// ══════════════════════════════════════════
+//  PROGRAMAÇÃO — grade semanal inteligente
+// ══════════════════════════════════════════
+let programas = [];
+let modalEditIdx = -1;
+
+function loadProgramas() {
+  try {
+    const s = localStorage.getItem('itapevi_prog');
+    if (s) {
+      programas = JSON.parse(s);
+      return;
+    }
+  } catch(e){}
+  programas = JSON.parse(JSON.stringify(DEFAULT_PROGRAMAS));
+}
+
+function saveGrade() {
+  try {
+    localStorage.setItem('itapevi_prog', JSON.stringify(programas));
+    alert('Programação salva!');
+  } catch(e) { alert('Erro ao salvar.'); }
+}
+
+function exportGrade() {
+  const json = JSON.stringify(programas, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    alert('JSON copiado! Cole em "Importar JSON" para restaurar.');
+  }).catch(() => {
+    prompt('Copie este JSON:', json);
+  });
+}
+
+function importGrade() {
+  const json = prompt('Cole o JSON da programação aqui:');
+  if (!json) return;
+  try {
+    const parsed = JSON.parse(json);
+    if (!Array.isArray(parsed)) { alert('JSON deve ser um array.'); return; }
+    if (!parsed.every(validatePrograma)) { alert('JSON contém dados inválidos.'); return; }
+    programas = parsed;
+    renderGrade();
+    updateOnAirUI();
+    saveGrade();
+  } catch(e) { alert('JSON inválido: ' + e.message); }
+}
+
+function renderGrade() {
+  // Header
+  const thead = document.getElementById('gradeHead');
+  const todayIdx = new Date().getDay(); // 0=Dom
+  const todayDia = DAYS_SHORT[todayIdx];
+  let headHtml = '<tr><th>Horário</th>';
+  DIAS_SEMANA.forEach((dia, i) => {
+    const isToday = dia === todayDia;
+    headHtml += '<th class="'+(isToday?'today':'')+'">'+ sanitize(DIAS_FULL[i]) +'</th>';
+  });
+  headHtml += '</tr>';
+  thead.innerHTML = headHtml;
+
+  // Body
+  const tbody = document.getElementById('gradeBody');
+  tbody.innerHTML = '';
+  
+  // Assign colors to programs
+  const progColorMap = {};
+  programas.forEach((p, idx) => {
+    progColorMap[idx] = PROG_COLORS[idx % PROG_COLORS.length];
+  });
+  
+  TIME_SLOTS.forEach((slot, rowIdx) => {
+    const tr = document.createElement('tr');
+    // Horário column
+    const nextSlot = rowIdx < TIME_SLOTS.length - 1 ? TIME_SLOTS[rowIdx + 1] : '22:30';
+    tr.innerHTML = '<td>' + sanitize(slot) + '</td>';
+
+    DIAS_SEMANA.forEach((dia, colIdx) => {
+      const td = document.createElement('td');
+      const cell = document.createElement('div');
+      cell.className = 'grade-cell';
+      cell.dataset.row = rowIdx;
+      cell.dataset.col = colIdx;
+
+      // Find program for this slot
+      const slotMin = timeToMin(slot);
+      const nextMin = timeToMin(nextSlot);
+      const prog = programas.find(p => {
+        if (!p.dias.includes(dia)) return null;
+        const startMin = timeToMin(p.das);
+        let endMin = timeToMin(p.ate);
+        if (endMin === 0) endMin = 1440;
+        // Cell overlaps with program?
+        return slotMin < endMin && nextMin > startMin && startMin < endMin;
+      });
+
+      if (prog) {
+        const progIdx = programas.indexOf(prog);
+        cell.classList.add('has-prog');
+        
+        // Apply program color to all cells it occupies
+        cell.style.background = progColorMap[progIdx];
+        cell.style.borderLeft = '3px solid ' + progColorMap[progIdx].replace('0.2', '0.6');
+        
+        // Only show full info on the starting row
+        const startMin = timeToMin(prog.das);
+        if (slotMin === startMin || (startMin === 0 && slotMin === timeToMin('00:00'))) {
+          const progName = document.createElement('div');
+          progName.className = 'grade-cell-prog';
+          progName.textContent = prog.prog;
+          
+          const apresName = document.createElement('div');
+          apresName.className = 'grade-cell-apres';
+          apresName.textContent = prog.apres;
+          
+          const horario = document.createElement('div');
+          horario.className = 'grade-cell-apres';
+          horario.textContent = prog.das + ' - ' + prog.ate;
+          
+          cell.innerHTML = '';
+          cell.appendChild(progName);
+          cell.appendChild(apresName);
+          cell.appendChild(horario);
+        }
+        cell.onclick = function() { openModal(progIdx); };
+      } else {
+        cell.innerHTML = '<div class="grade-cell-empty">+</div>';
+        cell.onclick = function() { openModalNew(dia, slot, nextSlot); };
+      }
+      td.appendChild(cell);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  updateOnAirUI();
+}
+
+// ══════════════════════════════════════════
+//  MODAL — editar / criar programa
+// ══════════════════════════════════════════
+function openModal(idx) {
+  modalEditIdx = idx;
+  const p = programas[idx];
+  document.getElementById('modalTitle').textContent = 'Editar Programa';
+  document.getElementById('modalProg').value = p.prog;
+  document.getElementById('modalApres').value = p.apres;
+  document.getElementById('modalDas').value = p.das;
+  document.getElementById('modalAte').value = p.ate;
+  renderModalDias(p.dias);
+  document.getElementById('modalDeleteBtn').style.display = '';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function openModalNew(dia, slot, nextSlot) {
+  modalEditIdx = -1;
+  document.getElementById('modalTitle').textContent = 'Novo Programa';
+  document.getElementById('modalProg').value = '';
+  document.getElementById('modalApres').value = '';
+  document.getElementById('modalDas').value = slot;
+  document.getElementById('modalAte').value = nextSlot;
+  renderModalDias([dia]);
+  document.getElementById('modalDeleteBtn').style.display = 'none';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function renderModalDias(selected) {
+  const container = document.getElementById('modalDias');
+  container.innerHTML = '';
+  DIAS_SEMANA.forEach(dia => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = dia;
+    const isSelected = selected.includes(dia);
+    btn.style.cssText = 'padding:6px 12px;border-radius:8px;border:1px solid ' +
+      (isSelected ? 'var(--accent2)' : 'var(--border2)') + ';background:' +
+      (isSelected ? 'rgba(192,57,43,0.3)' : 'rgba(255,255,255,0.05)') + ';color:' +
+      (isSelected ? 'var(--accent2)' : 'var(--text2)') + ';cursor:pointer;font-size:0.78rem;font-weight:600;';
+    btn.dataset.dia = dia;
+    btn.dataset.selected = isSelected ? '1' : '0';
+    btn.onclick = function() {
+      const sel = this.dataset.selected === '1';
+      this.dataset.selected = sel ? '0' : '1';
+      this.style.border = '1px solid ' + (sel ? 'var(--border2)' : 'var(--accent2)');
+      this.style.background = sel ? 'rgba(255,255,255,0.05)' : 'rgba(192,57,43,0.3)';
+      this.style.color = sel ? 'var(--text2)' : 'var(--accent2)';
+    };
+    container.appendChild(btn);
+  });
+}
+
+function getModalDias() {
+  const dias = [];
+  document.querySelectorAll('#modalDias button').forEach(btn => {
+    if (btn.dataset.selected === '1') dias.push(btn.dataset.dia);
+  });
+  return dias;
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  modalEditIdx = -1;
+}
+
+function saveModal() {
+  const prog = document.getElementById('modalProg').value.trim() || 'Sem nome';
+  const apres = document.getElementById('modalApres').value.trim() || '—';
+  const das = document.getElementById('modalDas').value;
+  const ate = document.getElementById('modalAte').value;
+  const dias = getModalDias();
+  if (dias.length === 0) { alert('Selecione ao menos um dia.'); return; }
+
+  if (modalEditIdx >= 0) {
+    programas[modalEditIdx] = { prog, apres, das, ate, dias };
+  } else {
+    programas.push({ prog, apres, das, ate, dias });
+  }
+  closeModal();
+  renderGrade();
+}
+
+function deleteFromModal() {
+  if (modalEditIdx >= 0 && confirm('Excluir este programa?')) {
+    programas.splice(modalEditIdx, 1);
+    closeModal();
+    renderGrade();
+  }
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+loadEquipe();
+renderEquipe();
+loadProgramas();
+renderGrade();
+
+setInterval(() => { updateOnAirUI(); if (playing) setupMediaSession(); }, 60000);
+</script>
+</body>
+</html>

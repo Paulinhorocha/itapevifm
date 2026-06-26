@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0015">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:;">
+<title>Dashboard — Itapevi FM 87.9</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root {
+  --bg: #0d0015;
+  --bg2: #130020;
+  --card: #1a002d;
+  --card2: #200035;
+  --accent: #c0392b;
+  --accent2: #e74c3c;
+  --purple: #8e44ad;
+  --purple2: #9b59b6;
+  --gold: #f39c12;
+  --green: #27ae60;
+  --green2: #58d68d;
+  --blue: #2980b9;
+  --blue2: #5dade2;
+  --text: #f0e6ff;
+  --text2: #b39dcc;
+  --text3: #7a6b8a;
+  --border: rgba(180,100,255,0.15);
+  --border2: rgba(180,100,255,0.3);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+/* Header */
+.dash-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+}
+.dash-brand {
+  display: flex; align-items: center; gap: 1rem;
+}
+.dash-brand img {
+  width: 56px; height: 56px; object-fit: contain; border-radius: 12px;
+}
+.dash-brand-text h1 {
+  font-family: 'Bebas Neue', cursive; font-size: 1.8rem; letter-spacing: 3px;
+  background: linear-gradient(135deg, var(--accent2), var(--purple2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.dash-brand-text p {
+  font-size: 0.75rem; color: var(--text3); letter-spacing: 1px;
+}
+.dash-actions {
+  display: flex; gap: 0.8rem; flex-wrap: wrap;
+}
+.dash-btn {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border2);
+  color: var(--text2); border-radius: 10px; padding: 10px 18px;
+  font-size: 0.82rem; font-weight: 500; cursor: pointer;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  transition: all 0.2s;
+}
+.dash-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.dash-btn.primary {
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  color: white; border: none;
+}
+
+/* Cards */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.dash-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.dash-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 0 20px rgba(142,68,173,0.2);
+}
+.dash-card-title {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text3); margin-bottom: 0.8rem;
+}
+.dash-card-value {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2.8rem; letter-spacing: 2px;
+  line-height: 1;
+}
+.dash-card-sub {
+  font-size: 0.78rem; color: var(--text2); margin-top: 0.4rem;
+}
+.dash-card-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; margin-bottom: 0.8rem;
+}
+
+/* On Air Card */
+.onair-card {
+  background: linear-gradient(135deg, rgba(192,57,43,0.15), rgba(142,68,173,0.15));
+  border: 1px solid rgba(192,57,43,0.3);
+}
+.onair-card .dash-card-value { color: var(--accent2); }
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent2);
+  animation: pulse-dot 1.5s infinite;
+  display: inline-block;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.4; transform:scale(1.5); }
+}
+
+/* Chart containers */
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+
+/* Wide cards */
+.dash-card.wide {
+  grid-column: 1 / -1;
+}
+@media (min-width: 900px) {
+  .dash-card.half {
+    grid-column: span 2;
+  }
+}
+
+/* Table */
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dash-table th {
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border2);
+}
+.dash-table td {
+  padding: 12px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+}
+.dash-table tr:last-child td { border-bottom: none; }
+.dash-table tr:hover td { background: rgba(142,68,173,0.05); }
+.dash-table .prog-name { color: var(--text); font-weight: 600; }
+.dash-table .badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.badge-live {
+  background: rgba(231,76,60,0.2);
+  color: var(--accent2);
+  border: 1px solid rgba(231,76,60,0.3);
+}
+.badge-day {
+  background: rgba(142,68,173,0.15);
+  color: var(--purple2);
+  border: 1px solid rgba(142,68,173,0.25);
+}
+
+/* Team grid */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+.team-member {
+  text-align: center;
+}
+.team-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  margin: 0 auto 0.5rem;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem; color: white;
+  border: 2px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+.team-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.team-name {
+  font-size: 0.82rem; font-weight: 600; color: var(--text);
+}
+.team-role {
+  font-size: 0.7rem; color: var(--text3);
+}
+
+/* Footer */
+.dash-footer {
+  text-align: center;
+  padding: 2rem 0 1rem;
+  color: var(--text3);
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+}
+
+/* Mobile */
+@media (max-width: 680px) {
+  body { padding: 1rem; }
+  .dash-card-value { font-size: 2.2rem; }
+  .chart-container { height: 250px; }
+}
+</style>
+</head>
+<body>
+<!-- Header -->
+<div class="dash-header">
+  <div class="dash-brand">
+    <img src="logo.jpg" alt="Itapevi FM">
+    <div class="dash-brand-text">
+      <h1>ITAPEVI FM</h1>
+      <p>Dashboard Administrativo · 87.9 MHz · Maçambará/RS</p>
+    </div>
+  </div>
+  <div class="dash-actions">
+    <a href="index.html" class="dash-btn">🌐 Ver Site</a>
+    <button class="dash-btn" onclick="exportAllData()">📋 Exportar Dados</button>
+    <button class="dash-btn primary" onclick="refreshDashboard()">🔄 Atualizar</button>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="dash-grid">
+  <div class="dash-card onair-card">
+    <div class="dash-card-title"><span class="live-dot"></span> No Ar Agora</div>
+    <div class="dash-card-value" id="onairProg">—</div>
+    <div class="dash-card-sub" id="onairInfo">Carregando...</div>
+  </div>
+  <div class="dash-card">
+    <div class="dash-card-icon" style="background:rgba(142,68,173,0.2);color:var(--purple2);">📻</div>
+    <div class="dash-card-title">Total de Programas</div>
+    <div class="dash-card-value" id="statProgramas" style="color:var(--purple2);">0</div>
+    <div class="dash-card-sub">ativos na grade semanal</div>
+  </div>
+  <div class="dash-card">
+    <div class="dash-card-icon" style="background:rgba(46,204,113,0.15);color:var(--green2);">👥</div>
+    <div class="dash-card-title">Equipe</div>
+    <div class="dash-card-value" id="statEquipe" style="color:var(--green2);">0</div>
+    <div class="dash-card-sub">membros cadastrados</div>
+  </div>
+  <div class="dash-card">
+    <div class="dash-card-icon" style="background:rgba(241,196,15,0.15);color:var(--gold);">⏱</div>
+    <div class="dash-card-title">Horas/Semana</div>
+    <div class="dash-card-value" id="statHoras" style="color:var(--gold);">0h</div>
+    <div class="dash-card-sub">de conteúdo programado</div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="dash-grid">
+  <div class="dash-card half">
+    <div class="dash-card-title">Programas por Dia da Semana</div>
+    <div class="chart-container" id="chartDias"></div>
+  </div>
+  <div class="dash-card half">
+    <div class="dash-card-title">Distribuição por Horário</div>
+    <div class="chart-container" id="chartHorarios"></div>
+  </div>
+</div>
+
+<!-- Schedule Table -->
+<div class="dash-grid">
+  <div class="dash-card wide">
+    <div class="dash-card-title">Grade Completa da Semana</div>
+    <div style="overflow-x:auto;">
+      <table class="dash-table" id="scheduleTable">
+        <thead>
+          <tr>
+            <th>Programa</th>
+            <th>Apresentador</th>
+            <th>Horário</th>
+            <th>Dias</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="scheduleBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Team Section -->
+<div class="dash-grid">
+  <div class="dash-card wide">
+    <div class="dash-card-title">Equipe</div>
+    <div class="team-grid" id="teamGrid"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="dash-footer">
+  <p><strong>Itapevi FM 87.9</strong> — Dashboard Administrativo</p>
+  <p style="margin-top:4px;">Dados sincronizados com o site principal via localStorage</p>
+</div>
+<script>
+// ══════════════════════════════════════════
+//  SEGURANÇA
+// ══════════════════════════════════════════
+function sanitize(str) {
+  if (typeof str !== 'string') return String(str || '');
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ══════════════════════════════════════════
+//  DADOS — lê do localStorage (mesmo do site)
+// ══════════════════════════════════════════
+const DIAS_SEMANA = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const DIAS_FULL   = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+const DAYS_SHORT  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const TIME_SLOTS  = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
+
+let EQUIPE = [];
+let programas = [];
+
+function loadData() {
+  try {
+    const eq = localStorage.getItem('itapevi_equipe');
+    if (eq) EQUIPE = JSON.parse(eq);
+  } catch(e){}
+  try {
+    const pr = localStorage.getItem('itapevi_prog');
+    if (pr) programas = JSON.parse(pr);
+  } catch(e){}
+}
+
+// ══════════════════════════════════════════
+//  CÁLCULOS
+// ══════════════════════════════════════════
+function timeToMin(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function calcHorasSemana() {
+  let totalMin = 0;
+  programas.forEach(p => {
+    const start = timeToMin(p.das);
+    let end = timeToMin(p.ate);
+    if (end <= start) end += 1440;
+    const dur = end - start;
+    totalMin += dur * p.dias.length;
+  });
+  return Math.round(totalMin / 60);
+}
+
+function getCurrentOnAir() {
+  const now = new Date();
+  const dayIdx = now.getDay();
+  const dayName = DAYS_SHORT[dayIdx];
+  const curMin = now.getHours() * 60 + now.getMinutes();
+  return programas.find(p => {
+    if (!p.dias.includes(dayName)) return false;
+    const start = timeToMin(p.das);
+    let end = timeToMin(p.ate);
+    if (end === 0) end = 1440;
+    return curMin >= start && curMin < end;
+  }) || null;
+}
+
+function countProgramasPorDia() {
+  const counts = {};
+  DIAS_SEMANA.forEach(d => counts[d] = 0);
+  programas.forEach(p => {
+    p.dias.forEach(d => { if (counts[d] !== undefined) counts[d]++; });
+  });
+  return counts;
+}
+
+function countProgramasPorHorario() {
+  const slots = {};
+  TIME_SLOTS.forEach(s => slots[s] = 0);
+  programas.forEach(p => {
+    const start = timeToMin(p.das);
+    let end = timeToMin(p.ate);
+    if (end <= start) end += 1440;
+    TIME_SLOTS.forEach(slot => {
+      const slotMin = timeToMin(slot);
+      if (slotMin >= start && slotMin < end) slots[slot]++;
+    });
+  });
+  return slots;
+}
+
+// ══════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════
+function renderStats() {
+  const cur = getCurrentOnAir();
+  document.getElementById('onairProg').textContent = cur ? cur.prog : 'Fora do ar';
+  document.getElementById('onairInfo').textContent = cur
+    ? cur.apres + ' · ' + cur.das + ' às ' + cur.ate
+    : 'Nenhum programa agendado para este horário';
+  document.getElementById('statProgramas').textContent = programas.length;
+  document.getElementById('statEquipe').textContent = EQUIPE.length;
+  document.getElementById('statHoras').textContent = calcHorasSemana() + 'h';
+}
+
+function renderScheduleTable() {
+  const tbody = document.getElementById('scheduleBody');
+  tbody.innerHTML = '';
+  const cur = getCurrentOnAir();
+  
+  // Sort by first day and start time
+  const sorted = [...programas].sort((a, b) => {
+    const dayA = DIAS_SEMANA.indexOf(a.dias[0]);
+    const dayB = DIAS_SEMANA.indexOf(b.dias[0]);
+    if (dayA !== dayB) return dayA - dayB;
+    return timeToMin(a.das) - timeToMin(b.das);
+  });
+  
+  sorted.forEach(p => {
+    const tr = document.createElement('tr');
+    const isLive = cur && cur.prog === p.prog && cur.das === p.das;
+    
+    const tdName = document.createElement('td');
+    tdName.className = 'prog-name';
+    tdName.textContent = p.prog;
+    
+    const tdApres = document.createElement('td');
+    tdApres.textContent = p.apres;
+    
+    const tdHorario = document.createElement('td');
+    tdHorario.textContent = p.das + ' — ' + p.ate;
+    
+    const tdDias = document.createElement('td');
+    tdDias.textContent = p.dias.join(', ');
+    
+    const tdStatus = document.createElement('td');
+    if (isLive) {
+      tdStatus.innerHTML = '<span class="badge badge-live"><span class="live-dot" style="width:5px;height:5px;vertical-align:middle;margin-right:4px;"></span>No ar</span>';
+    } else {
+      tdStatus.innerHTML = '<span class="badge badge-day">Agendado</span>';
+    }
+    
+    tr.appendChild(tdName);
+    tr.appendChild(tdApres);
+    tr.appendChild(tdHorario);
+    tr.appendChild(tdDias);
+    tr.appendChild(tdStatus);
+    tbody.appendChild(tr);
+  });
+  
+  if (programas.length === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td colspan="5" style="text-align:center;color:var(--text3);padding:2rem;">Nenhum programa cadastrado. <a href="index.html" style="color:var(--purple2);">Adicionar no site</a></td>';
+    tbody.appendChild(tr);
+  }
+}
+
+function renderTeam() {
+  const grid = document.getElementById('teamGrid');
+  grid.innerHTML = '';
+  EQUIPE.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'team-member';
+    
+    const avatar = document.createElement('div');
+    avatar.className = 'team-avatar';
+    avatar.style.background = m.cor || 'linear-gradient(135deg,var(--accent),var(--purple))';
+    if (m.foto) {
+      const img = document.createElement('img');
+      img.src = m.foto;
+      img.alt = m.nome;
+      avatar.appendChild(img);
+    } else {
+      avatar.textContent = m.iniciais || '?';
+    }
+    
+    const name = document.createElement('div');
+    name.className = 'team-name';
+    name.textContent = m.nome;
+    
+    const role = document.createElement('div');
+    role.className = 'team-role';
+    role.textContent = m.funcao || '—';
+    
+    div.appendChild(avatar);
+    div.appendChild(name);
+    div.appendChild(role);
+    grid.appendChild(div);
+  });
+  
+  if (EQUIPE.length === 0) {
+    grid.innerHTML = '<p style="color:var(--text3);grid-column:1/-1;text-align:center;padding:1rem;">Nenhum membro cadastrado. <a href="index.html" style="color:var(--purple2);">Adicionar no site</a></p>';
+  }
+}
+
+// ══════════════════════════════════════════
+//  CHARTS
+// ══════════════════════════════════════════
+function renderCharts() {
+  // Chart 1: Programas por dia
+  const chart1 = echarts.init(document.getElementById('chartDias'));
+  const countsDia = countProgramasPorDia();
+  chart1.setOption({
+    tooltip: { trigger: 'axis' },
+    xAxis: {
+      type: 'category',
+      data: DIAS_FULL,
+      axisLabel: { color: '#b39dcc', fontSize: 11 },
+      axisLine: { lineStyle: { color: 'rgba(180,100,255,0.2)' } }
+    },
+    yAxis: {
+      type: 'value',
+      minInterval: 1,
+      axisLabel: { color: '#b39dcc' },
+      splitLine: { lineStyle: { color: 'rgba(180,100,255,0.08)' } }
+    },
+    series: [{
+      data: DIAS_SEMANA.map(d => countsDia[d]),
+      type: 'bar',
+      itemStyle: {
+        borderRadius: [6, 6, 0, 0],
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: '#e74c3c' },
+          { offset: 1, color: '#8e44ad' }
+        ])
+      },
+      barWidth: '50%'
+    }],
+    grid: { left: 40, right: 20, top: 20, bottom: 40 }
+  });
+
+  // Chart 2: Distribuição por horário
+  const chart2 = echarts.init(document.getElementById('chartHorarios'));
+  const countsHora = countProgramasPorHorario();
+  chart2.setOption({
+    tooltip: { trigger: 'axis' },
+    xAxis: {
+      type: 'category',
+      data: TIME_SLOTS.map(s => s.substring(0, 2) + 'h'),
+      axisLabel: { color: '#b39dcc', fontSize: 10, rotate: 45 },
+      axisLine: { lineStyle: { color: 'rgba(180,100,255,0.2)' } }
+    },
+    yAxis: {
+      type: 'value',
+      minInterval: 1,
+      axisLabel: { color: '#b39dcc' },
+      splitLine: { lineStyle: { color: 'rgba(180,100,255,0.08)' } }
+    },
+    series: [{
+      data: TIME_SLOTS.map(s => countsHora[s]),
+      type: 'line',
+      smooth: true,
+      lineStyle: { color: '#9b59b6', width: 3 },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'rgba(155,89,182,0.4)' },
+          { offset: 1, color: 'rgba(155,89,182,0.05)' }
+        ])
+      },
+      itemStyle: { color: '#9b59b6' },
+      symbol: 'circle',
+      symbolSize: 6
+    }],
+    grid: { left: 40, right: 20, top: 20, bottom: 60 }
+  });
+
+  // Resize on window resize
+  window.addEventListener('resize', () => {
+    chart1.resize();
+    chart2.resize();
+  });
+}
+
+// ══════════════════════════════════════════
+//  ACTIONS
+// ══════════════════════════════════════════
+function refreshDashboard() {
+  loadData();
+  renderStats();
+  renderScheduleTable();
+  renderTeam();
+  renderCharts();
+}
+
+function exportAllData() {
+  const data = {
+    equipe: EQUIPE,
+    programas: programas,
+    exportado: new Date().toISOString()
+  };
+  const json = JSON.stringify(data, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    alert('Dados copiados! Inclui equipe e programação.');
+  }).catch(() => {
+    prompt('Copie os dados:', json);
+  });
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+loadData();
+renderStats();
+renderScheduleTable();
+renderTeam();
+renderCharts();
+
+// Auto-refresh a cada minuto
+setInterval(() => {
+  renderStats();
+  renderScheduleTable();
+}, 60000);
+</script>
+</body>
+</html>
