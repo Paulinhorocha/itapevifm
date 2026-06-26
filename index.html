@@ -462,7 +462,17 @@ footer {
 footer strong { color:var(--text2); }
 
 /* MOBILE */
-@media(max-width:680px){
+@media(max-width:680px)
+{
+  .play-btn:focus,
+  .play-btn:active {
+    outline: none;
+    box-shadow: 0 2px 14px rgba(192,57,43,0.5);
+  }
+  
+  .play-btn::-moz-focus-inner {
+    border: 0;
+  }
   :root{ --topbar-h:72px; --nav-h:56px; --header-total:128px; }
   #topbar {
     height: 72px;
