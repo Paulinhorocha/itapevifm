@@ -463,12 +463,25 @@ footer strong { color:var(--text2); }
 
 /* MOBILE */
 @media(max-width:680px)
-{
-  .play-btn:focus,
-  .play-btn:active {
-    outline: none;
-    box-shadow: 0 2px 14px rgba(192,57,43,0.5);
-  }
+.play-btn {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+  appearance: none;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+}
+
+.play-btn:focus,
+.play-btn:active,
+.play-btn:focus-visible {
+  outline: none !important;
+  box-shadow: 0 2px 14px rgba(192,57,43,0.5);
+}
+
+/* CORREÇÃO GLOBAL DO MOBILE (ESSENCIAL) */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
   
   .play-btn::-moz-focus-inner {
     border: 0;
