@@ -747,14 +747,7 @@ function openTabByName(name) {
 // ══════════════════════════════════════════
 const audio = document.getElementById('radioAudio');
 let playing = false;
-let userWantsPlay = false;
 let STREAM_URL = 'https://casthttps1.suaradionanet.net/10076/stream';
-
-let reconnectTimer = null;
-let watchdogInterval = null;
-let lastCurrentTime = -1;
-let stalledChecks = 0;
-let reconnectAttempts = 0;
 
 function toggleCfg() {
   document.getElementById('streamCfg').classList.toggle('open');
@@ -775,49 +768,24 @@ function applyStream() {
     alert('URL inválida. Use http:// ou https://');
   }
 }
-
-// Adiciona um parâmetro único a cada tentativa para evitar que o navegador
-// reaproveite uma conexão antiga/travada com o servidor de stream (cache).
-function buildStreamUrl() {
-  if (!STREAM_URL) return STREAM_URL;
-  const sep = STREAM_URL.includes('?') ? '&' : '?';
-  return STREAM_URL + sep + '_cb=' + Date.now();
-}
-
 function startPlay() {
   if (!STREAM_URL) { alert('Configure a URL do stream primeiro (botão ⚙ Stream)'); return; }
-  userWantsPlay = true;
-  clearTimeout(reconnectTimer);
-
   const st = document.getElementById('playerStatus');
   st.textContent = 'Carregando…'; st.className = 'player-status buffering';
-
-  audio.pause();
-  audio.src = buildStreamUrl();
-  audio.load();
+  audio.src = STREAM_URL;
   audio.volume = document.getElementById('volSlider').value / 100;
-
   audio.play().then(() => {
     playing = true;
-    reconnectAttempts = 0;
-    stalledChecks = 0;
-    lastCurrentTime = -1;
     document.getElementById('playBtn').textContent = '⏸';
     document.getElementById('eqBars').classList.remove('paused');
     st.textContent = '● Ao vivo'; st.className = 'player-status live';
     setupMediaSession();
-    startWatchdog();
   }).catch(() => {
     st.textContent = 'Erro'; st.className = 'player-status error';
     playing = false;
-    scheduleReconnect();
   });
 }
-
 function stopPlay() {
-  userWantsPlay = false;
-  clearTimeout(reconnectTimer);
-  stopWatchdog();
   audio.pause(); audio.src = '';
   playing = false;
   document.getElementById('playBtn').textContent = '▶';
@@ -827,70 +795,12 @@ function stopPlay() {
 }
 function togglePlay() { playing ? stopPlay() : startPlay(); }
 function setVolume(v) { audio.volume = v / 100; }
-
-// Tenta reconectar automaticamente quando o stream cai ou trava,
-// sem precisar que o ouvinte limpe o cache ou recarregue a página.
-function scheduleReconnect() {
-  if (!userWantsPlay) return;
-  clearTimeout(reconnectTimer);
-  stopWatchdog();
-
-  reconnectAttempts++;
-  const delay = Math.min(3000 + reconnectAttempts * 2000, 15000);
-
-  const st = document.getElementById('playerStatus');
-  st.textContent = 'Reconectando…'; st.className = 'player-status buffering';
-
-  reconnectTimer = setTimeout(() => {
-    if (userWantsPlay) startPlay();
-  }, delay);
-}
-
-// Watchdog: alguns navegadores travam o stream sem disparar nenhum
-// evento de erro. Aqui verificamos a cada 5s se o áudio realmente
-// está avançando; se não estiver, forçamos a reconexão.
-function startWatchdog() {
-  stopWatchdog();
-  watchdogInterval = setInterval(() => {
-    if (!userWantsPlay) { stopWatchdog(); return; }
-
-    if (audio.paused || audio.ended) {
-      stalledChecks++;
-    } else if (audio.currentTime === lastCurrentTime) {
-      stalledChecks++;
-    } else {
-      stalledChecks = 0;
-      lastCurrentTime = audio.currentTime;
-    }
-
-    if (stalledChecks >= 2) {
-      stalledChecks = 0;
-      playing = false;
-      scheduleReconnect();
-    }
-  }, 5000);
-}
-
-function stopWatchdog() {
-  if (watchdogInterval) { clearInterval(watchdogInterval); watchdogInterval = null; }
-}
-
 audio.addEventListener('error', () => {
   const st = document.getElementById('playerStatus');
   st.textContent = 'Indisponível'; st.className = 'player-status error';
   playing = false;
   document.getElementById('playBtn').textContent = '▶';
   document.getElementById('eqBars').classList.add('paused');
-  stopWatchdog();
-  scheduleReconnect();
-});
-
-// Quando o usuário volta para a aba/app, confere se o áudio ainda está
-// realmente tocando — se não estiver, reconecta na hora.
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && userWantsPlay && (audio.paused || audio.ended)) {
-    startPlay();
-  }
 });
 function setupMediaSession() {
   if (!('mediaSession' in navigator)) return;
