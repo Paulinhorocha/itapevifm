@@ -405,20 +405,23 @@ body {
 </head>
 <body>
 <!-- Login Screen -->
-<div id="loginScreen" style="display:none;position:fixed;inset:0;background:rgba(13,0,21,0.98);z-index:9999;display:flex;align-items:center;justify-content:center;">
+<div id="loginScreen" style="display:flex;position:fixed;inset:0;background:rgba(13,0,21,0.98);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:2rem;width:90%;max-width:400px;">
     <h2 style="font-family:'Bebas Neue',cursive;font-size:2rem;letter-spacing:2px;color:var(--text);margin-bottom:1rem;text-align:center;">Login Dashboard</h2>
     <p style="color:var(--text2);font-size:0.85rem;text-align:center;margin-bottom:1.5rem;">Acesso restrito à administração</p>
     <div style="margin-bottom:1rem;">
       <label style="display:block;font-size:0.7rem;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">Email</label>
-      <input type="email" id="loginEmail" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:0.85rem;padding:10px 12px;outline:none;" placeholder="admin@itapevifm.com">
+      <input type="email" id="loginEmail" onkeydown="if(event.key==='Enter'){document.getElementById('loginPassword').focus()}" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:0.85rem;padding:10px 12px;outline:none;" placeholder="admin@itapevifm.com">
     </div>
     <div style="margin-bottom:1.5rem;">
       <label style="display:block;font-size:0.7rem;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">Senha</label>
-      <input type="password" id="loginPassword" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:0.85rem;padding:10px 12px;outline:none;" placeholder="••••••••">
+      <input type="password" id="loginPassword" onkeydown="if(event.key==='Enter'){doLogin()}" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:0.85rem;padding:10px 12px;outline:none;" placeholder="••••••••">
     </div>
     <button onclick="doLogin()" style="width:100%;background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:white;border-radius:10px;padding:12px 16px;font-size:0.9rem;font-weight:600;cursor:pointer;">Entrar</button>
     <p id="loginError" style="color:var(--accent2);font-size:0.8rem;text-align:center;margin-top:1rem;display:none;"></p>
+    <p style="text-align:center;margin-top:1rem;">
+      <a href="#" onclick="doForgotPassword();return false;" style="color:var(--text3);font-size:0.75rem;text-decoration:underline;">Esqueci minha senha</a>
+    </p>
   </div>
 </div>
 
@@ -638,6 +641,30 @@ function doLogin() {
     })
     .catch((error) => {
       errorEl.textContent = 'Email ou senha incorretos';
+      errorEl.style.display = 'block';
+    });
+}
+
+function doForgotPassword() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const errorEl = document.getElementById('loginError');
+
+  if (!email) {
+    errorEl.style.color = 'var(--accent2)';
+    errorEl.textContent = 'Digite seu email no campo acima e clique novamente';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  auth.sendPasswordResetEmail(email)
+    .then(() => {
+      errorEl.style.color = '#4ade80';
+      errorEl.textContent = 'Email de redefinição enviado! Verifique sua caixa de entrada.';
+      errorEl.style.display = 'block';
+    })
+    .catch(() => {
+      errorEl.style.color = 'var(--accent2)';
+      errorEl.textContent = 'Não foi possível enviar o email. Verifique o endereço digitado.';
       errorEl.style.display = 'block';
     });
 }
