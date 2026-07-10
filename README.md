@@ -24,6 +24,7 @@ Isso é o que realmente protege o dashboard — sem isso, o login na tela é só
      }
    }
    ```
+   Isso vale para todo o banco, incluindo `config/streamUrl` (URL do stream, agora gerenciada só pelo dashboard).
    Sem isso, qualquer pessoa pode escrever no banco direto pela API, mesmo sem passar pela tela de login.
 3. **Restringir a API Key do Firebase** (recomendado): no [Google Cloud Console](https://console.cloud.google.com/apis/credentials), selecione a chave do projeto `itapevi-fm` e adicione uma restrição de **HTTP referrer** com o domínio final do site (ex: `https://itapevifm.vercel.app/*`). Isso impede que a chave (que fica visível no código-fonte) seja reaproveitada em outro site.
 4. Use uma senha forte para o usuário administrador (não a senha de exemplo dos guias).
@@ -38,5 +39,5 @@ Projeto estático, sem build. Pode subir direto:
 ## Como funciona
 
 - Os dados de programação e equipe ficam no Firebase Realtime Database.
-- O `dashboard.html` exige login (Firebase Auth) para escrever dados.
+- O `dashboard.html` exige login (Firebase Auth) para escrever dados, incluindo a URL do stream (`config/streamUrl`) — não é mais editável no site público.
 - O `index.html` lê os dados publicamente e atualiza em tempo real.

@@ -468,6 +468,18 @@ body {
   </div>
 </div>
 
+<!-- Configuração de Stream (antes ficava aberta no site público — agora só aqui, autenticado) -->
+<div class="dash-card" style="margin-bottom:2rem;">
+  <div class="dash-card-title">⚙ URL do Stream (Shoutcast/Icecast)</div>
+  <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+    <input type="text" id="streamUrlInput" placeholder="http://servidor:porta/stream"
+      style="flex:1;min-width:220px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.82rem;padding:8px 12px;outline:none;">
+    <button class="dash-btn primary" onclick="salvarStreamUrl()">Salvar</button>
+  </div>
+  <div class="dash-card-sub" id="streamUrlStatus" style="margin-top:8px;"></div>
+</div>
+
+
 <!-- Charts Row -->
 <div class="dash-grid">
   <div class="dash-card half">
@@ -679,7 +691,8 @@ function doLogout() {
 function initDashboard() {
   console.log('Inicializando dashboard...');
   loadFromFirebase();
-  
+  carregarStreamUrl();
+
   const todayIdx = new Date().getDay();
   const todayDia = DAYS_SHORT[todayIdx];
   if (DIAS_SEMANA.includes(todayDia)) {
@@ -687,11 +700,43 @@ function initDashboard() {
   } else {
     dashMostrarDia('Seg');
   }
-  
+
   setInterval(() => {
     renderStats();
     dashMostrarDia(dashDiaSelecionado);
   }, 60000);
+}
+
+function validateStreamUrl(url) {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch(e) { return false; }
+}
+
+function carregarStreamUrl() {
+  db.ref('config/streamUrl').once('value').then((snap) => {
+    const val = snap.val();
+    if (val) document.getElementById('streamUrlInput').value = val;
+  });
+}
+
+function salvarStreamUrl() {
+  const val = document.getElementById('streamUrlInput').value.trim();
+  const statusEl = document.getElementById('streamUrlStatus');
+  if (!validateStreamUrl(val)) {
+    statusEl.style.color = 'var(--accent2)';
+    statusEl.textContent = 'URL inválida. Use http:// ou https://';
+    return;
+  }
+  db.ref('config/streamUrl').set(val).then(() => {
+    statusEl.style.color = 'var(--green2)';
+    statusEl.textContent = 'Salvo! O site público já está usando esta URL.';
+  }).catch(() => {
+    statusEl.style.color = 'var(--accent2)';
+    statusEl.textContent = 'Erro ao salvar. Confira sua conexão e tente novamente.';
+  });
 }
 
 function sanitize(str) {

@@ -158,22 +158,25 @@ O plano gratuito do Firebase (Spark) inclui:
 
 ### Erro de permissão
 
-Se aparecer erro de permissão, vá em:
-1. Firebase Console → Realtime Database → Regras
-2. Substitua por:
+**Nunca resolva isso abrindo `.write: true`** — isso libera qualquer pessoa na internet, sem login, para escrever ou apagar todo o banco. A regra correta e definitiva é:
 
 ```json
 {
   "rules": {
     ".read": true,
-    ".write": true
+    ".write": "auth != null",
+    "config": {
+      "streamUrl": { ".write": "auth != null" }
+    }
   }
 }
 ```
 
-3. Clique em **"Publicar"**
-
-**Nota:** Isso permite que qualquer pessoa leia e escreva. Para produção, você pode adicionar autenticação depois.
+Se o erro persistir com essa regra publicada, o problema não é a regra — é autenticação:
+1. Confirme que o método "Email/Password" está ativado em Authentication → Sign-in method
+2. Confirme que existe um usuário criado em Authentication → Users
+3. No dashboard, confirme que o login foi feito com sucesso (email aparece no console do navegador) antes de salvar dados
+4. Abra o console do navegador (F12) para ver a mensagem de erro completa
 
 ## Próximos Passos
 

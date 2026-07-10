@@ -158,31 +158,6 @@ input[type=range]::-webkit-slider-thumb {
 .player-status.buffering { color:var(--gold); }
 .player-status.error { color:var(--accent2); }
 .player-status.live { color:#58d68d; }
-.stream-cfg-toggle {
-  background:rgba(255,255,255,0.05); border:1px solid var(--border2);
-  color:var(--text3); border-radius:8px; padding:5px 10px;
-  font-size:0.7rem; cursor:pointer; flex-shrink:0; letter-spacing:0.5px;
-  transition:background 0.2s;
-}
-.stream-cfg-toggle:hover { background:rgba(255,255,255,0.1); color:var(--text2); }
-.stream-cfg {
-  display:none; position:absolute; top:calc(var(--topbar-h) + 4px); right:1.5rem;
-  background:rgba(20,0,36,0.98); border:1px solid var(--border2); border-radius:12px;
-  padding:14px 16px; z-index:1001; box-shadow:0 8px 32px rgba(0,0,0,0.6);
-  min-width:320px;
-}
-.stream-cfg.open { display:block; }
-.stream-cfg label { font-size:0.68rem; color:var(--text3); letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:6px; }
-.stream-cfg input {
-  width:100%; background:rgba(255,255,255,0.06); border:1px solid var(--border2);
-  border-radius:8px; color:var(--text2); font-size:0.78rem; padding:8px 12px; outline:none;
-  margin-bottom:8px;
-}
-.stream-cfg button {
-  background:linear-gradient(135deg,var(--accent),var(--purple)); border:none;
-  color:white; border-radius:8px; padding:7px 16px; font-size:0.78rem;
-  cursor:pointer; font-weight:600; width:100%;
-}
 
 /* NAV */
 nav {
@@ -497,9 +472,6 @@ footer strong { color:var(--text2); }
   .player-status {
     display: none;
   }
-  .stream-cfg-toggle {
-    display: none;
-  }
   .topbar-sep {
     display: none;
   }
@@ -526,7 +498,6 @@ footer strong { color:var(--text2); }
 }
 @media(max-width:400px){
   .topbar-sep{display:none}
-  .stream-cfg{left:1rem;right:1rem;min-width:unset}
 }
 </style>
 </head>
@@ -565,13 +536,6 @@ footer strong { color:var(--text2); }
     </div>
     <button class="play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play / Pause">▶</button>
     <span class="player-status" id="playerStatus">Pronto</span>
-    <button class="stream-cfg-toggle" onclick="toggleCfg()">⚙ Stream</button>
-  </div>
-  <div class="stream-cfg" id="streamCfg">
-    <label>URL do Stream Shoutcast / Icecast (AAC ou MP3)</label>
-    <input type="text" id="streamUrl"
-      value="https://casthttps1.suaradionanet.net/10076/stream" placeholder="http://servidor:porta/stream">
-    <button onclick="applyStream()">✔ Aplicar e ouvir</button>
   </div>
   <audio id="radioAudio" preload="none"></audio>
 </div>
@@ -682,14 +646,6 @@ function sanitize(str) {
   return div.innerHTML;
 }
 
-function validateStreamUrl(url) {
-  if (!url) return false;
-  try {
-    const u = new URL(url);
-    return u.protocol === 'http:' || u.protocol === 'https:';
-  } catch(e) { return false; }
-}
-
 // ══════════════════════════════════════════
 //  DADOS — Sincronizados via Firebase
 // ══════════════════════════════════════════
@@ -748,7 +704,7 @@ function openTabByName(name) {
 const audio = document.getElementById('radioAudio');
 let playing = false;
 let userWantsPlay = false;
-let STREAM_URL = 'https://casthttps1.suaradionanet.net/10076/stream';
+let STREAM_URL = 'https://casthttps1.suaradionanet.net/10076/stream'; // fallback caso o Firebase ainda não tenha respondido
 
 let reconnectTimer = null;
 let watchdogInterval = null;
@@ -756,25 +712,16 @@ let lastCurrentTime = -1;
 let stalledChecks = 0;
 let reconnectAttempts = 0;
 
-function toggleCfg() {
-  document.getElementById('streamCfg').classList.toggle('open');
-}
-document.addEventListener('click', e => {
-  const cfg = document.getElementById('streamCfg');
-  if (!cfg.contains(e.target) && !e.target.classList.contains('stream-cfg-toggle'))
-    cfg.classList.remove('open');
-});
-function applyStream() {
-  const val = document.getElementById('streamUrl').value.trim();
-  if (val && validateStreamUrl(val)) {
+// A URL do stream agora é lida do Firebase (/config/streamUrl), gerenciada
+// apenas pelo dashboard administrativo — não é mais editável no site público.
+db.ref('config/streamUrl').on('value', (snapshot) => {
+  const val = snapshot.val();
+  if (val && typeof val === 'string') {
+    const changed = val !== STREAM_URL;
     STREAM_URL = val;
-    document.getElementById('streamCfg').classList.remove('open');
-    if (playing) { stopPlay(); setTimeout(startPlay, 200); }
-    else startPlay();
-  } else if (val) {
-    alert('URL inválida. Use http:// ou https://');
+    if (changed && playing) { stopPlay(); setTimeout(startPlay, 200); }
   }
-}
+});
 
 // Adiciona um parâmetro único a cada tentativa para evitar que o navegador
 // reaproveite uma conexão antiga/travada com o servidor de stream (cache).
