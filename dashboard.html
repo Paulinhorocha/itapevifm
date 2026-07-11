@@ -72,6 +72,11 @@ body {
   background: linear-gradient(135deg, var(--accent), var(--purple));
   color: white; border: none;
 }
+.dash-btn.danger {
+  background: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4);
+  color: #ff8a95;
+}
+.dash-btn.danger:hover { background: rgba(220,53,69,0.3); color: #fff; }
 
 /* Cards */
 .dash-grid {
@@ -479,6 +484,24 @@ body {
   <div class="dash-card-sub" id="streamUrlStatus" style="margin-top:8px;"></div>
 </div>
 
+<!-- Gestão de Usuários — só aparece para quem tem papel "admin" -->
+<div class="dash-card admin-only" style="margin-bottom:2rem;display:none;">
+  <div class="dash-card-title">👤 Usuários do Dashboard</div>
+  <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+    <input type="email" id="convidarEmailInput" placeholder="email@exemplo.com"
+      style="flex:1;min-width:220px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.82rem;padding:8px 12px;outline:none;">
+    <button class="dash-btn primary" onclick="convidarUsuario()">Convidar</button>
+  </div>
+  <div class="dash-card-sub" id="usuariosStatus" style="margin-top:8px;"></div>
+  <div id="usuariosLista" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;"></div>
+</div>
+
+<!-- Log de Atividade — só aparece para quem tem papel "admin" -->
+<div class="dash-card admin-only" style="margin-bottom:2rem;display:none;">
+  <div class="dash-card-title">📋 Atividade Recente</div>
+  <div id="logAtividade" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;font-size:0.78rem;color:var(--text3);"></div>
+</div>
+
 
 <!-- Charts Row -->
 <div class="dash-grid">
@@ -581,8 +604,15 @@ body {
       <input type="text" id="modalTeamIniciais" placeholder="Ex: JS" maxlength="3">
     </div>
     <div class="modal-field">
-      <label>URL da Foto (opcional)</label>
-      <input type="text" id="modalTeamFoto" placeholder="Ex: fotos/joao.jpg">
+      <label>Foto</label>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img id="modalTeamFotoPreview" src="" alt=""
+          style="width:56px;height:56px;border-radius:50%;object-fit:cover;background:rgba(255,255,255,0.06);display:none;">
+        <input type="file" id="modalTeamFotoFile" accept="image/*" onchange="uploadTeamFoto(this)"
+          style="flex:1;font-size:0.78rem;color:var(--text2);">
+      </div>
+      <input type="hidden" id="modalTeamFoto">
+      <div class="dash-card-sub" id="modalTeamFotoStatus" style="margin-top:6px;"></div>
     </div>
     <div class="modal-actions">
       <button class="modal-btn-cancel" onclick="closeTeamModal()">Cancelar</button>
@@ -595,46 +625,62 @@ body {
 <!-- Footer -->
 <div class="dash-footer">
   <p><strong>Itapevi FM 87.9</strong> — Dashboard Administrativo</p>
-  <p style="margin-top:4px;">Dados sincronizados via Firebase em tempo real</p>
+  <p style="margin-top:4px;">Dados sincronizados via Supabase em tempo real</p>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ══════════════════════════════════════════
-//  FIREBASE CONFIG
-//  IMPORTANTE: Substitua com suas credenciais do Firebase
+//  SUPABASE CONFIG
+//  IMPORTANTE: Substitua com a URL e a anon key do seu projeto
+//  (Supabase → Project Settings → API) — use os mesmos valores do index.html
 // ══════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyDWS74FZqrBJ23Ype1o0IFd0QwX_If_s6g",
-  authDomain: "itapevi-fm.firebaseapp.com",
-  databaseURL: "https://itapevi-fm-default-rtdb.firebaseio.com",
-  projectId: "itapevi-fm",
-  storageBucket: "itapevi-fm.firebasestorage.app",
-  messagingSenderId: "541640863596",
-  appId: "1:541640863596:web:618b581fd9b8edb94a4d49"
-};
+const SUPABASE_URL = 'https://hfswzuptkerizyrrrlgn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3d6dXB0a2VyaXp5cnJybGduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODY0MjQsImV4cCI6MjA5OTM2MjQyNH0.ZGs2G8tNt7qLROrKJPxqgzw2GDh3BbRm5BXbg1LeSxc';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const auth = firebase.auth();
+// ══════════════════════════════════════════
+//  FOTOS (HostGator)
+//  IMPORTANTE: troque pelo seu domínio real depois de subir os
+//  arquivos fotos/upload.php e fotos/delete.php na HostGator
+// ══════════════════════════════════════════
+const FOTOS_UPLOAD_URL = 'https://api.itapevifm.com.br/fotos/upload.php';
+const FOTOS_DELETE_URL = 'https://api.itapevifm.com.br/fotos/delete.php';
+
+// ══════════════════════════════════════════
+//  GESTÃO DE USUÁRIOS (HostGator) — só admins usam
+// ══════════════════════════════════════════
+const USUARIOS_CONVIDAR_URL = 'https://api.itapevifm.com.br/usuarios/convidar.php';
+const USUARIOS_REMOVER_URL = 'https://api.itapevifm.com.br/remover.php';
+const USUARIOS_ROLE_URL = 'https://api.itapevifm.com.br/definir_role.php';
 
 // ══════════════════════════════════════════
 //  AUTENTICAÇÃO
 // ══════════════════════════════════════════
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    // Usuário logado
+let currentUser = null;
+let currentRole = null;
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (session) {
     document.getElementById('loginScreen').style.display = 'none';
-    console.log('Usuário logado:', user.email);
+    currentUser = session.user;
+    console.log('Usuário logado:', session.user.email);
+    supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle().then(({ data }) => {
+      currentRole = data ? data.role : 'editor';
+      document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = (currentRole === 'admin') ? '' : 'none';
+      });
+      if (currentRole === 'admin') carregarUsuarios();
+    });
     initDashboard();
   } else {
-    // Usuário não logado
+    currentUser = null;
+    currentRole = null;
     document.getElementById('loginScreen').style.display = 'flex';
   }
 });
+// onAuthStateChange já dispara uma vez no carregamento com a sessão atual
+// (se houver token salvo), então não é preciso checar getSession() à parte.
 
 function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -647,13 +693,14 @@ function doLogin() {
     return;
   }
   
-  auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      console.log('Login bem-sucedido');
-    })
-    .catch((error) => {
-      errorEl.textContent = 'Email ou senha incorretos';
-      errorEl.style.display = 'block';
+  supabase.auth.signInWithPassword({ email, password })
+    .then(({ error }) => {
+      if (error) {
+        errorEl.textContent = 'Email ou senha incorretos';
+        errorEl.style.display = 'block';
+      } else {
+        console.log('Login bem-sucedido');
+      }
     });
 }
 
@@ -668,21 +715,21 @@ function doForgotPassword() {
     return;
   }
 
-  auth.sendPasswordResetEmail(email)
-    .then(() => {
-      errorEl.style.color = '#4ade80';
-      errorEl.textContent = 'Email de redefinição enviado! Verifique sua caixa de entrada.';
-      errorEl.style.display = 'block';
-    })
-    .catch(() => {
-      errorEl.style.color = 'var(--accent2)';
-      errorEl.textContent = 'Não foi possível enviar o email. Verifique o endereço digitado.';
+  supabase.auth.resetPasswordForEmail(email)
+    .then(({ error }) => {
+      if (error) {
+        errorEl.style.color = 'var(--accent2)';
+        errorEl.textContent = 'Não foi possível enviar o email. Verifique o endereço digitado.';
+      } else {
+        errorEl.style.color = '#4ade80';
+        errorEl.textContent = 'Email de redefinição enviado! Verifique sua caixa de entrada.';
+      }
       errorEl.style.display = 'block';
     });
 }
 
 function doLogout() {
-  auth.signOut().then(() => {
+  supabase.auth.signOut().then(() => {
     console.log('Logout realizado');
     location.reload();
   });
@@ -690,7 +737,7 @@ function doLogout() {
 
 function initDashboard() {
   console.log('Inicializando dashboard...');
-  loadFromFirebase();
+  loadFromSupabase();
   carregarStreamUrl();
 
   const todayIdx = new Date().getDay();
@@ -716,9 +763,8 @@ function validateStreamUrl(url) {
 }
 
 function carregarStreamUrl() {
-  db.ref('config/streamUrl').once('value').then((snap) => {
-    const val = snap.val();
-    if (val) document.getElementById('streamUrlInput').value = val;
+  supabase.from('config').select('value').eq('key', 'streamUrl').maybeSingle().then(({ data }) => {
+    if (data && data.value) document.getElementById('streamUrlInput').value = data.value;
   });
 }
 
@@ -730,12 +776,123 @@ function salvarStreamUrl() {
     statusEl.textContent = 'URL inválida. Use http:// ou https://';
     return;
   }
-  db.ref('config/streamUrl').set(val).then(() => {
-    statusEl.style.color = 'var(--green2)';
-    statusEl.textContent = 'Salvo! O site público já está usando esta URL.';
-  }).catch(() => {
+  supabase.from('config').upsert({ key: 'streamUrl', value: val }).then(({ error }) => {
+    if (error) {
+      statusEl.style.color = 'var(--accent2)';
+      statusEl.textContent = 'Erro ao salvar. Confira sua conexão e tente novamente.';
+    } else {
+      statusEl.style.color = 'var(--green2)';
+      statusEl.textContent = 'Salvo! O site público já está usando esta URL.';
+      registrarLog('Alterou a URL do stream');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+//  LOG DE ATIVIDADE (visível só a admins)
+// ══════════════════════════════════════════
+function registrarLog(acao) {
+  if (!currentUser) return;
+  supabase.from('activity_log').insert({
+    user_email: currentUser.email,
+    acao: acao
+  }).catch(() => {});
+}
+
+function carregarLog() {
+  supabase.from('activity_log').select('*').order('created_at', { ascending: false }).limit(15)
+    .then(({ data }) => {
+      const el = document.getElementById('logAtividade');
+      if (!data || data.length === 0) { el.innerHTML = 'Nenhuma atividade registrada ainda.'; return; }
+      el.innerHTML = data.map(l => {
+        const data2 = new Date(l.created_at).toLocaleString('pt-BR');
+        return `<div>${data2} — <b>${sanitize(l.user_email || '?')}</b>: ${sanitize(l.acao)}</div>`;
+      }).join('');
+    });
+}
+
+// ══════════════════════════════════════════
+//  GESTÃO DE USUÁRIOS (só admins — via PHP na HostGator)
+// ══════════════════════════════════════════
+async function getAuthToken() {
+  const { data } = await supabase.auth.getSession();
+  return data?.session?.access_token || null;
+}
+
+function carregarUsuarios() {
+  supabase.from('profiles').select('*').order('created_at', { ascending: true }).then(({ data }) => {
+    const el = document.getElementById('usuariosLista');
+    if (!data) { el.innerHTML = ''; return; }
+    el.innerHTML = data.map(u => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:0.8rem;flex-wrap:wrap;">
+        <span style="flex:1;min-width:160px;">${sanitize(u.email)}</span>
+        <span style="color:var(--text3);text-transform:uppercase;font-size:0.68rem;letter-spacing:1px;">${sanitize(u.role)}</span>
+        <button class="dash-btn" style="padding:4px 10px;font-size:0.72rem;" onclick="alternarRole('${u.id}','${u.role === 'admin' ? 'editor' : 'admin'}')">
+          ${u.role === 'admin' ? 'Tornar editor' : 'Tornar admin'}
+        </button>
+        <button class="dash-btn danger" style="padding:4px 10px;font-size:0.72rem;" onclick="removerUsuario('${u.id}','${sanitize(u.email)}')">Remover</button>
+      </div>
+    `).join('');
+  });
+  carregarLog();
+}
+
+function convidarUsuario() {
+  const email = document.getElementById('convidarEmailInput').value.trim();
+  const statusEl = document.getElementById('usuariosStatus');
+  if (!email || !email.includes('@')) {
     statusEl.style.color = 'var(--accent2)';
-    statusEl.textContent = 'Erro ao salvar. Confira sua conexão e tente novamente.';
+    statusEl.textContent = 'Digite um email válido.';
+    return;
+  }
+  statusEl.style.color = 'var(--text3)';
+  statusEl.textContent = 'Enviando convite…';
+
+  getAuthToken().then(token => {
+    fetch(USUARIOS_CONVIDAR_URL, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    }).then(res => res.json().then(json => ({ ok: res.ok, json }))).then(({ ok, json }) => {
+      if (!ok) throw new Error(json.error || 'Erro ao convidar');
+      statusEl.style.color = 'var(--green2)';
+      statusEl.textContent = 'Convite enviado! A pessoa vai receber um email para definir a senha.';
+      document.getElementById('convidarEmailInput').value = '';
+      registrarLog('Convidou o usuário ' + email);
+      setTimeout(carregarUsuarios, 1500);
+    }).catch(err => {
+      statusEl.style.color = 'var(--accent2)';
+      statusEl.textContent = 'Erro: ' + err.message;
+    });
+  });
+}
+
+function removerUsuario(id, email) {
+  if (!confirm('Remover o acesso de ' + email + '?')) return;
+  getAuthToken().then(token => {
+    fetch(USUARIOS_REMOVER_URL, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    }).then(res => res.json().then(json => ({ ok: res.ok, json }))).then(({ ok, json }) => {
+      if (!ok) throw new Error(json.error || 'Erro ao remover');
+      registrarLog('Removeu o usuário ' + email);
+      carregarUsuarios();
+    }).catch(err => alert('Erro: ' + err.message));
+  });
+}
+
+function alternarRole(id, novoRole) {
+  getAuthToken().then(token => {
+    fetch(USUARIOS_ROLE_URL, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, role: novoRole })
+    }).then(res => res.json().then(json => ({ ok: res.ok, json }))).then(({ ok, json }) => {
+      if (!ok) throw new Error(json.error || 'Erro ao alterar papel');
+      registrarLog('Alterou papel de usuário para ' + novoRole);
+      carregarUsuarios();
+    }).catch(err => alert('Erro: ' + err.message));
   });
 }
 
@@ -1130,38 +1287,26 @@ function saveProgram() {
   const dias = getModalDias();
   if (dias.length === 0) { alert('Selecione ao menos um dia.'); return; }
 
-  const programa = { prog, apres, das, ate, dias };
+  const key = (programEditIdx >= 0 && programas[programEditIdx].id) ? programas[programEditIdx].id : 'prog' + Date.now();
+  const programa = { id: key, prog, apres, das, ate, dias };
 
-  if (programEditIdx >= 0) {
-    // Atualizar programa existente
-    const key = programas[programEditIdx].id || 'prog' + programEditIdx;
-    db.ref('programas/' + key).update(programa).then(() => {
-      alert('Programa atualizado!');
-      closeProgramModal();
-    }).catch(err => {
-      alert('Erro ao atualizar: ' + err.message);
-    });
-  } else {
-    // Criar novo programa
-    const newKey = 'prog' + Date.now();
-    programa.id = newKey;
-    db.ref('programas/' + newKey).set(programa).then(() => {
-      alert('Programa adicionado!');
-      closeProgramModal();
-    }).catch(err => {
-      alert('Erro ao salvar: ' + err.message);
-    });
-  }
+  supabase.from('programas').upsert(programa).then(({ error }) => {
+    if (error) { alert('Erro ao salvar: ' + error.message); return; }
+    alert(programEditIdx >= 0 ? 'Programa atualizado!' : 'Programa adicionado!');
+    registrarLog((programEditIdx >= 0 ? 'Atualizou' : 'Criou') + ' o programa "' + prog + '"');
+    closeProgramModal();
+  });
 }
 
 function deleteProgram() {
   if (programEditIdx >= 0 && confirm('Excluir este programa?')) {
-    const key = programas[programEditIdx].id || 'prog' + programEditIdx;
-    db.ref('programas/' + key).remove().then(() => {
+    const key = programas[programEditIdx].id;
+    const nomeProg = programas[programEditIdx].prog;
+    supabase.from('programas').delete().eq('id', key).then(({ error }) => {
+      if (error) { alert('Erro ao excluir: ' + error.message); return; }
       alert('Programa excluído!');
+      registrarLog('Excluiu o programa "' + nomeProg + '"');
       closeProgramModal();
-    }).catch(err => {
-      alert('Erro ao excluir: ' + err.message);
     });
   }
 }
@@ -1173,6 +1318,8 @@ let teamEditIdx = -1;
 
 function openTeamModal(idx) {
   teamEditIdx = idx;
+  document.getElementById('modalTeamFotoFile').value = '';
+  document.getElementById('modalTeamFotoStatus').textContent = '';
   if (idx >= 0) {
     const m = EQUIPE[idx];
     document.getElementById('teamModalTitle').textContent = 'Editar Membro';
@@ -1180,6 +1327,7 @@ function openTeamModal(idx) {
     document.getElementById('modalTeamFuncao').value = m.funcao || '';
     document.getElementById('modalTeamIniciais').value = m.iniciais || '';
     document.getElementById('modalTeamFoto').value = m.foto || '';
+    setFotoPreview(m.foto || '');
     document.getElementById('modalTeamDeleteBtn').style.display = '';
   } else {
     document.getElementById('teamModalTitle').textContent = 'Novo Membro';
@@ -1187,14 +1335,118 @@ function openTeamModal(idx) {
     document.getElementById('modalTeamFuncao').value = '';
     document.getElementById('modalTeamIniciais').value = '';
     document.getElementById('modalTeamFoto').value = '';
+    setFotoPreview('');
     document.getElementById('modalTeamDeleteBtn').style.display = 'none';
   }
   document.getElementById('teamModal').classList.add('open');
 }
 
+function setFotoPreview(url) {
+  const img = document.getElementById('modalTeamFotoPreview');
+  if (url) { img.src = url; img.style.display = ''; }
+  else { img.src = ''; img.style.display = 'none'; }
+}
+
 function closeTeamModal() {
   document.getElementById('teamModal').classList.remove('open');
   teamEditIdx = -1;
+}
+
+// Redimensiona/comprime a imagem no navegador antes de enviar,
+// para não sobrecarregar o Storage nem o carregamento do site público.
+function resizeImage(file, maxSize) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > maxSize) { height *= maxSize / width; width = maxSize; }
+        else if (height > maxSize) { width *= maxSize / height; height = maxSize; }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Falha ao processar imagem')), 'image/jpeg', 0.85);
+      };
+      img.onerror = () => reject(new Error('Arquivo não é uma imagem válida'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Falha ao ler o arquivo'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadTeamFoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('modalTeamFotoStatus');
+
+  if (!file.type.startsWith('image/')) {
+    statusEl.style.color = 'var(--accent2)';
+    statusEl.textContent = 'Selecione um arquivo de imagem.';
+    input.value = '';
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    statusEl.style.color = 'var(--accent2)';
+    statusEl.textContent = 'Imagem muito grande (máx. 8MB).';
+    input.value = '';
+    return;
+  }
+
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token;
+  if (!token) {
+    statusEl.style.color = 'var(--accent2)';
+    statusEl.textContent = 'Sessão expirada. Faça login novamente.';
+    return;
+  }
+
+  statusEl.style.color = 'var(--text3)';
+  statusEl.textContent = 'Processando imagem…';
+
+  resizeImage(file, 500).then(async blob => {
+    const formData = new FormData();
+    formData.append('foto', blob, 'foto.jpg');
+
+    statusEl.textContent = 'Enviando…';
+    try {
+      const res = await fetch(FOTOS_UPLOAD_URL, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Erro no upload');
+
+      const oldUrl = document.getElementById('modalTeamFoto').value;
+      document.getElementById('modalTeamFoto').value = json.url;
+      setFotoPreview(json.url);
+      statusEl.style.color = 'var(--green2)';
+      statusEl.textContent = 'Foto enviada! Clique em Salvar para confirmar.';
+      deleteFotoNaHostgator(oldUrl, token);
+    } catch (err) {
+      statusEl.style.color = 'var(--accent2)';
+      statusEl.textContent = 'Erro no upload: ' + err.message;
+    }
+  }).catch(err => {
+    statusEl.style.color = 'var(--accent2)';
+    statusEl.textContent = 'Erro: ' + err.message;
+  });
+}
+
+// Apaga uma foto antiga na HostGator a partir da URL pública (best-effort).
+async function deleteFotoNaHostgator(url, token) {
+  if (!url || !url.includes('/fotos/')) return;
+  const nome = url.split('/fotos/').pop();
+  if (!nome) return;
+  try {
+    await fetch(FOTOS_DELETE_URL, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome })
+    });
+  } catch (e) { /* best-effort: se falhar, fica um arquivo órfão, sem impacto no site */ }
 }
 
 function saveTeamMember() {
@@ -1203,7 +1455,9 @@ function saveTeamMember() {
   const iniciais = document.getElementById('modalTeamIniciais').value.trim() || nome.substring(0, 2).toUpperCase();
   const foto = document.getElementById('modalTeamFoto').value.trim();
 
+  const key = (teamEditIdx >= 0 && EQUIPE[teamEditIdx].id) ? EQUIPE[teamEditIdx].id : 'membro' + Date.now();
   const membro = {
+    id: key,
     nome: nome,
     funcao: funcao,
     iniciais: iniciais,
@@ -1211,67 +1465,56 @@ function saveTeamMember() {
     cor: 'linear-gradient(135deg,#1a002d,#3a0060)'
   };
 
-  if (teamEditIdx >= 0) {
-    // Atualizar membro existente
-    const key = EQUIPE[teamEditIdx].id || 'membro' + teamEditIdx;
-    membro.id = key;
-    db.ref('equipe/' + key).update(membro).then(() => {
-      alert('Membro atualizado!');
-      closeTeamModal();
-    }).catch(err => {
-      alert('Erro ao atualizar: ' + err.message);
-    });
-  } else {
-    // Criar novo membro
-    const newKey = 'membro' + Date.now();
-    membro.id = newKey;
-    db.ref('equipe/' + newKey).set(membro).then(() => {
-      alert('Membro adicionado!');
-      closeTeamModal();
-    }).catch(err => {
-      alert('Erro ao salvar: ' + err.message);
-    });
-  }
+  supabase.from('equipe').upsert(membro).then(({ error }) => {
+    if (error) { alert('Erro ao salvar: ' + error.message); return; }
+    alert(teamEditIdx >= 0 ? 'Membro atualizado!' : 'Membro adicionado!');
+    registrarLog((teamEditIdx >= 0 ? 'Atualizou' : 'Adicionou') + ' o membro "' + nome + '"');
+    closeTeamModal();
+  });
 }
 
 function deleteTeamMember() {
   if (teamEditIdx >= 0 && confirm('Excluir este membro?')) {
-    const key = EQUIPE[teamEditIdx].id || 'membro' + teamEditIdx;
-    db.ref('equipe/' + key).remove().then(() => {
+    const m = EQUIPE[teamEditIdx];
+    supabase.from('equipe').delete().eq('id', m.id).then(async ({ error }) => {
+      if (error) { alert('Erro ao excluir: ' + error.message); return; }
       alert('Membro excluído!');
+      registrarLog('Excluiu o membro "' + m.nome + '"');
       closeTeamModal();
-    }).catch(err => {
-      alert('Erro ao excluir: ' + err.message);
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (token) deleteFotoNaHostgator(m.foto, token);
     });
   }
 }
 
 // ══════════════════════════════════════════
-//  FIREBASE SYNC — Carregar dados em tempo real
+//  SUPABASE SYNC — Carregar dados em tempo real
 // ══════════════════════════════════════════
-function loadFromFirebase() {
-  // Carregar equipe
-  db.ref('equipe').on('value', (snapshot) => {
-    const data = snapshot.val();
-    EQUIPE = [];
-    if (data) {
-      EQUIPE = Object.values(data);
-    }
+function loadFromSupabase() {
+  async function carregarEquipe() {
+    const { data } = await supabase.from('equipe').select('*');
+    EQUIPE = data || [];
     renderTeam();
     renderStats();
-  });
-
-  // Carregar programas
-  db.ref('programas').on('value', (snapshot) => {
-    const data = snapshot.val();
-    programas = [];
-    if (data) {
-      programas = Object.values(data);
-    }
+  }
+  async function carregarProgramas() {
+    const { data } = await supabase.from('programas').select('*');
+    programas = data || [];
     dashMostrarDia(dashDiaSelecionado);
     renderStats();
     renderCharts();
-  });
+  }
+
+  carregarEquipe();
+  carregarProgramas();
+
+  supabase.channel('dash-equipe-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'equipe' }, carregarEquipe)
+    .subscribe();
+  supabase.channel('dash-programas-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'programas' }, carregarProgramas)
+    .subscribe();
 }
 
 // ══════════════════════════════════════════

@@ -615,26 +615,16 @@ footer strong { color:var(--text2); }
   <p style="margin-top:5px;font-size:0.68rem;">© 2025 Itapevi FM · Todos os direitos reservados</p>
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ══════════════════════════════════════════
-//  FIREBASE CONFIG
-//  IMPORTANTE: Substitua com suas credenciais do Firebase
+//  SUPABASE CONFIG
+//  IMPORTANTE: Substitua com a URL e a anon key do seu projeto
+//  (Supabase → Project Settings → API)
 // ══════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyDWS74FZqrBJ23Ype1o0IFd0QwX_If_s6g",
-  authDomain: "itapevi-fm.firebaseapp.com",
-  databaseURL: "https://itapevi-fm-default-rtdb.firebaseio.com",
-  projectId: "itapevi-fm",
-  storageBucket: "itapevi-fm.firebasestorage.app",
-  messagingSenderId: "541640863596",
-  appId: "1:541640863596:web:618b581fd9b8edb94a4d49"
-};
-
-// Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const SUPABASE_URL = 'https://hfswzuptkerizyrrrlgn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3d6dXB0a2VyaXp5cnJybGduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODY0MjQsImV4cCI6MjA5OTM2MjQyNH0.ZGs2G8tNt7qLROrKJPxqgzw2GDh3BbRm5BXbg1LeSxc';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ══════════════════════════════════════════
 //  SEGURANÇA — Sanitização de inputs
@@ -647,7 +637,7 @@ function sanitize(str) {
 }
 
 // ══════════════════════════════════════════
-//  DADOS — Sincronizados via Firebase
+//  DADOS — Sincronizados via Supabase
 // ══════════════════════════════════════════
 const EQUIPE = [];
 let programas = [];
@@ -704,7 +694,7 @@ function openTabByName(name) {
 const audio = document.getElementById('radioAudio');
 let playing = false;
 let userWantsPlay = false;
-let STREAM_URL = 'https://casthttps1.suaradionanet.net/10076/stream'; // fallback caso o Firebase ainda não tenha respondido
+let STREAM_URL = 'https://casthttps1.suaradionanet.net/10076/stream'; // fallback caso o Supabase ainda não tenha respondido
 
 let reconnectTimer = null;
 let watchdogInterval = null;
@@ -712,16 +702,20 @@ let lastCurrentTime = -1;
 let stalledChecks = 0;
 let reconnectAttempts = 0;
 
-// A URL do stream agora é lida do Firebase (/config/streamUrl), gerenciada
-// apenas pelo dashboard administrativo — não é mais editável no site público.
-db.ref('config/streamUrl').on('value', (snapshot) => {
-  const val = snapshot.val();
-  if (val && typeof val === 'string') {
-    const changed = val !== STREAM_URL;
-    STREAM_URL = val;
+// A URL do stream agora é lida do Supabase (tabela config, chave streamUrl),
+// gerenciada apenas pelo dashboard administrativo — não é mais editável no site público.
+async function loadStreamUrl() {
+  const { data } = await supabase.from('config').select('value').eq('key', 'streamUrl').maybeSingle();
+  if (data && data.value) {
+    const changed = data.value !== STREAM_URL;
+    STREAM_URL = data.value;
     if (changed && playing) { stopPlay(); setTimeout(startPlay, 200); }
   }
-});
+}
+loadStreamUrl();
+supabase.channel('config-changes')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'config' }, loadStreamUrl)
+  .subscribe();
 
 // Adiciona um parâmetro único a cada tentativa para evitar que o navegador
 // reaproveite uma conexão antiga/travada com o servidor de stream (cache).
@@ -1040,39 +1034,41 @@ function mostrarDia(dia) {
 }
 
 // ══════════════════════════════════════════
-//  FIREBASE SYNC — Carregar dados em tempo real
+//  SUPABASE SYNC — Carregar dados em tempo real
 // ══════════════════════════════════════════
-function loadFromFirebase() {
-  // Carregar equipe
-  db.ref('equipe').on('value', (snapshot) => {
-    const data = snapshot.val();
+function loadFromSupabase() {
+  async function carregarEquipe() {
+    const { data } = await supabase.from('equipe').select('*');
     EQUIPE.length = 0;
-    if (data) {
-      Object.values(data).forEach(m => EQUIPE.push(m));
-    }
+    if (data) EQUIPE.push(...data);
     renderEquipe();
     updateOnAirUI();
-  });
-
-  // Carregar programas
-  db.ref('programas').on('value', (snapshot) => {
-    const data = snapshot.val();
-    programas = [];
-    if (data) {
-      programas = Object.values(data);
-    }
+  }
+  async function carregarProgramas() {
+    const { data } = await supabase.from('programas').select('*');
+    programas = data || [];
     mostrarDia(diaSelecionado);
     updateOnAirUI();
-  });
+  }
+
+  carregarEquipe();
+  carregarProgramas();
+
+  supabase.channel('equipe-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'equipe' }, carregarEquipe)
+    .subscribe();
+  supabase.channel('programas-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'programas' }, carregarProgramas)
+    .subscribe();
 }
 
 // ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
-console.log('Iniciando Itapevi FM com Firebase...');
+console.log('Iniciando Itapevi FM com Supabase...');
 
-// Carregar dados do Firebase
-loadFromFirebase();
+// Carregar dados do Supabase
+loadFromSupabase();
 
 // Detectar dia atual
 const todayIdx = new Date().getDay();
