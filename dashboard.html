@@ -582,7 +582,7 @@ body {
     <div class="modal-actions">
       <button class="modal-btn-cancel" onclick="closeProgramModal()">Cancelar</button>
       <button class="modal-btn-delete" id="modalDeleteBtn" onclick="deleteProgram()">Excluir</button>
-      <button class="modal-btn-save" onclick="saveProgram()">Salvar</button>
+      <button class="modal-btn-save" id="saveProgramBtn" onclick="saveProgram()">Salvar</button>
     </div>
   </div>
 </div>
@@ -617,7 +617,7 @@ body {
     <div class="modal-actions">
       <button class="modal-btn-cancel" onclick="closeTeamModal()">Cancelar</button>
       <button class="modal-btn-delete" id="modalTeamDeleteBtn" onclick="deleteTeamMember()">Excluir</button>
-      <button class="modal-btn-save" onclick="saveTeamMember()">Salvar</button>
+      <button class="modal-btn-save" id="saveTeamBtn" onclick="saveTeamMember()">Salvar</button>
     </div>
   </div>
 </div>
@@ -1209,6 +1209,10 @@ let programEditIdx = -1;
 
 function openProgramModal(idx) {
   programEditIdx = idx;
+  salvandoPrograma = false;
+  const saveBtn = document.getElementById('saveProgramBtn');
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'Salvar';
   if (idx >= 0) {
     const p = programas[idx];
     document.getElementById('programModalTitle').textContent = 'Editar Programa';
@@ -1279,7 +1283,10 @@ function getModalDias() {
   return dias;
 }
 
+let salvandoPrograma = false;
+
 function saveProgram() {
+  if (salvandoPrograma) return; // ignora cliques repetidos enquanto já está salvando
   const prog = document.getElementById('modalProg').value.trim() || 'Sem nome';
   const apres = document.getElementById('modalApres').value.trim() || '—';
   const das = document.getElementById('modalDas').value;
@@ -1289,22 +1296,34 @@ function saveProgram() {
 
   const key = (programEditIdx >= 0 && programas[programEditIdx].id) ? programas[programEditIdx].id : 'prog' + Date.now();
   const programa = { id: key, prog, apres, das, ate, dias };
+  const eraNovo = programEditIdx < 0;
+
+  salvandoPrograma = true;
+  const btn = document.getElementById('saveProgramBtn');
+  btn.disabled = true;
+  btn.textContent = 'Salvando…';
 
   supabaseClient.from('programas').upsert(programa).then(({ error }) => {
+    salvandoPrograma = false;
+    btn.disabled = false;
+    btn.textContent = 'Salvar';
     if (error) { alert('Erro ao salvar: ' + error.message); return; }
-    alert(programEditIdx >= 0 ? 'Programa atualizado!' : 'Programa adicionado!');
-    registrarLog((programEditIdx >= 0 ? 'Atualizou' : 'Criou') + ' o programa "' + prog + '"');
+    registrarLog((eraNovo ? 'Criou' : 'Atualizou') + ' o programa "' + prog + '"');
     closeProgramModal();
   });
 }
 
+let excluindoPrograma = false;
+
 function deleteProgram() {
+  if (excluindoPrograma) return;
   if (programEditIdx >= 0 && confirm('Excluir este programa?')) {
+    excluindoPrograma = true;
     const key = programas[programEditIdx].id;
     const nomeProg = programas[programEditIdx].prog;
     supabaseClient.from('programas').delete().eq('id', key).then(({ error }) => {
+      excluindoPrograma = false;
       if (error) { alert('Erro ao excluir: ' + error.message); return; }
-      alert('Programa excluído!');
       registrarLog('Excluiu o programa "' + nomeProg + '"');
       closeProgramModal();
     });
@@ -1318,6 +1337,10 @@ let teamEditIdx = -1;
 
 function openTeamModal(idx) {
   teamEditIdx = idx;
+  salvandoMembro = false;
+  const saveBtn = document.getElementById('saveTeamBtn');
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'Salvar';
   document.getElementById('modalTeamFotoFile').value = '';
   document.getElementById('modalTeamFotoStatus').textContent = '';
   if (idx >= 0) {
@@ -1449,13 +1472,17 @@ async function deleteFotoNaHostgator(url, token) {
   } catch (e) { /* best-effort: se falhar, fica um arquivo órfão, sem impacto no site */ }
 }
 
+let salvandoMembro = false;
+
 function saveTeamMember() {
+  if (salvandoMembro) return; // ignora cliques repetidos enquanto já está salvando
   const nome = document.getElementById('modalTeamNome').value.trim() || 'Sem nome';
   const funcao = document.getElementById('modalTeamFuncao').value.trim();
   const iniciais = document.getElementById('modalTeamIniciais').value.trim() || nome.substring(0, 2).toUpperCase();
   const foto = document.getElementById('modalTeamFoto').value.trim();
 
   const key = (teamEditIdx >= 0 && EQUIPE[teamEditIdx].id) ? EQUIPE[teamEditIdx].id : 'membro' + Date.now();
+  const eraNovo = teamEditIdx < 0;
   const membro = {
     id: key,
     nome: nome,
@@ -1465,20 +1492,31 @@ function saveTeamMember() {
     cor: 'linear-gradient(135deg,#1a002d,#3a0060)'
   };
 
+  salvandoMembro = true;
+  const btn = document.getElementById('saveTeamBtn');
+  btn.disabled = true;
+  btn.textContent = 'Salvando…';
+
   supabaseClient.from('equipe').upsert(membro).then(({ error }) => {
+    salvandoMembro = false;
+    btn.disabled = false;
+    btn.textContent = 'Salvar';
     if (error) { alert('Erro ao salvar: ' + error.message); return; }
-    alert(teamEditIdx >= 0 ? 'Membro atualizado!' : 'Membro adicionado!');
-    registrarLog((teamEditIdx >= 0 ? 'Atualizou' : 'Adicionou') + ' o membro "' + nome + '"');
+    registrarLog((eraNovo ? 'Adicionou' : 'Atualizou') + ' o membro "' + nome + '"');
     closeTeamModal();
   });
 }
 
+let excluindoMembro = false;
+
 function deleteTeamMember() {
+  if (excluindoMembro) return;
   if (teamEditIdx >= 0 && confirm('Excluir este membro?')) {
+    excluindoMembro = true;
     const m = EQUIPE[teamEditIdx];
     supabaseClient.from('equipe').delete().eq('id', m.id).then(async ({ error }) => {
+      excluindoMembro = false;
       if (error) { alert('Erro ao excluir: ' + error.message); return; }
-      alert('Membro excluído!');
       registrarLog('Excluiu o membro "' + m.nome + '"');
       closeTeamModal();
       const { data: sessionData } = await supabaseClient.auth.getSession();
