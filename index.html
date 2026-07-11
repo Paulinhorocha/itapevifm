@@ -624,7 +624,7 @@ footer strong { color:var(--text2); }
 // ══════════════════════════════════════════
 const SUPABASE_URL = 'https://hfswzuptkerizyrrrlgn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3d6dXB0a2VyaXp5cnJybGduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODY0MjQsImV4cCI6MjA5OTM2MjQyNH0.ZGs2G8tNt7qLROrKJPxqgzw2GDh3BbRm5BXbg1LeSxc';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ══════════════════════════════════════════
 //  SEGURANÇA — Sanitização de inputs
@@ -705,7 +705,7 @@ let reconnectAttempts = 0;
 // A URL do stream agora é lida do Supabase (tabela config, chave streamUrl),
 // gerenciada apenas pelo dashboard administrativo — não é mais editável no site público.
 async function loadStreamUrl() {
-  const { data } = await supabase.from('config').select('value').eq('key', 'streamUrl').maybeSingle();
+  const { data } = await supabaseClient.from('config').select('value').eq('key', 'streamUrl').maybeSingle();
   if (data && data.value) {
     const changed = data.value !== STREAM_URL;
     STREAM_URL = data.value;
@@ -713,7 +713,7 @@ async function loadStreamUrl() {
   }
 }
 loadStreamUrl();
-supabase.channel('config-changes')
+supabaseClient.channel('config-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'config' }, loadStreamUrl)
   .subscribe();
 
@@ -1038,14 +1038,14 @@ function mostrarDia(dia) {
 // ══════════════════════════════════════════
 function loadFromSupabase() {
   async function carregarEquipe() {
-    const { data } = await supabase.from('equipe').select('*');
+    const { data } = await supabaseClient.from('equipe').select('*');
     EQUIPE.length = 0;
     if (data) EQUIPE.push(...data);
     renderEquipe();
     updateOnAirUI();
   }
   async function carregarProgramas() {
-    const { data } = await supabase.from('programas').select('*');
+    const { data } = await supabaseClient.from('programas').select('*');
     programas = data || [];
     mostrarDia(diaSelecionado);
     updateOnAirUI();
@@ -1054,10 +1054,10 @@ function loadFromSupabase() {
   carregarEquipe();
   carregarProgramas();
 
-  supabase.channel('equipe-changes')
+  supabaseClient.channel('equipe-changes')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'equipe' }, carregarEquipe)
     .subscribe();
-  supabase.channel('programas-changes')
+  supabaseClient.channel('programas-changes')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'programas' }, carregarProgramas)
     .subscribe();
 }

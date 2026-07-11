@@ -637,22 +637,22 @@ body {
 // ══════════════════════════════════════════
 const SUPABASE_URL = 'https://hfswzuptkerizyrrrlgn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3d6dXB0a2VyaXp5cnJybGduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODY0MjQsImV4cCI6MjA5OTM2MjQyNH0.ZGs2G8tNt7qLROrKJPxqgzw2GDh3BbRm5BXbg1LeSxc';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ══════════════════════════════════════════
 //  FOTOS (HostGator)
 //  IMPORTANTE: troque pelo seu domínio real depois de subir os
 //  arquivos fotos/upload.php e fotos/delete.php na HostGator
 // ══════════════════════════════════════════
-const FOTOS_UPLOAD_URL = 'https://api.itapevifm.com.br/fotos/upload.php';
-const FOTOS_DELETE_URL = 'https://api.itapevifm.com.br/fotos/delete.php';
+const FOTOS_UPLOAD_URL = 'https://SEU-DOMINIO.com/fotos/upload.php';
+const FOTOS_DELETE_URL = 'https://SEU-DOMINIO.com/fotos/delete.php';
 
 // ══════════════════════════════════════════
 //  GESTÃO DE USUÁRIOS (HostGator) — só admins usam
 // ══════════════════════════════════════════
-const USUARIOS_CONVIDAR_URL = 'https://api.itapevifm.com.br/usuarios/convidar.php';
-const USUARIOS_REMOVER_URL = 'https://api.itapevifm.com.br/remover.php';
-const USUARIOS_ROLE_URL = 'https://api.itapevifm.com.br/definir_role.php';
+const USUARIOS_CONVIDAR_URL = 'https://SEU-DOMINIO.com/usuarios/convidar.php';
+const USUARIOS_REMOVER_URL = 'https://SEU-DOMINIO.com/usuarios/remover.php';
+const USUARIOS_ROLE_URL = 'https://SEU-DOMINIO.com/usuarios/definir_role.php';
 
 // ══════════════════════════════════════════
 //  AUTENTICAÇÃO
@@ -660,12 +660,12 @@ const USUARIOS_ROLE_URL = 'https://api.itapevifm.com.br/definir_role.php';
 let currentUser = null;
 let currentRole = null;
 
-supabase.auth.onAuthStateChange((event, session) => {
+supabaseClient.auth.onAuthStateChange((event, session) => {
   if (session) {
     document.getElementById('loginScreen').style.display = 'none';
     currentUser = session.user;
     console.log('Usuário logado:', session.user.email);
-    supabase.from('profiles').select('role').eq('id', session.user.id).maybeSingle().then(({ data }) => {
+    supabaseClient.from('profiles').select('role').eq('id', session.user.id).maybeSingle().then(({ data }) => {
       currentRole = data ? data.role : 'editor';
       document.querySelectorAll('.admin-only').forEach(el => {
         el.style.display = (currentRole === 'admin') ? '' : 'none';
@@ -693,7 +693,7 @@ function doLogin() {
     return;
   }
   
-  supabase.auth.signInWithPassword({ email, password })
+  supabaseClient.auth.signInWithPassword({ email, password })
     .then(({ error }) => {
       if (error) {
         errorEl.textContent = 'Email ou senha incorretos';
@@ -715,7 +715,7 @@ function doForgotPassword() {
     return;
   }
 
-  supabase.auth.resetPasswordForEmail(email)
+  supabaseClient.auth.resetPasswordForEmail(email)
     .then(({ error }) => {
       if (error) {
         errorEl.style.color = 'var(--accent2)';
@@ -729,7 +729,7 @@ function doForgotPassword() {
 }
 
 function doLogout() {
-  supabase.auth.signOut().then(() => {
+  supabaseClient.auth.signOut().then(() => {
     console.log('Logout realizado');
     location.reload();
   });
@@ -763,7 +763,7 @@ function validateStreamUrl(url) {
 }
 
 function carregarStreamUrl() {
-  supabase.from('config').select('value').eq('key', 'streamUrl').maybeSingle().then(({ data }) => {
+  supabaseClient.from('config').select('value').eq('key', 'streamUrl').maybeSingle().then(({ data }) => {
     if (data && data.value) document.getElementById('streamUrlInput').value = data.value;
   });
 }
@@ -776,7 +776,7 @@ function salvarStreamUrl() {
     statusEl.textContent = 'URL inválida. Use http:// ou https://';
     return;
   }
-  supabase.from('config').upsert({ key: 'streamUrl', value: val }).then(({ error }) => {
+  supabaseClient.from('config').upsert({ key: 'streamUrl', value: val }).then(({ error }) => {
     if (error) {
       statusEl.style.color = 'var(--accent2)';
       statusEl.textContent = 'Erro ao salvar. Confira sua conexão e tente novamente.';
@@ -793,14 +793,14 @@ function salvarStreamUrl() {
 // ══════════════════════════════════════════
 function registrarLog(acao) {
   if (!currentUser) return;
-  supabase.from('activity_log').insert({
+  supabaseClient.from('activity_log').insert({
     user_email: currentUser.email,
     acao: acao
   }).catch(() => {});
 }
 
 function carregarLog() {
-  supabase.from('activity_log').select('*').order('created_at', { ascending: false }).limit(15)
+  supabaseClient.from('activity_log').select('*').order('created_at', { ascending: false }).limit(15)
     .then(({ data }) => {
       const el = document.getElementById('logAtividade');
       if (!data || data.length === 0) { el.innerHTML = 'Nenhuma atividade registrada ainda.'; return; }
@@ -815,12 +815,12 @@ function carregarLog() {
 //  GESTÃO DE USUÁRIOS (só admins — via PHP na HostGator)
 // ══════════════════════════════════════════
 async function getAuthToken() {
-  const { data } = await supabase.auth.getSession();
+  const { data } = await supabaseClient.auth.getSession();
   return data?.session?.access_token || null;
 }
 
 function carregarUsuarios() {
-  supabase.from('profiles').select('*').order('created_at', { ascending: true }).then(({ data }) => {
+  supabaseClient.from('profiles').select('*').order('created_at', { ascending: true }).then(({ data }) => {
     const el = document.getElementById('usuariosLista');
     if (!data) { el.innerHTML = ''; return; }
     el.innerHTML = data.map(u => `
@@ -1290,7 +1290,7 @@ function saveProgram() {
   const key = (programEditIdx >= 0 && programas[programEditIdx].id) ? programas[programEditIdx].id : 'prog' + Date.now();
   const programa = { id: key, prog, apres, das, ate, dias };
 
-  supabase.from('programas').upsert(programa).then(({ error }) => {
+  supabaseClient.from('programas').upsert(programa).then(({ error }) => {
     if (error) { alert('Erro ao salvar: ' + error.message); return; }
     alert(programEditIdx >= 0 ? 'Programa atualizado!' : 'Programa adicionado!');
     registrarLog((programEditIdx >= 0 ? 'Atualizou' : 'Criou') + ' o programa "' + prog + '"');
@@ -1302,7 +1302,7 @@ function deleteProgram() {
   if (programEditIdx >= 0 && confirm('Excluir este programa?')) {
     const key = programas[programEditIdx].id;
     const nomeProg = programas[programEditIdx].prog;
-    supabase.from('programas').delete().eq('id', key).then(({ error }) => {
+    supabaseClient.from('programas').delete().eq('id', key).then(({ error }) => {
       if (error) { alert('Erro ao excluir: ' + error.message); return; }
       alert('Programa excluído!');
       registrarLog('Excluiu o programa "' + nomeProg + '"');
@@ -1394,7 +1394,7 @@ async function uploadTeamFoto(input) {
     return;
   }
 
-  const { data: sessionData } = await supabase.auth.getSession();
+  const { data: sessionData } = await supabaseClient.auth.getSession();
   const token = sessionData?.session?.access_token;
   if (!token) {
     statusEl.style.color = 'var(--accent2)';
@@ -1465,7 +1465,7 @@ function saveTeamMember() {
     cor: 'linear-gradient(135deg,#1a002d,#3a0060)'
   };
 
-  supabase.from('equipe').upsert(membro).then(({ error }) => {
+  supabaseClient.from('equipe').upsert(membro).then(({ error }) => {
     if (error) { alert('Erro ao salvar: ' + error.message); return; }
     alert(teamEditIdx >= 0 ? 'Membro atualizado!' : 'Membro adicionado!');
     registrarLog((teamEditIdx >= 0 ? 'Atualizou' : 'Adicionou') + ' o membro "' + nome + '"');
@@ -1476,12 +1476,12 @@ function saveTeamMember() {
 function deleteTeamMember() {
   if (teamEditIdx >= 0 && confirm('Excluir este membro?')) {
     const m = EQUIPE[teamEditIdx];
-    supabase.from('equipe').delete().eq('id', m.id).then(async ({ error }) => {
+    supabaseClient.from('equipe').delete().eq('id', m.id).then(async ({ error }) => {
       if (error) { alert('Erro ao excluir: ' + error.message); return; }
       alert('Membro excluído!');
       registrarLog('Excluiu o membro "' + m.nome + '"');
       closeTeamModal();
-      const { data: sessionData } = await supabase.auth.getSession();
+      const { data: sessionData } = await supabaseClient.auth.getSession();
       const token = sessionData?.session?.access_token;
       if (token) deleteFotoNaHostgator(m.foto, token);
     });
@@ -1493,13 +1493,13 @@ function deleteTeamMember() {
 // ══════════════════════════════════════════
 function loadFromSupabase() {
   async function carregarEquipe() {
-    const { data } = await supabase.from('equipe').select('*');
+    const { data } = await supabaseClient.from('equipe').select('*');
     EQUIPE = data || [];
     renderTeam();
     renderStats();
   }
   async function carregarProgramas() {
-    const { data } = await supabase.from('programas').select('*');
+    const { data } = await supabaseClient.from('programas').select('*');
     programas = data || [];
     dashMostrarDia(dashDiaSelecionado);
     renderStats();
@@ -1509,10 +1509,10 @@ function loadFromSupabase() {
   carregarEquipe();
   carregarProgramas();
 
-  supabase.channel('dash-equipe-changes')
+  supabaseClient.channel('dash-equipe-changes')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'equipe' }, carregarEquipe)
     .subscribe();
-  supabase.channel('dash-programas-changes')
+  supabaseClient.channel('dash-programas-changes')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'programas' }, carregarProgramas)
     .subscribe();
 }
