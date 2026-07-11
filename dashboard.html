@@ -660,12 +660,13 @@ const USUARIOS_ROLE_URL = 'https://SEU-DOMINIO.com/usuarios/definir_role.php';
 let currentUser = null;
 let currentRole = null;
 
-supabaseClient.auth.onAuthStateChange((event, session) => {
+function aplicarSessao(session) {
   if (session) {
     document.getElementById('loginScreen').style.display = 'none';
     currentUser = session.user;
     console.log('Usuário logado:', session.user.email);
-    supabaseClient.from('profiles').select('role').eq('id', session.user.id).maybeSingle().then(({ data }) => {
+    supabaseClient.from('profiles').select('role').eq('id', session.user.id).maybeSingle().then(({ data, error }) => {
+      if (error) console.error('Erro ao buscar papel do usuário:', error);
       currentRole = data ? data.role : 'editor';
       document.querySelectorAll('.admin-only').forEach(el => {
         el.style.display = (currentRole === 'admin') ? '' : 'none';
@@ -678,9 +679,22 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
     currentRole = null;
     document.getElementById('loginScreen').style.display = 'flex';
   }
+}
+
+// Checagem explícita ao carregar a página (mais confiável que depender só do
+// disparo automático do onAuthStateChange, e loga o motivo se algo falhar).
+supabaseClient.auth.getSession().then(({ data, error }) => {
+  if (error) console.error('Erro ao verificar sessão salva:', error);
+  aplicarSessao(data?.session || null);
 });
-// onAuthStateChange já dispara uma vez no carregamento com a sessão atual
-// (se houver token salvo), então não é preciso checar getSession() à parte.
+
+// Atualiza sempre que a sessão mudar (login, logout, token renovado).
+// Ignora o evento INITIAL_SESSION porque o getSession() acima já tratou o carregamento da página.
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === 'INITIAL_SESSION') return;
+  console.log('Evento de auth:', event);
+  aplicarSessao(session);
+});
 
 function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
