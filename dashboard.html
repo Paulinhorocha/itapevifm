@@ -640,19 +640,11 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ══════════════════════════════════════════
-//  FOTOS (HostGator)
-//  IMPORTANTE: troque pelo seu domínio real depois de subir os
-//  arquivos fotos/upload.php e fotos/delete.php na HostGator
+//  GESTÃO DE USUÁRIOS — Vercel Functions (mesmo domínio do site, sem CORS)
 // ══════════════════════════════════════════
-const FOTOS_UPLOAD_URL = 'https://www.itapevifm.com.br/fotos/upload.php';
-const FOTOS_DELETE_URL = 'https://www.itapevifm.com.br/fotos/delete.php';
-
-// ══════════════════════════════════════════
-//  GESTÃO DE USUÁRIOS (HostGator) — só admins usam
-// ══════════════════════════════════════════
-const USUARIOS_CONVIDAR_URL = 'https://www.itapevifm.com.br/usuarios/convidar.php';
-const USUARIOS_REMOVER_URL = 'https://www.itapevifm.com.br/usuarios/remover.php';
-const USUARIOS_ROLE_URL = 'https://www.itapevifm.com.br/usuarios/definir_role.php';
+const USUARIOS_CONVIDAR_URL = '/api/usuarios/convidar';
+const USUARIOS_REMOVER_URL = '/api/usuarios/remover';
+const USUARIOS_ROLE_URL = '/api/usuarios/definir-role';
 
 // ══════════════════════════════════════════
 //  AUTENTICAÇÃO
@@ -834,7 +826,7 @@ function carregarLog() {
 }
 
 // ══════════════════════════════════════════
-//  GESTÃO DE USUÁRIOS (só admins — via PHP na HostGator)
+//  GESTÃO DE USUÁRIOS (só admins — via Vercel Functions)
 // ══════════════════════════════════════════
 async function getAuthToken() {
   const { data } = await supabaseClient.auth.getSession();
@@ -1421,7 +1413,7 @@ function resizeImage(file, maxSize) {
   });
 }
 
-async function uploadTeamFoto(input) {
+function uploadTeamFoto(input) {
   const file = input.files[0];
   if (!file) return;
   const statusEl = document.getElementById('modalTeamFotoStatus');
@@ -1439,59 +1431,44 @@ async function uploadTeamFoto(input) {
     return;
   }
 
-  const { data: sessionData } = await supabaseClient.auth.getSession();
-  const token = sessionData?.session?.access_token;
-  if (!token) {
-    statusEl.style.color = 'var(--accent2)';
-    statusEl.textContent = 'Sessão expirada. Faça login novamente.';
-    return;
-  }
-
   statusEl.style.color = 'var(--text3)';
   statusEl.textContent = 'Processando imagem…';
 
-  resizeImage(file, 500).then(async blob => {
-    const formData = new FormData();
-    formData.append('foto', blob, 'foto.jpg');
+  resizeImage(file, 500).then(blob => {
+    const key = (teamEditIdx >= 0 && EQUIPE[teamEditIdx].id) ? EQUIPE[teamEditIdx].id : 'membro' + Date.now();
+    const path = key + '_' + Date.now() + '.jpg';
 
     statusEl.textContent = 'Enviando…';
-    try {
-      const res = await fetch(FOTOS_UPLOAD_URL, {
-        method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + token },
-        body: formData
+    supabaseClient.storage.from('locutores').upload(path, blob, { contentType: 'image/jpeg', upsert: true })
+      .then(({ error }) => {
+        if (error) {
+          statusEl.style.color = 'var(--accent2)';
+          statusEl.textContent = 'Erro no upload: ' + error.message;
+          return;
+        }
+        const oldUrl = document.getElementById('modalTeamFoto').value;
+        const { data } = supabaseClient.storage.from('locutores').getPublicUrl(path);
+        const url = data.publicUrl;
+        document.getElementById('modalTeamFoto').value = url;
+        setFotoPreview(url);
+        statusEl.style.color = 'var(--green2)';
+        statusEl.textContent = 'Foto enviada! Clique em Salvar para confirmar.';
+        deleteFotoDoStorage(oldUrl);
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Erro no upload');
-
-      const oldUrl = document.getElementById('modalTeamFoto').value;
-      document.getElementById('modalTeamFoto').value = json.url;
-      setFotoPreview(json.url);
-      statusEl.style.color = 'var(--green2)';
-      statusEl.textContent = 'Foto enviada! Clique em Salvar para confirmar.';
-      deleteFotoNaHostgator(oldUrl, token);
-    } catch (err) {
-      statusEl.style.color = 'var(--accent2)';
-      statusEl.textContent = 'Erro no upload: ' + err.message;
-    }
   }).catch(err => {
     statusEl.style.color = 'var(--accent2)';
     statusEl.textContent = 'Erro: ' + err.message;
   });
 }
 
-// Apaga uma foto antiga na HostGator a partir da URL pública (best-effort).
-async function deleteFotoNaHostgator(url, token) {
-  if (!url || !url.includes('/fotos/')) return;
-  const nome = url.split('/fotos/').pop();
-  if (!nome) return;
-  try {
-    await fetch(FOTOS_DELETE_URL, {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome })
-    });
-  } catch (e) { /* best-effort: se falhar, fica um arquivo órfão, sem impacto no site */ }
+// Apaga uma foto antiga do Supabase Storage a partir da URL pública (best-effort).
+function deleteFotoDoStorage(url) {
+  if (!url) return;
+  const marker = '/storage/v1/object/public/locutores/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return;
+  const path = url.substring(idx + marker.length);
+  supabaseClient.storage.from('locutores').remove([path]).catch(() => {});
 }
 
 let salvandoMembro = false;
@@ -1536,14 +1513,12 @@ function deleteTeamMember() {
   if (teamEditIdx >= 0 && confirm('Excluir este membro?')) {
     excluindoMembro = true;
     const m = EQUIPE[teamEditIdx];
-    supabaseClient.from('equipe').delete().eq('id', m.id).then(async ({ error }) => {
+    supabaseClient.from('equipe').delete().eq('id', m.id).then(({ error }) => {
       excluindoMembro = false;
       if (error) { alert('Erro ao excluir: ' + error.message); return; }
       registrarLog('Excluiu o membro "' + m.nome + '"');
       closeTeamModal();
-      const { data: sessionData } = await supabaseClient.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (token) deleteFotoNaHostgator(m.foto, token);
+      deleteFotoDoStorage(m.foto);
     });
   }
 }

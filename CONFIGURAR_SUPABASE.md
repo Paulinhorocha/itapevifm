@@ -76,9 +76,29 @@ alter publication supabase_realtime add table config;
 3. Para adicionar outros administradores depois, repita esse passo — cada um usa seu próprio email/senha para logar no `dashboard.html`.
 4. Em **"Authentication" → "URL Configuration"**, adicione a URL do seu site (ex: `https://itapevifm.vercel.app`) em **Site URL** — necessário para o link de "esqueci minha senha" funcionar.
 
-## Passo 4 (opcional — não usado se as fotos ficarem na HostGator)
+## Passo 4: Criar o bucket de fotos (Storage)
 
-Se você optou por guardar as fotos dos locutores na HostGator (ver `CONFIGURAR_FOTOS_HOSTGATOR.md`), pode pular este passo — o bucket de Storage do Supabase não é necessário. Ele só seria usado se as fotos ficassem no próprio Supabase.
+1. Menu lateral → **"Storage"** → **"New bucket"**.
+2. Nome: `locutores`. Marque **"Public bucket"** (a foto precisa ser visível no site público). Criar.
+3. Vá em **"SQL Editor"** e execute:
+
+```sql
+create policy "leitura publica fotos locutores"
+on storage.objects for select
+using (bucket_id = 'locutores');
+
+create policy "upload autenticado fotos locutores"
+on storage.objects for insert
+with check (bucket_id = 'locutores' and auth.role() = 'authenticated');
+
+create policy "update autenticado fotos locutores"
+on storage.objects for update
+using (bucket_id = 'locutores' and auth.role() = 'authenticated');
+
+create policy "delete autenticado fotos locutores"
+on storage.objects for delete
+using (bucket_id = 'locutores' and auth.role() = 'authenticated');
+```
 
 ## Passo 5: Pegar a URL e a chave do projeto
 

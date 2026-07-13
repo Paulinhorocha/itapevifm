@@ -1,17 +1,15 @@
 # Itapevi FM
 
-Landing page institucional com dashboard administrativo (programação, equipe e fotos), sincronizados em tempo real via Supabase (Postgres + Auth + Storage).
+Landing page institucional com dashboard administrativo (programação, equipe e fotos), sincronizados em tempo real via Supabase (Postgres + Auth + Storage), com gestão de usuários via Vercel Functions.
 
 ## Estrutura
 
 - `index.html` — site público (programação, equipe, player)
 - `dashboard.html` — painel administrativo (protegido por login)
 - `logo.jpg` — logo da rádio
-- `CONFIGURAR_SUPABASE.md` — passo a passo: banco de dados e login
-- `CONFIGURAR_USUARIOS.md` — passo a passo: papéis (admin/editor) e log de atividade
-- `CONFIGURAR_FOTOS_HOSTGATOR.md` — passo a passo: upload das fotos dos locutores na HostGator
-- `fotos/` — scripts PHP (upload/exclusão de fotos) para subir na HostGator
-- `usuarios/` — scripts PHP (convite/remoção/papel de usuários) para subir na HostGator
+- `api/usuarios/` — Vercel Functions (convidar/remover/definir papel de usuários) — precisam de variáveis de ambiente, veja `CONFIGURAR_USUARIOS.md`
+- `CONFIGURAR_SUPABASE.md` — passo a passo: banco de dados, login e fotos (Storage)
+- `CONFIGURAR_USUARIOS.md` — passo a passo: papéis (admin/editor), log de atividade e deploy via GitHub + Vercel
 
 ## ✅ Checklist de segurança antes de publicar
 
@@ -20,18 +18,19 @@ Isso é o que realmente protege o dashboard — sem isso, o login na tela é só
 1. Rodar o script SQL do `CONFIGURAR_SUPABASE.md` (cria as tabelas com Row Level Security: leitura pública, escrita só para usuários autenticados).
 2. Criar o bucket `locutores` no Storage como **público**, com as políticas do mesmo guia.
 3. Criar o(s) usuário(s) administrador(es) em Authentication → Users, com senha forte.
-4. Colar a **Project URL** e a **anon key** do Supabase no topo do script de `index.html` e `dashboard.html`.
+4. Colar a **Project URL** e a **anon key** do Supabase no topo do script de `index.html` e `dashboard.html` (já preenchidas neste pacote).
+5. Configurar `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` como variáveis de ambiente na Vercel (`CONFIGURAR_USUARIOS.md`, Passo 5) — sem isso, convidar/remover/promover usuários não funciona.
 
-## Deploy
+## Deploy (GitHub → Vercel, automático)
 
-Projeto estático, sem build. Pode subir direto:
-
-- **GitHub** → conecte o repositório à [Vercel](https://vercel.com/) (import automático) ou
-- **Vercel** → arraste a pasta do projeto direto no painel.
+1. Suba o projeto para um repositório no GitHub.
+2. Importe o repositório na Vercel (Framework Preset: **Other**).
+3. Configure as variáveis de ambiente (Passo 5 do `CONFIGURAR_USUARIOS.md`).
+4. A partir daí, todo `git push` na branch `main` publica automaticamente.
 
 ## Como funciona
 
-- Programação, equipe e configuração do stream ficam no Supabase (Postgres).
-- As fotos dos locutores ficam guardadas na hospedagem HostGator, enviadas via `fotos/upload.php` (protegido por login do Supabase).
+- Programação, equipe, fotos dos locutores e configuração do stream ficam no Supabase (Postgres + Storage).
 - O `dashboard.html` exige login (Supabase Auth) para escrever dados e enviar fotos — nada disso é editável no site público.
 - O `index.html` lê os dados publicamente e atualiza em tempo real via Supabase Realtime.
+- A gestão de usuários (convidar/remover/promover) roda em `api/usuarios/*.js`, como Vercel Functions no mesmo domínio do site — usam a `service_role key` do Supabase, que só existe como variável de ambiente na Vercel e nunca é exposta ao navegador.
