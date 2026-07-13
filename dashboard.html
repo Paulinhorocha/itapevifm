@@ -644,21 +644,22 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 //  IMPORTANTE: troque pelo seu domínio real depois de subir os
 //  arquivos fotos/upload.php e fotos/delete.php na HostGator
 // ══════════════════════════════════════════
-const FOTOS_UPLOAD_URL = 'https://SEU-DOMINIO.com/fotos/upload.php';
-const FOTOS_DELETE_URL = 'https://SEU-DOMINIO.com/fotos/delete.php';
+const FOTOS_UPLOAD_URL = 'https://www.itapevifm.com.br/fotos/upload.php';
+const FOTOS_DELETE_URL = 'https://www.itapevifm.com.br/fotos/delete.php';
 
 // ══════════════════════════════════════════
 //  GESTÃO DE USUÁRIOS (HostGator) — só admins usam
 // ══════════════════════════════════════════
-const USUARIOS_CONVIDAR_URL = 'https://SEU-DOMINIO.com/usuarios/convidar.php';
-const USUARIOS_REMOVER_URL = 'https://SEU-DOMINIO.com/usuarios/remover.php';
-const USUARIOS_ROLE_URL = 'https://SEU-DOMINIO.com/usuarios/definir_role.php';
+const USUARIOS_CONVIDAR_URL = 'https://www.itapevifm.com.br/usuarios/convidar.php';
+const USUARIOS_REMOVER_URL = 'https://www.itapevifm.com.br/usuarios/remover.php';
+const USUARIOS_ROLE_URL = 'https://www.itapevifm.com.br/usuarios/definir_role.php';
 
 // ══════════════════════════════════════════
 //  AUTENTICAÇÃO
 // ══════════════════════════════════════════
 let currentUser = null;
 let currentRole = null;
+let dashboardIniciado = false;
 
 function aplicarSessao(session) {
   if (session) {
@@ -673,10 +674,17 @@ function aplicarSessao(session) {
       });
       if (currentRole === 'admin') carregarUsuarios();
     });
-    initDashboard();
+    // O Supabase pode disparar o evento de login mais de uma vez (ex: ao voltar
+    // pra aba depois de um tempo) — só inicializamos o dashboard (canais em tempo
+    // real, intervalos, etc.) na primeira vez, pra não duplicar nada.
+    if (!dashboardIniciado) {
+      dashboardIniciado = true;
+      initDashboard();
+    }
   } else {
     currentUser = null;
     currentRole = null;
+    dashboardIniciado = false;
     document.getElementById('loginScreen').style.display = 'flex';
   }
 }
