@@ -490,6 +490,11 @@ body {
   <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
     <input type="email" id="convidarEmailInput" placeholder="email@exemplo.com"
       style="flex:1;min-width:220px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.82rem;padding:8px 12px;outline:none;">
+    <select id="convidarRoleInput"
+      style="background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.82rem;padding:8px 12px;outline:none;">
+      <option value="editor">Editor</option>
+      <option value="admin">Admin</option>
+    </select>
     <button class="dash-btn primary" onclick="convidarUsuario()">Convidar</button>
   </div>
   <div class="dash-card-sub" id="usuariosStatus" style="margin-top:8px;"></div>
@@ -853,6 +858,7 @@ function carregarUsuarios() {
 
 function convidarUsuario() {
   const email = document.getElementById('convidarEmailInput').value.trim();
+  const role = document.getElementById('convidarRoleInput').value;
   const statusEl = document.getElementById('usuariosStatus');
   if (!email || !email.includes('@')) {
     statusEl.style.color = 'var(--accent2)';
@@ -866,13 +872,13 @@ function convidarUsuario() {
     fetch(USUARIOS_CONVIDAR_URL, {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, role })
     }).then(res => res.json().then(json => ({ ok: res.ok, json }))).then(({ ok, json }) => {
       if (!ok) throw new Error(json.error || 'Erro ao convidar');
-      statusEl.style.color = 'var(--green2)';
-      statusEl.textContent = 'Convite enviado! A pessoa vai receber um email para definir a senha.';
+      statusEl.style.color = json.aviso ? 'var(--gold)' : 'var(--green2)';
+      statusEl.textContent = json.aviso || 'Convite enviado! A pessoa vai receber um email para definir a senha.';
       document.getElementById('convidarEmailInput').value = '';
-      registrarLog('Convidou o usuário ' + email);
+      registrarLog('Convidou o usuário ' + email + ' como ' + role);
       setTimeout(carregarUsuarios, 1500);
     }).catch(err => {
       statusEl.style.color = 'var(--accent2)';
@@ -1299,7 +1305,7 @@ function getModalDias() {
 
 let salvandoPrograma = false;
 
-function saveProgram() {
+async function saveProgram() {
   if (salvandoPrograma) return; // ignora cliques repetidos enquanto já está salvando
   const prog = document.getElementById('modalProg').value.trim() || 'Sem nome';
   const apres = document.getElementById('modalApres').value.trim() || '—';
@@ -1317,14 +1323,19 @@ function saveProgram() {
   btn.disabled = true;
   btn.textContent = 'Salvando…';
 
-  supabaseClient.from('programas').upsert(programa).then(({ error }) => {
+  try {
+    const { error } = await supabaseClient.from('programas').upsert(programa);
+    if (error) throw error;
+    registrarLog((eraNovo ? 'Criou' : 'Atualizou') + ' o programa "' + prog + '"');
+    closeProgramModal();
+  } catch (err) {
+    console.error('Erro ao salvar programa:', err);
+    alert('Erro ao salvar: ' + err.message);
+  } finally {
     salvandoPrograma = false;
     btn.disabled = false;
     btn.textContent = 'Salvar';
-    if (error) { alert('Erro ao salvar: ' + error.message); return; }
-    registrarLog((eraNovo ? 'Criou' : 'Atualizou') + ' o programa "' + prog + '"');
-    closeProgramModal();
-  });
+  }
 }
 
 let excluindoPrograma = false;
@@ -1337,7 +1348,11 @@ function deleteProgram() {
     const nomeProg = programas[programEditIdx].prog;
     supabaseClient.from('programas').delete().eq('id', key).then(({ error }) => {
       excluindoPrograma = false;
-      if (error) { alert('Erro ao excluir: ' + error.message); return; }
+      if (error) {
+        console.error('Erro ao excluir programa:', error);
+        alert('Erro ao excluir: ' + error.message);
+        return;
+      }
       registrarLog('Excluiu o programa "' + nomeProg + '"');
       closeProgramModal();
     });
@@ -1473,7 +1488,7 @@ function deleteFotoDoStorage(url) {
 
 let salvandoMembro = false;
 
-function saveTeamMember() {
+async function saveTeamMember() {
   if (salvandoMembro) return; // ignora cliques repetidos enquanto já está salvando
   const nome = document.getElementById('modalTeamNome').value.trim() || 'Sem nome';
   const funcao = document.getElementById('modalTeamFuncao').value.trim();
@@ -1496,14 +1511,19 @@ function saveTeamMember() {
   btn.disabled = true;
   btn.textContent = 'Salvando…';
 
-  supabaseClient.from('equipe').upsert(membro).then(({ error }) => {
+  try {
+    const { error } = await supabaseClient.from('equipe').upsert(membro);
+    if (error) throw error;
+    registrarLog((eraNovo ? 'Adicionou' : 'Atualizou') + ' o membro "' + nome + '"');
+    closeTeamModal();
+  } catch (err) {
+    console.error('Erro ao salvar membro:', err);
+    alert('Erro ao salvar: ' + err.message);
+  } finally {
     salvandoMembro = false;
     btn.disabled = false;
     btn.textContent = 'Salvar';
-    if (error) { alert('Erro ao salvar: ' + error.message); return; }
-    registrarLog((eraNovo ? 'Adicionou' : 'Atualizou') + ' o membro "' + nome + '"');
-    closeTeamModal();
-  });
+  }
 }
 
 let excluindoMembro = false;
@@ -1515,7 +1535,11 @@ function deleteTeamMember() {
     const m = EQUIPE[teamEditIdx];
     supabaseClient.from('equipe').delete().eq('id', m.id).then(({ error }) => {
       excluindoMembro = false;
-      if (error) { alert('Erro ao excluir: ' + error.message); return; }
+      if (error) {
+        console.error('Erro ao excluir membro:', error);
+        alert('Erro ao excluir: ' + error.message);
+        return;
+      }
       registrarLog('Excluiu o membro "' + m.nome + '"');
       closeTeamModal();
       deleteFotoDoStorage(m.foto);
