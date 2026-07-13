@@ -815,7 +815,10 @@ function registrarLog(acao) {
   supabaseClient.from('activity_log').insert({
     user_email: currentUser.email,
     acao: acao
-  }).catch(() => {});
+  }).then(
+    () => {},
+    (err) => console.error('Erro ao registrar log (não impede o salvamento):', err)
+  );
 }
 
 function carregarLog() {
