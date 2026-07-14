@@ -1,0 +1,33 @@
+{
+  "name": "Itapevi FM 87.9",
+  "short_name": "Itapevi FM",
+  "description": "Rádio Itapevi FM 87.9 — Maçambará/RS. Ouça ao vivo, veja a programação e conheça a equipe.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d0015",
+  "theme_color": "#0d0015",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -4,8 +4,11 @@ Landing page institucional com dashboard administrativo (programação, equipe e
 
 ## Estrutura
 
-- `index.html` — site público (programação, equipe, player)
-- `dashboard.html` — painel administrativo (protegido por login)
+- `index.html` — site público (programação, equipe, player) + `styles.css` + `app.js`
+- `dashboard.html` — painel administrativo (protegido por login, CSS/JS ainda inline)
+- `manifest.json` — configuração do PWA (nome, ícones, cores)
+- `icons/` — ícones do PWA e favicon, gerados a partir da `logo.jpg`
+- `robots.txt` / `sitemap.xml` — SEO básico (dashboard e API ficam fora de busca)
 - `logo.jpg` — logo da rádio
 - `api/usuarios/` — Vercel Functions (criar/remover/definir papel de usuários) — precisam de variáveis de ambiente, veja `CONFIGURAR_USUARIOS.md`
 - `CONFIGURAR_SUPABASE.md` — passo a passo: banco de dados, login e fotos (Storage)
@@ -34,3 +37,7 @@ Isso é o que realmente protege o dashboard — sem isso, o login na tela é só
 - O `dashboard.html` exige login (Supabase Auth) para escrever dados e enviar fotos — nada disso é editável no site público.
 - O `index.html` lê os dados publicamente e atualiza em tempo real via Supabase Realtime.
 - A gestão de usuários (criar/remover/promover) roda em `api/usuarios/*.js`, como Vercel Functions no mesmo domínio do site — usam a `service_role key` do Supabase, que só existe como variável de ambiente na Vercel e nunca é exposta ao navegador.
+
+## Status do PWA
+
+O site já tem manifest, ícones e meta tags — o Chrome deve reconhecer como "app" nas ferramentas de desenvolvedor (aba Application → Manifest), mas o botão "Instalar" só aparece depois de existir um **Service Worker** (próxima etapa), que também habilita abrir o app sem internet.

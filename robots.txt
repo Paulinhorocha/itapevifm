@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /dashboard.html
+Disallow: /api/
+
+Sitemap: https://www.itapevifm.com.br/sitemap.xml
