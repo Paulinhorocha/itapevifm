@@ -40,4 +40,4 @@ Isso é o que realmente protege o dashboard — sem isso, o login na tela é só
 
 ## Status do PWA
 
-O site já tem manifest, ícones e meta tags — o Chrome deve reconhecer como "app" nas ferramentas de desenvolvedor (aba Application → Manifest), mas o botão "Instalar" só aparece depois de existir um **Service Worker** (próxima etapa), que também habilita abrir o app sem internet.
+Completo: manifest, ícones, `sw.js` (Service Worker) e `offline.html`. O site já pode ser instalado (botão "Instalar" aparece sozinho no rodapé quando o navegador permite, ou pelo menu do navegador) e os arquivos estáticos (`styles.css`, `app.js`, ícones) ficam disponíveis mesmo sem internet. Dados dinâmicos (programação, equipe, stream de áudio) sempre exigem conexão, propositalmente — não faz sentido cachear "ao vivo".
