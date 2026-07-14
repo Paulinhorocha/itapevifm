@@ -488,15 +488,19 @@ body {
 <div class="dash-card admin-only" style="margin-bottom:2rem;display:none;">
   <div class="dash-card-title">👤 Usuários do Dashboard</div>
   <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-    <input type="email" id="convidarEmailInput" placeholder="email@exemplo.com"
-      style="flex:1;min-width:220px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.82rem;padding:8px 12px;outline:none;">
-    <select id="convidarRoleInput"
+    <input type="email" id="criarEmailInput" placeholder="email@exemplo.com"
+      style="flex:1;min-width:180px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.82rem;padding:8px 12px;outline:none;">
+    <input type="text" id="criarSenhaInput" placeholder="Senha (mín. 6 caracteres)"
+      style="flex:1;min-width:180px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.82rem;padding:8px 12px;outline:none;">
+    <button class="dash-btn" onclick="gerarSenhaAleatoria()">🎲 Gerar</button>
+    <select id="criarRoleInput"
       style="background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:0.82rem;padding:8px 12px;outline:none;">
       <option value="editor">Editor</option>
       <option value="admin">Admin</option>
     </select>
-    <button class="dash-btn primary" onclick="convidarUsuario()">Convidar</button>
+    <button class="dash-btn primary" onclick="criarUsuario()">Criar usuário</button>
   </div>
+  <div class="dash-card-sub" style="margin-top:6px;">A conta já fica ativa imediatamente — sem envio de email. Depois de criar, copie o email e a senha e envie você mesmo para a pessoa.</div>
   <div class="dash-card-sub" id="usuariosStatus" style="margin-top:8px;"></div>
   <div id="usuariosLista" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;"></div>
 </div>
@@ -647,7 +651,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 // ══════════════════════════════════════════
 //  GESTÃO DE USUÁRIOS — Vercel Functions (mesmo domínio do site, sem CORS)
 // ══════════════════════════════════════════
-const USUARIOS_CONVIDAR_URL = '/api/usuarios/convidar';
+const USUARIOS_CRIAR_URL = '/api/usuarios/criar';
 const USUARIOS_REMOVER_URL = '/api/usuarios/remover';
 const USUARIOS_ROLE_URL = '/api/usuarios/definir-role';
 
@@ -859,29 +863,43 @@ function carregarUsuarios() {
   carregarLog();
 }
 
-function convidarUsuario() {
-  const email = document.getElementById('convidarEmailInput').value.trim();
-  const role = document.getElementById('convidarRoleInput').value;
+function gerarSenhaAleatoria() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  let senha = '';
+  for (let i = 0; i < 10; i++) senha += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('criarSenhaInput').value = senha;
+}
+
+function criarUsuario() {
+  const email = document.getElementById('criarEmailInput').value.trim();
+  const password = document.getElementById('criarSenhaInput').value;
+  const role = document.getElementById('criarRoleInput').value;
   const statusEl = document.getElementById('usuariosStatus');
   if (!email || !email.includes('@')) {
     statusEl.style.color = 'var(--accent2)';
     statusEl.textContent = 'Digite um email válido.';
     return;
   }
+  if (!password || password.length < 6) {
+    statusEl.style.color = 'var(--accent2)';
+    statusEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.';
+    return;
+  }
   statusEl.style.color = 'var(--text3)';
-  statusEl.textContent = 'Enviando convite…';
+  statusEl.textContent = 'Criando usuário…';
 
   getAuthToken().then(token => {
-    fetch(USUARIOS_CONVIDAR_URL, {
+    fetch(USUARIOS_CRIAR_URL, {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, role })
+      body: JSON.stringify({ email, password, role })
     }).then(res => res.json().then(json => ({ ok: res.ok, json }))).then(({ ok, json }) => {
-      if (!ok) throw new Error(json.error || 'Erro ao convidar');
+      if (!ok) throw new Error(json.error || 'Erro ao criar usuário');
       statusEl.style.color = json.aviso ? 'var(--gold)' : 'var(--green2)';
-      statusEl.textContent = json.aviso || 'Convite enviado! A pessoa vai receber um email para definir a senha.';
-      document.getElementById('convidarEmailInput').value = '';
-      registrarLog('Convidou o usuário ' + email + ' como ' + role);
+      statusEl.textContent = json.aviso || ('Usuário criado! Envie você mesmo estes dados: ' + email + ' / ' + password);
+      document.getElementById('criarEmailInput').value = '';
+      document.getElementById('criarSenhaInput').value = '';
+      registrarLog('Criou o usuário ' + email + ' como ' + role);
       setTimeout(carregarUsuarios, 1500);
     }).catch(err => {
       statusEl.style.color = 'var(--accent2)';

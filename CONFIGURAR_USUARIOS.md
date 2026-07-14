@@ -2,12 +2,12 @@
 
 Isso resolve o problema do "multi-user" original: antes, qualquer usuário logado tinha acesso total a tudo, sem distinção nem histórico. Agora existem dois papéis:
 
-- **admin** — faz tudo, incluindo convidar/remover pessoas e trocar papéis.
+- **admin** — faz tudo, incluindo criar/remover pessoas e trocar papéis.
 - **editor** — edita programação, equipe e URL do stream, mas não vê a seção de usuários.
 
 E toda alteração feita no dashboard fica registrada num histórico (quem fez o quê e quando).
 
-As ações de admin (convidar, remover, trocar papel) rodam em **Vercel Functions** (pasta `api/usuarios/`) — pequenos scripts que ficam no mesmo domínio do site, sem precisar de outra hospedagem, sem CORS pra configurar. Eles usam a `service_role key` do Supabase, guardada como variável de ambiente na Vercel — nunca aparece no código que o navegador carrega.
+As ações de admin (criar usuário, remover, trocar papel) rodam em **Vercel Functions** (pasta `api/usuarios/`) — pequenos scripts que ficam no mesmo domínio do site, sem precisar de outra hospedagem, sem CORS pra configurar. Eles usam a `service_role key` do Supabase, guardada como variável de ambiente na Vercel — nunca aparece no código que o navegador carrega.
 
 ## Passo 1: Criar as tabelas no Supabase
 
@@ -110,7 +110,7 @@ A partir daqui, **todo `git push` na branch `main` publica automaticamente** —
 
 1. Acesse seu site publicado (ex: `https://itapevifm.vercel.app` ou seu domínio próprio).
 2. Logue no dashboard com o usuário que você tornou admin — deve aparecer a seção **"Usuários do Dashboard"** e **"Atividade Recente"**.
-3. Convide um segundo email de teste — a pessoa recebe um link do Supabase para criar a senha.
+3. Crie um usuário de teste (email + senha à sua escolha, use o botão 🎲 se quiser gerar uma senha aleatória) — a conta já fica ativa na hora, sem precisar de nenhum email. Envie o email e a senha para a pessoa por onde preferir (WhatsApp, por exemplo).
 4. Edite um programa ou membro da equipe e confira se a ação aparece no histórico.
 
 ## Testando localmente (opcional)
@@ -124,20 +124,16 @@ vercel dev
 
 Na primeira vez ele pede pra linkar com o projeto da Vercel (login) e vai pedir as mesmas variáveis de ambiente do Passo 5 (ou você `vercel env pull` para baixá-las automaticamente para um arquivo `.env.local`).
 
-## Sobre o envio de emails de convite
-
-O Supabase envia esses emails usando um serviço próprio, limitado no plano gratuito (poucos emails por hora — suficiente para uma rádio pequena). Se os convites não chegarem, confira a pasta de spam ou, no Supabase, vá em **Authentication → Email Templates** para confirmar que o envio está ativo.
-
 ## Problemas comuns
 
 ### "Apenas administradores podem fazer isso"
 Seu usuário está com papel `editor`. Rode o SQL do Passo 2 com o email correto.
 
-### Erro 500 ao convidar/remover/trocar papel
+### Erro 500 ao criar/remover/trocar papel de usuário
 As variáveis de ambiente não foram configuradas na Vercel, ou o deploy não foi refeito depois de configurá-las (Passo 5).
 
-### Convite não chega
-Verifique o spam; no plano gratuito o envio de emails do Supabase tem limite de volume por hora.
+### "A senha precisa ter pelo menos 6 caracteres"
+O Supabase exige senha mínima de 6 caracteres — use o botão 🎲 Gerar se quiser algo rápido e seguro.
 
 ### Funciona no site publicado mas não localmente
 Esperado, se você abriu os arquivos direto ou com um servidor simples — veja "Testando localmente" acima.
