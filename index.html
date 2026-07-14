@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0d0015">
 <title>Itapevi FM 87.9 — Maçambará</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -50,6 +50,30 @@ body {
   padding: 0 1.5rem; gap: 1rem;
   box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 1px 0 rgba(180,100,255,0.1);
 }
+
+/* APP FOOTER NAV */
+#appFooterNav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
+  height: calc(62px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: linear-gradient(135deg, rgba(18,0,32,0.98), rgba(28,0,46,0.98));
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border2);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+  display: flex;
+}
+.app-footer-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; color: var(--text2); text-decoration: none; background: none; border: none;
+  cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.app-footer-btn:hover, .app-footer-btn:active { color: var(--text); background: rgba(255,255,255,0.04); }
+.app-footer-btn .icon { font-size: 1.25rem; line-height: 1; }
+.app-footer-btn .label { font-size: 0.62rem; letter-spacing: 0.5px; text-transform: uppercase; }
+.app-footer-btn.whatsapp .icon { color: #25D366; }
+.app-footer-btn.facebook .icon { color: #1877F2; }
+body { padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px)); }
 .topbar-logo {
   flex-shrink: 0; display: flex; align-items: center; gap: 10px;
 }
@@ -614,6 +638,21 @@ footer strong { color:var(--text2); }
   <p><strong>Itapevi FM 87.9</strong> — Maçambará/RS</p>
   <p style="margin-top:5px;font-size:0.68rem;">© 2025 Itapevi FM · Todos os direitos reservados</p>
 </footer>
+
+<div id="appFooterNav">
+  <a class="app-footer-btn whatsapp" href="https://wa.me/5555933005230?text=Ol%C3%A1!%20Vim%20atrav%C3%A9s%20do%20site%20da%20Itapevi%20FM." target="_blank" rel="noopener">
+    <span class="icon">💬</span>
+    <span class="label">WhatsApp</span>
+  </a>
+  <a class="app-footer-btn facebook" href="https://www.facebook.com/radioitapeviFM87.9" target="_blank" rel="noopener">
+    <span class="icon">📘</span>
+    <span class="label">Facebook</span>
+  </a>
+  <button class="app-footer-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <span class="icon">⬆️</span>
+    <span class="label">Topo</span>
+  </button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
