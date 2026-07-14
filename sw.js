@@ -1,7 +1,7 @@
 // Service Worker do site público da Itapevi FM.
 // Sobe a versão do cache (CACHE_VERSION) sempre que mudar a lista de arquivos
 // ou quiser forçar todo mundo a buscar a versão nova.
-const CACHE_VERSION = 'itapevi-fm-v1';
+const CACHE_VERSION = 'itapevi-fm-v2';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 
 // Arquivos baixados assim que o Service Worker é instalado, para o site
